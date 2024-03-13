@@ -1,0 +1,9 @@
+body {
+    text-align: center;
+}
+.options {
+    padding: 1rem;
+    text-align: left;
+    margin: auto;
+    width: 20%;
+}
