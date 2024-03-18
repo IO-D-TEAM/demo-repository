@@ -14,12 +14,12 @@ public class Player {
         this.nickname = nickname;
     }
 
-    void moveForward(int steps) {
+    void move(int steps) {
         position += steps;
     }
 
-    void moveBackward(int steps) {
-        position += steps;
+    public int getPosition() {
+        return position;
     }
 
     @Override

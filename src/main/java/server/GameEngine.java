@@ -6,7 +6,7 @@ import board.Player;
 import java.util.Map;
 
 /**
- * In this class we should do all of the logic relates to managing questions, moving players, updating board state etc.
+ * In this class we should do all the logic relates to managing questions, moving players, updating board state etc.
  */
 public class GameEngine {
     private Board board;
