@@ -1,4 +1,13 @@
-# Welcome to your organization's demo respository
-This code repository (or "repo") is designed to demonstrate the best GitHub has to offer with the least amount of noise.
+# Jak odpalić
+* wejdź do folderu frontend 
+* wpisz 'npm install'
+* wpisz 'npm start'
 
-The repo includes an `index.html` file (so it can render a web page), two GitHub Actions workflows, and a CSS stylesheet dependency.
+# Jak odpalić ze spring bootem:
+* pobierz i zbuduj projekt w swoim edytorze
+* wszystkie potrzebne bilbioteki są w build.gradle
+* uruchom plik BackendApplication.java
+* no i g, u mnie działa pzdr
+
+
+  
