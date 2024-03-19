@@ -1,4 +1,4 @@
-package board;
+package org.io_web.backend.board;
 
 /**
  * Probably will be needed for UI purposes as well as keeping position of the player

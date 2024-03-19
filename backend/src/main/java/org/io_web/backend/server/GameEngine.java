@@ -1,7 +1,7 @@
-package server;
+package org.io_web.backend.server;
 
-import board.Board;
-import board.Player;
+import org.io_web.backend.board.Board;
+import org.io_web.backend.board.Player;
 
 import java.util.Map;
 

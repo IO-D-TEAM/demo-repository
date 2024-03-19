@@ -1,4 +1,4 @@
-package board;
+package org.io_web.backend.board;
 
 import java.util.Set;
 

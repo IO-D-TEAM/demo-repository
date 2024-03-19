@@ -1,6 +1,6 @@
-package board;
+package org.io_web.backend.board;
 
-import questions.Question;
+import org.io_web.backend.questions.Question;
 
 import java.util.ArrayList;
 import java.util.Map;

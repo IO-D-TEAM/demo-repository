@@ -1,4 +1,4 @@
-package questions;
+package org.io_web.backend.questions;
 
 /**
  * Class prepared to keep question, 4 possible answers, and correct answer
