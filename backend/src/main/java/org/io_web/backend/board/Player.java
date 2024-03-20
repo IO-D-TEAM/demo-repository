@@ -1,9 +1,12 @@
 package org.io_web.backend.board;
 
+import lombok.Getter;
+
 /**
  * Probably will be needed for UI purposes as well as keeping position of the player
  */
 public class Player {
+    @Getter
     private int position;
     private int correctAnswers;
     private String nickname;
@@ -16,10 +19,6 @@ public class Player {
 
     void move(int steps) {
         position += steps;
-    }
-
-    public int getPosition() {
-        return position;
     }
 
     @Override
