@@ -11,6 +11,7 @@ import Move from './model/UserView/Move/Move';
 import Lobby from './model/Lobby/Lobby';
 import CreateQuestionsSet from './model/TeacherView/CreateQuestionsSet/CreateQuestionsSet';
 import Results from './model/TeacherView/Results/Results';
+import GameView from './model/GameView/GameView';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/userView/move" element={<Move/>}/>
           <Route path="/board" element={<BoardView/>}/>
           <Route path="/lobby" element={<Lobby/>}/>
+          <Route path="/gameView" element={<GameView/>}/>
         </Routes>
       </Router>
     </div>
