@@ -1,6 +1,7 @@
 import React from "react";
 import Board from "./Board/Board";
-import { Player, FieldType } from "./GameTypes";
+import Timer from "./Timer/Timer";
+import { Player } from "./GameTypes";
 import { calculateFields } from "./GameViewUtils";
 
 
@@ -31,10 +32,10 @@ const players: Player[] = [
 const GameView = () => {
     const boardSize: number = 45;
     const [fields, rows, columns] = calculateFields(boardSize);
-    console.log(fields);
 
     return (
         <div>
+            <Timer minutes={0}/>
             <Board fields={fields} players={players} rows={rows} columns={columns}/>
         </div>
     );
