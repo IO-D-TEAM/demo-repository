@@ -78,6 +78,7 @@ public class Server implements Runnable {
             }
         }
         if (gameEngine.getGameStatus() == GameStatus.LOBBY) {
+            iterator = clientPool.getClients().iterator();
             while (iterator.hasNext()) {
                 client = iterator.next();
                 if (client.getStatus() == ClientStatus.SPECTATOR) {
