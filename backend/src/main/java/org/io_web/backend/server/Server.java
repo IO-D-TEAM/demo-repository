@@ -1,14 +1,11 @@
 package org.io_web.backend.server;
 
-import java.util.HashMap;
 import java.util.Random;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.io_web.backend.board.Player;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -26,33 +23,36 @@ import java.util.*;
  */
 
 @RestController
-public class Server implements Runnable{
-    private final List<Client> clientPool = new ArrayList<>();
+public class Server implements Runnable {
+    private final ClientPool clientPool = new ClientPool();
     private GameEngine gameEngine;
     private String gameCode;
 
+    private final SimpMessagingTemplate template;
+
+
     private int maxPlayers = 10,
-                currentPlayers = 0,
-                newID = 0;
+            currentPlayers = 0;
 
-
-    public Server() {
+    @Autowired
+    public Server(SimpMessagingTemplate template) {
+        this.template = template;
         this.gameEngine = new GameEngine();
         this.gameCode = generateGameCode();
+        System.out.println(gameCode);
     }
+
 
     // Game Engine Communication
-    private int addNewClient(String nickname){
-        Client client = new Client(this.newID, nickname);
-        clientPool.add(client);
-        this.newID += 1;
-        return this.newID - 1;
+
+    // function to comunicate to client that he's been chosen for next
+    public void informClientOfHisTurn(){
+
     }
 
-    /*
-        Server logic
-     */
-    private String generateGameCode(){
+
+    // Server logic
+    private String generateGameCode() {
         String allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();
         StringBuilder stringBuilder = new StringBuilder();
@@ -64,146 +64,154 @@ public class Server implements Runnable{
         }
         return stringBuilder.toString();
     }
-    private final List<Client> clients = new ArrayList<>();
-
-    private final SimpMessagingTemplate template;
-
-    @Autowired
-    public Server(SimpMessagingTemplate template) {
-        this.template = template;
-    }
-
-
-
-    private ResponseEntity<String> createResponse(HttpStatus status, String message) {
-        return ResponseEntity.status(status).body(message);
-    }
-
-    private ResponseEntity<String> createResponseFromMap(HttpStatus status, HashMap<String, Object> map){
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = null;
-        try {
-            json = objectMapper.writeValueAsString(map);
-        } catch (JsonProcessingException e) {
-            createResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Problem occurred when converting json response");
-        }
-        return createResponse(status, json);
-    }
-    // Client joins game
-    @GetMapping("{gameCode}/join_game")
-    public ResponseEntity<String> mainPage(@PathVariable String gameCode){
-        if (!gameCode.equals(this.gameCode)){
-            return createResponse(HttpStatus.NOT_FOUND, "No game with that code");
-        }
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("game_status", this.gameEngine.getGameStatus());
-        return createResponseFromMap(HttpStatus.OK, map);
-
-    }
-
-    @PostMapping("/addNickname")
-    public ResponseEntity<Void> sendMessage(@RequestBody Client client) {
-        System.out.println(client.getNickName());
-        this.clients.add(client);
-        template.convertAndSend("/lobby/players", this.clients);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    // Client tries to join game, gives his nickname
-    @PostMapping("{gameCode}/join_game")
-    public ResponseEntity<String> joinGame(@PathVariable String gameCode, @RequestBody String nickname){
-        if (!gameCode.equals(this.gameCode)){
-            return createResponse(HttpStatus.NOT_FOUND, "No game with that code");
-        }
-        boolean reconnected = false;
-        int ID = -1;
-        switch (gameEngine.getGameStatus()){
-            case LOBBY, ENDED:
-                for (Client client : clientPool) {
-                    if (client.getNickname().equals(nickname)) {
-                        return createResponse(HttpStatus.CONFLICT, "Nickname already in use");
-                    }
+    // Entering the Lobby Losts are erased, Spectators -> Connected, Ending game - Losts erased
+    public void gameStatusChanged(){
+        Iterator<Client> iterator = clientPool.getClients().iterator();
+        Client client;
+        if (gameEngine.getGameStatus() != GameStatus.PENDING) {
+            while (iterator.hasNext()) {
+                client = iterator.next();
+                if (client.getStatus() == ClientStatus.LOST_CONNECTION) {
+                    iterator.remove();
+                    gameEngine.removePlayer(client.getId());
                 }
-                break;
-            case PENDING:
-                for (Client client : clientPool){
-                    if(client.getNickname().equals(nickname)){
-                        if (client.getStatus() == ClientStatus.LOST_CONNECTION){
-                            client.setStatus(ClientStatus.CONNECTED);
-                            /*
-                            ewenutalnia informacja dla Game Engine'a
-                             */
-                            ID = client.getId();
-                            reconnected = true;
-                            break;
-                        }
-                        else{
-                            return createResponse(HttpStatus.CONFLICT, "Nickname already in use");
-                        }
-                    }
-                }
-                if(!reconnected && this.maxPlayers == this.currentPlayers){
-                    return createResponse(HttpStatus.CONFLICT, "Lobby full");
-                }
-                break;
-
-        }
-        HashMap<String, Object> map = new HashMap<>();
-
-        if (!reconnected){
-            ID = addNewClient(nickname);
-        }
-
-        map.put("ID", Integer.toString(ID));
-        map.put("game_status", this.gameEngine.getGameStatus().toString());
-        return createResponseFromMap(HttpStatus.OK, map);
-
-    }
-
-    @GetMapping("{gameCode}/{clientID}")
-    public ResponseEntity<String> attendGame(@PathVariable String gameCode, @PathVariable String clientID) throws JsonProcessingException {
-        if (!gameCode.equals(this.gameCode)) return createResponse(HttpStatus.NOT_FOUND, "No game with that code");
-        int id;
-        try{
-            id = Integer.parseInt(clientID);
-        }
-        catch (NumberFormatException e){ return createResponse(HttpStatus.UNAUTHORIZED, "Wrong client number");}
-        // ZMIENIĆ
-        if (!clientPool.contains(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("ID", Integer.toString(id));
-        map.put("game_status", this.gameEngine.getGameStatus().toString());
-        if (gameEngine.getGameStatus() == GameStatus.PENDING) {
-            if (gameEngine.getCurrentMovingPlayerId() == id) {
-                map.put("answering", "true");
-                map.put("question", gameEngine.getCurrentQuestion());
-                ObjectMapper objectMapper = new ObjectMapper();
-                String answersList = objectMapper.writeValueAsString(gameEngine.getCurrentAnswers());
-                map.put("answers", answersList);
-            } else {
-                map.put("answering", "false");
             }
         }
-        return createResponseFromMap(HttpStatus.OK, map);
-    }
-
-
-    @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity<String> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer){
-        if (!gameCode.equals(this.gameCode)) return createResponse(HttpStatus.NOT_FOUND, "No game with that code");
-        int id;
-        try{
-            id = Integer.parseInt(clientID);
+        if (gameEngine.getGameStatus() == GameStatus.LOBBY) {
+            while (iterator.hasNext()) {
+                client = iterator.next();
+                if (client.getStatus() == ClientStatus.SPECTATOR) {
+                    client.setStatus(ClientStatus.CONNECTED);
+                    gameEngine.addPlayer(client.getId());
+                }
+            }
         }
-        catch (NumberFormatException e){ return createResponse(HttpStatus.UNAUTHORIZED, "Wrong client number");}
+    }
 
-        // ZMIENIĆ
-        if (!clientPool.contains(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+    private Response createMessageResponse(HttpStatus status, String message) {
+        Response response = new Response();
+        response.setStatus(status);
+        response.setMessage(message);
+        return response;
+    }
+
+    private Response createResponse(HttpStatus status) {
+        Response response = new Response();
+        response.setStatus(status);
+        response.setGameStatus(gameEngine.getGameStatus());
+        return response;
+    }
 
 
-        return createResponse(HttpStatus.ACCEPTED, "ok");
+    private Response createResponse(HttpStatus status, Client client) {
+        Response response = new Response();
+        response.setStatus(status);
+        response.setClientId(client.getId());
+        response.setGameStatus(gameEngine.getGameStatus());
+        if(client.getId().equals(gameEngine.getCurrentMovingPlayerId())){
+            if (gameEngine.getCurrentTask() == PlayerTask.ANSWERING_QUESTION) {
+                response.setQuestion(gameEngine.getCurrentQuestion());
+                response.setTask(PlayerTask.ANSWERING_QUESTION);
+            }
+            else
+                response.setTask(PlayerTask.THROWING_DICE);
+        }
+        response.setTask(PlayerTask.IDLE);
+
+
+        return response;
+    }
+
+
+    @GetMapping("/gamecode")
+    public String showGeneratedCode() {
+        return this.gameCode;
+    }
+
+    @GetMapping("/lobby")
+    public List<Client> sendPlayers() {
+        return this.clientPool.getClients();
+    }
+
+    // Client joins game
+    @GetMapping("{gameCode}/join_game")
+    public Response mainPage(@PathVariable String gameCode) {
+        if (!gameCode.equals(this.gameCode)) {
+            return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        }
+        return createResponse(HttpStatus.OK);
 
     }
+
+    // Client tries to join game, gives his nickname
+    @PostMapping("{gameCode}/join_game")
+    public Response joinGame(@PathVariable String gameCode, @RequestBody Client newClient) {
+        if (!gameCode.equals(this.gameCode)) {
+            return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        }
+        boolean reconnected = false;
+        Response response = null;
+
+        switch (gameEngine.getGameStatus()) {
+            case LOBBY, ENDED:
+                if (clientPool.getClientByNickname(newClient.getNickname()) != null)
+                        return createMessageResponse(HttpStatus.CONFLICT, "Nickname already in use");
+            case PENDING:
+                Client prevClient = clientPool.getClientByNickname(newClient.getNickname());
+                if (prevClient != null) {
+                    if (prevClient.getStatus() == ClientStatus.LOST_CONNECTION) {
+                        prevClient.setStatus(ClientStatus.CONNECTED);
+                        response = createResponse(HttpStatus.OK, prevClient);
+                        reconnected = true;
+
+                    } else {
+                        return createMessageResponse(HttpStatus.CONFLICT, "Nickname already in use");
+
+                    }
+                } else if (this.maxPlayers == this.currentPlayers) {
+                        return createMessageResponse(HttpStatus.CONFLICT, "Lobby full");
+                }
+                newClient.setStatus(ClientStatus.SPECTATOR);
+
+        }
+
+        if (!reconnected) {
+            this.clientPool.add(newClient);
+            gameEngine.addPlayer(newClient.getId());
+            response = createResponse(HttpStatus.OK, newClient);
+        }
+        // nauczyciel
+        template.convertAndSend("/lobby/players", this.clientPool);
+
+        return response;
+
+    }
+    // client observes game, getting information about throwing, questions
+    @GetMapping("{gameCode}/{clientID}")
+    public Response attendGame(@PathVariable String gameCode, @PathVariable String clientID) throws JsonProcessingException {
+        if (!gameCode.equals(this.gameCode)) return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        Client client = clientPool.getClientById(clientID);
+        if (client == null) return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+
+        return createResponse(HttpStatus.OK, client);
+    }
+
+    // client sends his answer
+    @PostMapping("{gameCode}/{clientID}")
+    public Response giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody ClientAnswer answer) {
+        if (!gameCode.equals(this.gameCode)) return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        Client client = clientPool.getClientById(clientID);
+        if (client == null) return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId()))) return createMessageResponse(HttpStatus.FORBIDDEN, "Not your turn");
+
+        if (gameEngine.getCurrentTask() == PlayerTask.THROWING_DICE)
+            gameEngine.diceRollOutcome(answer.getDice());
+        else
+            gameEngine.playerAnswered(answer.getAnswer());
+        return createResponse(HttpStatus.ACCEPTED, client);
+
+    }
+
     @Override
     public void run() {
 

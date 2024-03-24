@@ -11,12 +11,12 @@ public class Client {
 
     private final String id = UUID.randomUUID().toString();
 
-    private String nickName;
+    private String nickname;
 
     private ClientStatus status;
 
     public Client(String nickName) {
-        this.nickName = nickName;
+        this.nickname = nickName;
     }
 
     public Client() {

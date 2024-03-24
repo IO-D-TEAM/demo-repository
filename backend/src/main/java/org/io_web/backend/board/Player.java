@@ -11,21 +11,21 @@ public class Player {
     private int correctAnswers;
 
     @Getter
-    private int id;
+    private String id;
 
-    public Player(int position, int correctAnswers, int id) {
+    public Player(int position, int correctAnswers, String id) {
         this.position = position;
         this.correctAnswers = correctAnswers;
         this.id = id;
     }
 
-    void move(int steps) {
+    public void move(int steps) {
         position += steps;
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(this.id);
+        return this.id.hashCode();
     }
 
     @Override
