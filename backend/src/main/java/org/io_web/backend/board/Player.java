@@ -9,12 +9,14 @@ public class Player {
     @Getter
     private int position;
     private int correctAnswers;
-    private String nickname;
 
-    public Player(int position, int correctAnswers, String nickname) {
+    @Getter
+    private int id;
+
+    public Player(int position, int correctAnswers, int id) {
         this.position = position;
         this.correctAnswers = correctAnswers;
-        this.nickname = nickname;
+        this.id = id;
     }
 
     void move(int steps) {
@@ -23,7 +25,7 @@ public class Player {
 
     @Override
     public int hashCode() {
-        return nickname.hashCode();
+        return Integer.hashCode(this.id);
     }
 
     @Override
@@ -36,6 +38,6 @@ public class Player {
             return false;
         final Player other = (Player) obj;
 
-        return this.nickname.equals(other.nickname);
+        return this.id == other.id;
     }
 }
