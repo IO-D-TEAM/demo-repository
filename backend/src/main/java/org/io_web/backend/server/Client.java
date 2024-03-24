@@ -1,29 +1,25 @@
 package org.io_web.backend.server;
 
-/**
- * Client means phone
- */
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.UUID;
+
+@Getter
+@Setter
 public class Client {
-    private String nickname;
-    private int id;
+
+    private final String id = UUID.randomUUID().toString();
+
+    private String nickName;
+
     private ClientStatus status;
 
-    public Client(int id, String nickname){
-        this.id = id;
-        this.nickname = nickname;
+    public Client(String nickName) {
+        this.nickName = nickName;
     }
 
-    public String getNickname() {
-        return nickname;
+    public Client() {
     }
 
-    public ClientStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ClientStatus status) {
-        this.status = status;
-    }
-
-    public int getId(){ return id }
 }

@@ -12,12 +12,22 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
+
 /**
  * Needed to handle connection before the game start
  */
+
 @RestController
 public class Server implements Runnable{
-    private HashMap<Integer, Client> clientPool;
+    private final List<Client> clientPool = new ArrayList<>();
     private GameEngine gameEngine;
     private String gameCode;
 
@@ -34,7 +44,7 @@ public class Server implements Runnable{
     // Game Engine Communication
     private int addNewClient(String nickname){
         Client client = new Client(this.newID, nickname);
-        clientPool.put(newID, client);
+        clientPool.add(client);
         this.newID += 1;
         return this.newID - 1;
     }
@@ -54,6 +64,16 @@ public class Server implements Runnable{
         }
         return stringBuilder.toString();
     }
+    private final List<Client> clients = new ArrayList<>();
+
+    private final SimpMessagingTemplate template;
+
+    @Autowired
+    public Server(SimpMessagingTemplate template) {
+        this.template = template;
+    }
+
+
 
     private ResponseEntity<String> createResponse(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(message);
@@ -80,6 +100,14 @@ public class Server implements Runnable{
         return createResponseFromMap(HttpStatus.OK, map);
 
     }
+
+    @PostMapping("/addNickname")
+    public ResponseEntity<Void> sendMessage(@RequestBody Client client) {
+        System.out.println(client.getNickName());
+        this.clients.add(client);
+        template.convertAndSend("/lobby/players", this.clients);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     // Client tries to join game, gives his nickname
     @PostMapping("{gameCode}/join_game")
     public ResponseEntity<String> joinGame(@PathVariable String gameCode, @RequestBody String nickname){
@@ -90,14 +118,14 @@ public class Server implements Runnable{
         int ID = -1;
         switch (gameEngine.getGameStatus()){
             case LOBBY, ENDED:
-                for (Client client : clientPool.values()) {
+                for (Client client : clientPool) {
                     if (client.getNickname().equals(nickname)) {
                         return createResponse(HttpStatus.CONFLICT, "Nickname already in use");
                     }
                 }
                 break;
             case PENDING:
-                for (Client client : clientPool.values()){
+                for (Client client : clientPool){
                     if(client.getNickname().equals(nickname)){
                         if (client.getStatus() == ClientStatus.LOST_CONNECTION){
                             client.setStatus(ClientStatus.CONNECTED);
@@ -139,7 +167,8 @@ public class Server implements Runnable{
             id = Integer.parseInt(clientID);
         }
         catch (NumberFormatException e){ return createResponse(HttpStatus.UNAUTHORIZED, "Wrong client number");}
-        if (!clientPool.containsKey(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        // ZMIENIĆ
+        if (!clientPool.contains(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("ID", Integer.toString(id));
@@ -167,7 +196,9 @@ public class Server implements Runnable{
             id = Integer.parseInt(clientID);
         }
         catch (NumberFormatException e){ return createResponse(HttpStatus.UNAUTHORIZED, "Wrong client number");}
-        if (!clientPool.containsKey(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+
+        // ZMIENIĆ
+        if (!clientPool.contains(id)) return createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
 
 
         return createResponse(HttpStatus.ACCEPTED, "ok");
