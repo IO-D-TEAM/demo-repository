@@ -11,7 +11,7 @@ const calculateRowsAndCols = (size: number): [number, number] => {
 
 
 const calculateFields = (size: number): [FieldType[], number, number] => {
-    const [rows, columns] = calculateRowsAndCols(size);
+    let [rows, columns] = calculateRowsAndCols(size);
     const fields: FieldType[] = [];
 
     let position: number = 0;
@@ -63,6 +63,10 @@ const calculateFields = (size: number): [FieldType[], number, number] => {
             }
             position++;
         }
+    }
+
+    if (fields[fields.length - 1].row < rows) {
+        rows--;
     }
 
     return [fields, rows, columns];

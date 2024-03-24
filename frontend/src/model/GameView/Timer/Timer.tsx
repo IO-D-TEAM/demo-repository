@@ -1,5 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import "./Timer.css";
+import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
 
 
 interface Props {
@@ -10,12 +13,6 @@ interface Props {
 const Timer = (props: Props) => {
     const [seconds, setSeconds] = useState(0);
     const [minutes, setMinutes] = useState(props.minutes);
-
-    const TimerStyle: React.CSSProperties = {
-        display: "flex",
-        justifyContent: "space-evenly",
-        margin: "1rem"
-    }
 
     useEffect(() => {
         const timerId = setInterval(() => {
@@ -35,9 +32,11 @@ const Timer = (props: Props) => {
     }, [minutes, seconds]);
 
     return (
-        <div style={TimerStyle}>
-            <h2>{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</h2>
-            <button>Finish</button>
+        <div className="timer">
+            <p className="time-left">{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+            <Button className="finish-btn" variant="contained" component={Link} to="/teacherView/results">
+                Zakończ
+            </Button>
         </div>
     );
 }

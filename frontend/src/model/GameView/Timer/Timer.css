@@ -1,0 +1,24 @@
+.timer {
+    display: flex;
+    justify-content: space-between;
+    width: 17%;
+    height: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+}
+
+.time-left, .finish-btn {
+    padding: .3em;
+    margin: 0;
+    border-radius: 5%;
+}
+
+.time-left {
+    font-size: 2rem;
+    font-weight: bold;
+    color: rgb(66, 53, 21);
+    background: rgb(250, 250, 250, .5);
+}
