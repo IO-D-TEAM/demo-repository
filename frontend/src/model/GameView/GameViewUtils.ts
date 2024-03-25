@@ -10,7 +10,7 @@ const calculateRowsAndCols = (size: number): [number, number] => {
 }
 
 
-const calculateFields = (size: number): [FieldType[], number, number] => {
+const calculateFields = (size: number, speciality: boolean[]): [FieldType[], number, number] => {
     let [rows, columns] = calculateRowsAndCols(size);
     const fields: FieldType[] = [];
 
@@ -26,7 +26,7 @@ const calculateFields = (size: number): [FieldType[], number, number] => {
                         position: position,
                         row: row + 1,
                         column: col + 1,
-                        isSpecial: false
+                        isSpecial: speciality[position]
                     });
                     position++;
                 }
@@ -38,7 +38,7 @@ const calculateFields = (size: number): [FieldType[], number, number] => {
                         position: position,
                         row: row + 1,
                         column: col + 1,
-                        isSpecial: false
+                        isSpecial: speciality[position]
                     });
                     position++;
                 }
@@ -51,14 +51,14 @@ const calculateFields = (size: number): [FieldType[], number, number] => {
                     position: position,
                     row: row + 1,
                     column: 0,
-                    isSpecial: false
+                    isSpecial: speciality[position]
                 });
             } else {
                 fields.push({
                     position: position,
                     row: row + 1,
-                    column: 14,
-                    isSpecial: false
+                    column: columns,
+                    isSpecial: speciality[position]
                 });
             }
             position++;

@@ -1,10 +1,9 @@
 import React from "react";
-import Board from "./Board/Board";
-import Timer from "./Timer/Timer";
-import { Player } from "./GameTypes";
+import { useState, useEffect } from "react";
+import { FieldType, Player, Question } from "./GameTypes";
 import { calculateFields } from "./GameViewUtils";
+import Board from "./Board/Board";
 import "./GameView.css";
-import { useState } from "react";
 
 
 const mockPlayers: Player[] = [
@@ -38,15 +37,52 @@ const mockPlayers: Player[] = [
     {nickname: "P7", color: "pink", position: 0, id: 6}
 ];
 
+const mockFields: boolean[] = [
+    false, false, false, false, false,
+    true, false, false, false, true,
+    true, false, false, false, true,
+    false, false, false, false, false,
+    false, false, false, false, false,
+    true, false, false, false, true,
+    true, false, false, false, true,
+    false, false, false, false, false
+];
+
 const GameView = () => {
-    const boardSize: number = 50;
-    const [fields, rows, columns] = calculateFields(boardSize);
-    const [players, setPlayers] = useState(mockPlayers);
-    const [gameFinished, setGameFinished] = useState(false);
+    const [boardSize, setBoardSize] = useState<number>(0);
+    const [players, setPlayers] = useState<Player[]>(mockPlayers);
+    const [fields, setFields] = useState<boolean[]>([]);
+
+    const [question, setQuestion] = useState<Question>({question: "", a: "", b: "", correctAnswer: ""});
+    const [gameFinished, setGameFinished] = useState<boolean>(false);
+    
+    const [rows, setRows] = useState(0);
+    const [columns, setColumns] = useState(0);
+    const [fieldsRepresentation, setFieldsRepresentation] = useState<FieldType[]>([]);
+
+    
+    useEffect(() => {
+        // fetching board config and players
+        // now it's mocked because backend is not done yet
+        setFields(mockFields);
+        setBoardSize(mockFields.length)
+        setPlayers(players);
+
+        if (boardSize > 0) {
+            const [f, r, c] = calculateFields(boardSize, fields);
+            setRows(r);
+            setColumns(c);
+            setFieldsRepresentation(f);
+        }
+    }, [players, boardSize, fields]);
+
+    useEffect(() => {
+        // websockets setup
+    });
 
     return (
         <div className="game-view">
-            <Board fields={fields} players={players} rows={rows} columns={columns}/>
+            <Board fields={fieldsRepresentation} players={players} rows={rows} columns={columns}/>
         </div>
     );
 }

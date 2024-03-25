@@ -1,8 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import "./Timer.css";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
+import "./Timer.css";
 
 
 interface Props {

@@ -1,9 +1,8 @@
 import React from "react";
-import { useState } from "react";
-import Field from "../Field/Field";
 import { Player, FieldType } from "../GameTypes";
-import "./Board.css";
+import Field from "../Field/Field";
 import Timer from "../Timer/Timer";
+import "./Board.css";
 
 
 interface Props {

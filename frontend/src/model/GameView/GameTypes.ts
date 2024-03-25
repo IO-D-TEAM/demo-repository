@@ -12,4 +12,13 @@ interface Player {
     color: string;
 }
 
-export type {Player, FieldType}
+interface Question {
+    question: string;
+    a: string;
+    b: string;
+    c?: string;
+    d?: string;
+    correctAnswer: string;
+}
+
+export type {Player, FieldType, Question}
