@@ -8,17 +8,23 @@
     align-items: center;
     text-align: center;
     align-content: center;
+    column-gap: 25px;
 }
 
-.time-left, .finish-btn {
+.timer-comps {
     padding: .3em;
     margin: 0;
-    border-radius: 5%;
+    border-radius: 10px;
 }
 
-.time-left {
+.timer-comps {
     font-size: 2rem;
     font-weight: bold;
     color: rgb(66, 53, 21);
     background: rgb(250, 250, 250, .5);
+}
+
+.finish-btn {
+    cursor: pointer;
+    border: none;
 }

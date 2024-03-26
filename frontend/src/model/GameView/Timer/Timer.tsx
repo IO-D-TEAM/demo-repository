@@ -1,42 +1,44 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
 import "./Timer.css";
+import { useGameStore } from "../GameState/GameState";
 
 
-interface Props {
-    minutes: number;
-}
-
-
-const Timer = (props: Props) => {
+const Timer = () => {
+    const { gameDuration, setGameDuration, setFinish } = useGameStore((state) => state);
     const [seconds, setSeconds] = useState(0);
-    const [minutes, setMinutes] = useState(props.minutes);
+    // const [minutes, setMinutes] = useState(0);
 
     useEffect(() => {
         const timerId = setInterval(() => {
-            if (minutes === 0 && seconds === 0) {
+            if (gameDuration === 0 && seconds === 0) {
+                setFinish(true);
                 return () => clearInterval(timerId);
             }
             
             setSeconds(seconds - 1);
             if (seconds === 0) {
-                setMinutes(minutes - 1);
+                setGameDuration(gameDuration - 1);
                 setSeconds(59)
             }
 
         }, 1000);
-
+    
         return () => clearInterval(timerId);
-    }, [minutes, seconds]);
+
+    }, [gameDuration, setGameDuration, setFinish, seconds, ]);
+
+    const onClick = () => {
+        setFinish(true);
+    }
 
     return (
         <div className="timer">
-            <p className="time-left">{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
-            <Button className="finish-btn" variant="contained" component={Link} to="/teacherView/results">
-                Zakończ
-            </Button>
+            <p className="time-left timer-comps">{gameDuration < 10 ? `0${gameDuration}` : gameDuration}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+            <button className="finish-btn timer-comps" onClick={onClick}>
+                ZAKOŃCZ
+            </button>
         </div>
     );
 }

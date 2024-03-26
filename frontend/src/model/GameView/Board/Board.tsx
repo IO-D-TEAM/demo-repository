@@ -21,7 +21,7 @@ const Board = (props: Props) => {
 
     return (
         <div className="board-wrap">
-            <Timer minutes={5}/>
+            <Timer/>
             <div className="board" style={GridStyle}>
                 {
                     props.fields.map((field, i) => (
