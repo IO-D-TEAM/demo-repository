@@ -42,11 +42,7 @@ public class GameEngine {
     }
 
     public void removePlayer(String id) {
-        for (Player player : playersList)
-            if (player.getId().equals(id)) {
-                playersList.remove(player);
-                break;
-            }
+        playersList.removeIf(player -> !player.getId().equals(id));
     }
 
     // communication with server
@@ -80,8 +76,7 @@ public class GameEngine {
     ;
 
     public String getCurrentMovingPlayerId() {
-        if (currentMovingPlayer != null) return currentMovingPlayer.getId();
-        return null;
+        return (currentMovingPlayer != null) ? currentMovingPlayer.getId() : null;
     }
 
 

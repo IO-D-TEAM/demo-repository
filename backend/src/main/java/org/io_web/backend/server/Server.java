@@ -157,6 +157,7 @@ public class Server implements Runnable {
             case LOBBY, ENDED:
                 if (clientPool.getClientByNickname(newClient.getNickname()) != null)
                         return createMessageResponse(HttpStatus.CONFLICT, "Nickname already in use");
+                break;
             case PENDING:
                 Client prevClient = clientPool.getClientByNickname(newClient.getNickname());
                 if (prevClient != null) {
@@ -189,7 +190,7 @@ public class Server implements Runnable {
     }
     // client observes game, getting information about throwing, questions
     @GetMapping("{gameCode}/{clientID}")
-    public Response attendGame(@PathVariable String gameCode, @PathVariable String clientID) throws JsonProcessingException {
+    public Response attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
         if (!gameCode.equals(this.gameCode)) return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
         Client client = clientPool.getClientById(clientID);
         if (client == null) return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");

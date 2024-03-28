@@ -38,6 +38,6 @@ public class Player {
             return false;
         final Player other = (Player) obj;
 
-        return this.id == other.id;
+        return this.id.equals(other.id);
     }
 }
