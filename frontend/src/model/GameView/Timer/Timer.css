@@ -1,7 +1,6 @@
 .timer {
     display: flex;
     justify-content: space-between;
-    width: 17%;
     height: 10%;
     margin-left: auto;
     margin-right: auto;
@@ -12,12 +11,9 @@
 }
 
 .timer-comps {
-    padding: .3em;
+    padding: .3rem;
     margin: 0;
     border-radius: 10px;
-}
-
-.timer-comps {
     font-size: 2rem;
     font-weight: bold;
     color: rgb(66, 53, 21);

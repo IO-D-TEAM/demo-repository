@@ -1,6 +1,6 @@
 import React from "react";
 import { create } from "zustand";
-import { FieldType, Player } from "../GameTypes";
+import { FieldType, Player } from "../utils/GameTypes";
 
 
 interface BoardDims {

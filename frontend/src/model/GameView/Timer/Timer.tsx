@@ -35,7 +35,7 @@ const Timer = () => {
 
     return (
         <div className="timer">
-            <p className="time-left timer-comps">{gameDuration < 10 ? `0${gameDuration}` : gameDuration}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+            <span className="time-left timer-comps">{gameDuration < 10 ? `0${gameDuration}` : gameDuration}:{seconds < 10 ? `0${seconds}` : seconds}</span>
             <button className="finish-btn timer-comps" onClick={onClick}>
                 ZAKOŃCZ
             </button>

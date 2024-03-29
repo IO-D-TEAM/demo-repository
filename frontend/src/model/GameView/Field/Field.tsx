@@ -1,6 +1,7 @@
 import React from "react";
-import { Player, FieldType } from "../GameTypes";
+import { Player, FieldType } from "../utils/GameTypes";
 import "./Field.css";
+import { useGameStore } from "../GameState/GameState";
 
 
 interface Props {
@@ -10,8 +11,29 @@ interface Props {
 
 
 const Field = (props: Props) => {
+    const { boardSize } = useGameStore((state) => state)
+    
+    
+    const getColor = () => {
+        if (props.field.position === boardSize - 1) {
+            return "#DACC3E"
+        }
+
+        if (props.field.isSpecial) return "#DF3030";
+
+        return props.field.position % 2 === 1 ? "#6db922" : "#c6c5c5";
+    }
+
+    const getBorder = () => {
+        if (props.field.position % 2 === 1 && props.field.isSpecial) {
+            return "5px solid #6db922";
+        }
+        return "none";
+    }
+    
     const FieldStyle: React.CSSProperties = {
-        background: props.field.isSpecial ? "orange" : "lightgrey",
+        border: getBorder(),
+        background: getColor(),
         gridRow: props.field.row,
         gridColumn: props.field.column
     }

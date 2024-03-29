@@ -12,13 +12,11 @@ interface Player {
     color: string;
 }
 
-interface Question {
-    question: string;
-    a: string;
-    b: string;
-    c?: string;
-    d?: string;
-    correctAnswer: string;
+interface GameConfig {
+    gameDuration: number;
+    boardSize: number;
+    fields: boolean[];
+    players: Player[];
 }
 
-export type {Player, FieldType, Question}
+export type {Player, FieldType, GameConfig}
