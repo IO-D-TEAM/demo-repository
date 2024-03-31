@@ -1,22 +1,13 @@
 package org.io_web.backend.server;
 
-import java.util.Random;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Needed to handle connection before the game start
