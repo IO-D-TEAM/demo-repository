@@ -1,5 +1,65 @@
-.btns {
+.lobby-img {
+    position: relative; 
+    height: 100vh;
+    background-position: center;
+    background-size: cover;
+}
+
+.lobby-img::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../../../assets/4.jpg);
+    z-index: -1; 
+    background-image: linear-gradient(0deg,rgba(90, 92, 94, 0.5), rgba(212, 223, 233, 0.5)), url(../../../assets/4.jpg);
+}
+
+
+p {
+    margin: 0.5rem;
+}
+
+.join {
+    background-color: rgba(255, 255, 255, 0.7);
     margin: auto;
-    padding: 2rem;
-    width: 20%;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: fit-content;
+}
+
+.code {
+    font-size: xx-large;
+}
+
+.middle-coint {
+    max-width: 80%;
+    margin: auto;
+}
+
+.start {
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.show-players {
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.show-players > * {
+    flex: 0 1 calc(25% - 1rem); 
+    margin-bottom: 1rem; 
 }
