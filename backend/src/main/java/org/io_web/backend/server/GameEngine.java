@@ -70,10 +70,14 @@ public class GameEngine {
     }
     // method to change players, inform server
     public void nextTurn() {
+        // reset turn if ended
+        if (!playerIterator.hasNext())
+            playerIterator = playersList.iterator();
 
+        currentMovingPlayer = playerIterator.next();
+        currentTask = PlayerTask.THROWING_DICE;
+        server.informClientOfHisTurn();
     }
-
-    ;
 
     public String getCurrentMovingPlayerId() {
         return (currentMovingPlayer != null) ? currentMovingPlayer.getId() : null;

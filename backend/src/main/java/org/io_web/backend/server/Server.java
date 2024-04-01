@@ -1,5 +1,6 @@
 package org.io_web.backend.server;
 
+import org.io_web.backend.questions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -36,11 +37,19 @@ public class Server implements Runnable {
 
     // Game Engine Communication
 
-    // function to comunicate to client that he's been chosen for next
-    public void informClientOfHisTurn(){
 
+    /**
+     * Send question to client (equivalent to informing client of their turn)
+     * In order to receive it, client will need to be subscribed to a websocket,
+     * that is bound to their id - /client/{clientID}
+     */
+    public void informClientOfHisTurn() {
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        Question currentQuestion = gameEngine.getCurrentQuestion();
+        if (clientID == null || currentQuestion == null) return;
+
+        template.convertAndSend("/client/" + clientID, currentQuestion);
     }
-
 
     // Server logic
     private String generateGameCode() {
