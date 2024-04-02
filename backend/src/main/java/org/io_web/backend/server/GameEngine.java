@@ -27,7 +27,8 @@ public class GameEngine {
     @Getter
     private PlayerTask currentTask;
 
-    public GameEngine() {
+    public GameEngine(Server server) {
+        this.server = server;
         gameStatus = GameStatus.LOBBY;
     }
     private void setGameStatus(GameStatus newStatus){

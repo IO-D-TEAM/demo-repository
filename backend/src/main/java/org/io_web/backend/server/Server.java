@@ -29,7 +29,7 @@ public class Server implements Runnable {
     @Autowired
     public Server(SimpMessagingTemplate template) {
         this.template = template;
-        this.gameEngine = new GameEngine();
+        this.gameEngine = new GameEngine(this);
         this.gameCode = generateGameCode();
         System.out.println(gameCode);
     }
