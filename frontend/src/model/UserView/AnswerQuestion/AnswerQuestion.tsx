@@ -3,14 +3,12 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import { useParams } from 'react-router-dom';
 
-// Question from server
 interface ServerMessage {
   question: string;
   answers: string[];
   correctAnswer: string;
 }
 
-// Client needs to know his ID && GameID to communicate with server
 interface AnswerQuestionParams {
   clientId: string ;
   gameId: string;
@@ -18,12 +16,13 @@ interface AnswerQuestionParams {
 
 const AnswerQuestion: React.FC = () => {
 
+  // Params for client-server communication? 
   const { clientId, gameId } = useParams<{ clientId: string, gameId: string }>();
-  
-  const [serverMessage, setServerMessage] = useState<ServerMessage | null>(null);
-  const [rollDiceResult, setRollDiceResult] = useState<number | null>(null);
-  let stompClient: Stomp.Client | null = null;
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [serverMessage, setServerMessage] = useState<ServerMessage|null>(null);
+  const [rollDiceResult, setRollDiceResult] = useState<number|null>(null);
+  let stompClient: Stomp.Client|null = null;
+
   const [error, setError] = useState(null);
 
   const WS_URL = "http://localhost:8080/ws";
@@ -32,9 +31,11 @@ const AnswerQuestion: React.FC = () => {
     const socket = new SockJS(WS_URL);
     stompClient = Stomp.over(socket);
 
-    // Client subscribes to channel with it's ID 
+    // Client subscribes to channel with his ID
     stompClient.connect({}, (frame: any) => {
+
       console.log('Connected: ' + frame);
+
       stompClient?.subscribe(`/client/${clientId}`, message => {
         const messageBody: ServerMessage = JSON.parse(message.body);
         setServerMessage(messageBody);
@@ -53,8 +54,7 @@ const AnswerQuestion: React.FC = () => {
     setRollDiceResult(diceRollResult);
   }
 
-  const handleAnswerClick = async (answer: string) => {
-    setIsLoading(true);
+  const sendAnswerToServer = async (answer: string) => {
     try {
       const response = await fetch(`http://localhost:8080/${gameId}/${clientId}`, {
         method: 'POST',
@@ -74,8 +74,6 @@ const AnswerQuestion: React.FC = () => {
       const data = await response.json();
       console.log('Response data:', data);
     } catch (error) {
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,7 +91,7 @@ const AnswerQuestion: React.FC = () => {
 
               <div className="answer-section">
                 {serverMessage.answers.map((answerOption, index) => (
-                  <button key={index} onClick={() => handleAnswerClick(answerOption)} >
+                  <button key={index} onClick={() => sendAnswerToServer(answerOption)} >
                     {answerOption}
                   </button>
                 ))}

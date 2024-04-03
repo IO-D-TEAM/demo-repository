@@ -20,7 +20,7 @@ const UserView: FC<UserViewProps> = () => (
       </li>
       <li>
         Odpowiadam na pytania
-        <AnswerQuestion clientId='123' gameId='123'></AnswerQuestion>
+        <AnswerQuestion></AnswerQuestion>
       </li>
       <li>
         Rzuca kością
