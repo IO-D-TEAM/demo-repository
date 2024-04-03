@@ -8,6 +8,7 @@ import org.io_web.backend.questions.Question;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * In this class we should do all the logic relates to managing questions, moving players, updating board state etc.
@@ -20,6 +21,7 @@ public class GameEngine {
     private Player currentMovingPlayer = null;
     @Getter
     private Question currentQuestion = null;
+    private int diceRoll = 0;
 
     private Iterator<Player> playerIterator;
 
@@ -27,7 +29,8 @@ public class GameEngine {
     @Getter
     private PlayerTask currentTask;
 
-    public GameEngine() {
+    public GameEngine(Server server) {
+        this.server = server;
         gameStatus = GameStatus.LOBBY;
     }
     private void setGameStatus(GameStatus newStatus){
@@ -50,11 +53,14 @@ public class GameEngine {
     public void diceRollOutcome(int dice){
         currentMovingPlayer.move(dice);
 
+        String[] answers = { "a", "b" };
+        currentQuestion = new Question("xd?", answers, answers[0]);
+        server.sendQuestion();
         currentTask = PlayerTask.ANSWERING_QUESTION;
     }
 
     public void playerAnswered(Answer answer){
-
+        //TODO: handle the answer
 
         currentMovingPlayer = null;
         currentTask = PlayerTask.IDLE;
@@ -66,18 +72,28 @@ public class GameEngine {
         playerIterator = playersList.iterator();
         currentMovingPlayer = playerIterator.next();
         currentTask = PlayerTask.THROWING_DICE;
-        server.informClientOfHisTurn();
+
+        Random random = new Random();
+        diceRoll = random.nextInt(6) + 1;
+
+        server.informClientOfHisTurn(diceRoll);
     }
     // method to change players, inform server
     public void nextTurn() {
+        // reset turn if ended
+        if (!playerIterator.hasNext())
+            playerIterator = playersList.iterator();
 
+        currentMovingPlayer = playerIterator.next();
+        currentTask = PlayerTask.THROWING_DICE;
+
+        Random random = new Random();
+        diceRoll = random.nextInt(6) + 1;
+
+        server.informClientOfHisTurn(diceRoll);
     }
-
-    ;
 
     public String getCurrentMovingPlayerId() {
         return (currentMovingPlayer != null) ? currentMovingPlayer.getId() : null;
     }
-
-
 }
