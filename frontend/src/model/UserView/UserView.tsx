@@ -8,6 +8,7 @@ import Move from './Move/Move';
 interface UserViewProps {}
 
 const UserView: FC<UserViewProps> = () => (
+
   <div className='main'>
     UserView Component
     <br />
@@ -19,7 +20,7 @@ const UserView: FC<UserViewProps> = () => (
       </li>
       <li>
         Odpowiadam na pytania
-        <AnswerQuestion></AnswerQuestion>
+        <AnswerQuestion clientId='123' gameId='123'></AnswerQuestion>
       </li>
       <li>
         Rzuca kością
