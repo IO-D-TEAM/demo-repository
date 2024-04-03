@@ -1,0 +1,31 @@
+.game-over {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(253, 223, 187, .9);
+    border-radius: 1.5em;
+    padding: 1em;
+}
+
+.game-over h1 {
+    font-size: 4rem;
+}
+
+.show-res {
+    cursor: pointer;
+    border: 3px rgb(126, 106, 31) solid;
+    padding: .5em;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: .5em;
+    text-decoration: none;
+    background-color: rgb(228, 221, 22);
+    color: black;
+    transition: .5s;
+}
+
+.show-res:hover {
+    background-color: rgb(144, 140, 17);
+    transition: .5s;
+}
