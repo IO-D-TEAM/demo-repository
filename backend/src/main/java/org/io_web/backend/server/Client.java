@@ -1,5 +1,7 @@
 package org.io_web.backend.server;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,11 +17,8 @@ public class Client {
 
     private ClientStatus status;
 
-    public Client(String nickName) {
+    @JsonCreator
+    public Client(@JsonProperty("nickname") String nickName) {
         this.nickname = nickName;
     }
-
-    public Client() {
-    }
-
 }
