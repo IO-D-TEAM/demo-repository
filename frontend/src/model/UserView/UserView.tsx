@@ -1,18 +1,17 @@
-import React, { FC } from 'react';
-import "./UserView.css"
-import JoinGame from './JoinGame/JoinGame';
-import AnswerQuestion from './AnswerQuestion/AnswerQuestion';
-import Move from './Move/Move';
-
+import React, { FC } from "react";
+import "./UserView.css";
+import JoinGame from "./JoinGame/JoinGame";
+import AnswerQuestion from "./AnswerQuestion/AnswerQuestion";
+import Move from "./Move/Move";
 
 interface UserViewProps {}
 
 const UserView: FC<UserViewProps> = () => (
-  <div className='main'>
+  <div className="main">
     UserView Component
     <br />
-    Opcje: 
-    <ul className='options'>
+    Opcje:
+    <ul className="options">
       <li>
         Wpisuje kodzik
         <JoinGame></JoinGame>
