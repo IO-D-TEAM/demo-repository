@@ -4,6 +4,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgb(253, 223, 187, .9);
-    border-radius: 20px;
+    border-radius: 1.5em;
     padding: 1em;
 }

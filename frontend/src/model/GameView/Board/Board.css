@@ -10,8 +10,8 @@
     width: 90%;
     height: 90%;
     display: grid;
-    row-gap: 5px;
-    column-gap: 5px;
+    row-gap: .5em;
+    column-gap: .5em;
     padding: 1em;
     background: #138A36;
     border-radius: 15px;

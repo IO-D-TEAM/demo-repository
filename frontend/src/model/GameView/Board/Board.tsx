@@ -1,5 +1,6 @@
 import React from "react";
-import { Player, FieldType } from "../utils/GameTypes";
+import { Player } from "../../../interfaces/GameViewInterfaces/Player";
+import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 import Field from "../Field/Field";
 import Timer from "../Timer/Timer";
 import "./Board.css";

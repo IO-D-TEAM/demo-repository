@@ -7,13 +7,13 @@
     align-items: center;
     text-align: center;
     align-content: center;
-    column-gap: 25px;
+    column-gap: 1.5em;
 }
 
 .timer-comps {
     padding: .3rem;
     margin: 0;
-    border-radius: 10px;
+    border-radius: .3em;
     font-size: 2rem;
     font-weight: bold;
     color: rgb(66, 53, 21);

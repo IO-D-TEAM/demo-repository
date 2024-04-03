@@ -1,14 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./Timer.css";
-import { useGameStore } from "../GameState/GameState";
+import { useGameStore } from "../GameStore/GameStore";
 
 
 const Timer = () => {
     const { gameDuration, setGameDuration, setFinish } = useGameStore((state) => state);
     const [seconds, setSeconds] = useState(0);
-    // const [minutes, setMinutes] = useState(0);
+    const secondsRestart: number = 59;
 
     useEffect(() => {
         const timerId = setInterval(() => {
@@ -20,7 +19,7 @@ const Timer = () => {
             setSeconds(seconds - 1);
             if (seconds === 0) {
                 setGameDuration(gameDuration - 1);
-                setSeconds(59)
+                setSeconds(secondsRestart)
             }
 
         }, 1000);

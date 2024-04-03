@@ -1,11 +1,15 @@
-import { FieldType } from "./GameTypes"
+import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 
 
 const calculateRowsAndCols = (size: number): [number, number] => {
-    const columns: number = 14;
-    let rows: number = Math.ceil(size / columns);
-    rows += (rows - 1);
+    let rows: number = Math.ceil(Math.sqrt(size / 2));
+    let columns: number = 2 * rows;
 
+    if (size % 2 !== 0) {
+        columns = 2 * rows;
+    }
+
+    rows += (rows - 1);
     return [rows, columns];
 }
 
@@ -66,7 +70,7 @@ const calculateFields = (size: number, speciality: boolean[]): [FieldType[], num
     }
 
     if (fields[fields.length - 1].row < rows) {
-        rows--;
+        rows = fields[fields.length - 1].row;
     }
 
     return [fields, rows, columns];

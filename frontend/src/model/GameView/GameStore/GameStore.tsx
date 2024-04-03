@@ -1,31 +1,8 @@
 import React from "react";
 import { create } from "zustand";
-import { FieldType, Player } from "../utils/GameTypes";
-
-
-interface BoardDims {
-    boardSize: number;
-    rows: number;
-    columns: number;
-}
-
-
-interface GameState {
-    players: Player[];
-    fields: FieldType[];
-    gameDuration: number;
-    gameFinished: boolean;
-    boardSize: number;
-    rows: number,
-    columns: number;
-    setPlayers: (value: Player[]) => void;
-    setFields: (value: FieldType[]) => void;
-    setGameDuration: (value: number) => void;
-    setFinish: (value: boolean) => void;
-    setRows: (value: number) => void;
-    setColumns: (value: number) => void;
-    setBoardSize: (value: number) => void;
-}
+import { Player } from "../../../interfaces/GameViewInterfaces/Player";
+import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
+import { GameState } from "../../../interfaces/GameViewInterfaces/GameState";
 
 
 const useGameStore = create<GameState> ((set) => ({

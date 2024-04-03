@@ -1,8 +1,9 @@
 import React from "react";
 import { useEffect } from "react";
-import { GameConfig } from "./utils/GameTypes";
+import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
 import { calculateFields } from "./utils/GameViewUtils";
-import { useGameStore } from "./GameState/GameState";
+import { useGameStore } from "./GameStore/GameStore";
+import { GetGameConfig } from "../../services/GameConfig/GameConfigService";
 import Board from "./Board/Board";
 import FinishWindow from "./FinishWindow/FinishWindow";
 import "./GameView.css";
@@ -15,28 +16,23 @@ const GameView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const config: GameConfig = await fetchConfig();
+                const config: GameConfig = await GetGameConfig();
+                const [f, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
+    
                 setFinish(false);
                 setGameDuration(config.gameDuration);
                 setPlayers(config.players);
-                const [f, r, c] = calculateFields(config.boardSize, config.fields);
                 setFields(f);
                 setRows(r);
                 setColumns(c);
                 setBoardSize(config.boardSize);
             } catch (error) {
-                console.error("Error ocurred with fetching game configuration: ", error);
+                console.error(error);
             }
         };
 
         fetchData();
     }, [setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows]);
-
-    const fetchConfig = async () => {
-        const response = await fetch("/gameConfig");
-        const data = await response.json();
-        return data;
-    }
 
     return (
         <div className="game-view">

@@ -3,13 +3,13 @@ package org.io_web.backend.mock_data;
 public class MockGameConfig {
     public int gameDuration;
     public int boardSize;
-    public boolean[] fields;
+    public boolean[] fieldSpeciality;
     public MockPlayer[] players;
 
     public MockGameConfig(int mockTime, int mockSize) {
         this.gameDuration = mockTime;
         this.boardSize = mockSize;
-        this.fields = new boolean[]{
+        this.fieldSpeciality = new boolean[]{
                 false, false, false, false, false,
                 true, false, false, false, true,
                 true, false, false, false, true,

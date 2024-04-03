@@ -1,7 +1,8 @@
 import React from "react";
-import { Player, FieldType } from "../utils/GameTypes";
+import { Player } from "../../../interfaces/GameViewInterfaces/Player";
+import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
+import { useGameStore } from "../GameStore/GameStore";
 import "./Field.css";
-import { useGameStore } from "../GameState/GameState";
 
 
 interface Props {
