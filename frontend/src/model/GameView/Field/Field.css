@@ -1,0 +1,21 @@
+.field {
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    flex-wrap: wrap;
+    width: auto;
+    height: auto;
+    padding: .3em;
+    border-radius: 1.5em;
+    row-gap: .1rem;
+    column-gap: .2rem;
+    box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+}
+
+.player {
+    width: .8rem;
+    height: .8rem;
+    border-radius: 50%;
+    border: 1px black groove;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+}

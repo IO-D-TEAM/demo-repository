@@ -9,11 +9,6 @@ interface ServerMessage {
   correctAnswer: string;
 }
 
-interface AnswerQuestionParams {
-  clientId: string ;
-  gameId: string;
-}
-
 const AnswerQuestion: React.FC = () => {
 
   // Params for client-server communication? 
@@ -105,5 +100,6 @@ const AnswerQuestion: React.FC = () => {
     </div>
   );
 }
+
 
 export default AnswerQuestion;

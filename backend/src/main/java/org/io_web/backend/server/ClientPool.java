@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Clas needed to manage clients
@@ -14,16 +15,12 @@ public class ClientPool {
     ArrayList<Client> clients = new ArrayList<>();
 
     public Client getClientByNickname(String nickname){
-        for (Client client : clients){
-            if (client.getNickname().equals(nickname)) return client;
-        }
-        return null;
+        Optional<Client> searchedClient = clients.stream().filter(client -> client.getNickname().equals(nickname)).findFirst();
+        return searchedClient.orElse(null);
     }
     public Client getClientById(String id){
-        for (Client client : clients){
-            if (client.getId().equals(id)) return client;
-        }
-        return null;
+        Optional<Client> searchedClient = clients.stream().filter(client -> client.getId().equals(id)).findFirst();
+        return searchedClient.orElse(null);
     }
 
     public void add(Client client){
@@ -35,12 +32,7 @@ public class ClientPool {
     }
 
     public void remove(String id){
-        for (Client client : clients){
-            if (client.getId().equals(id)){
-                clients.remove(client);
-                return;
-            }
-        }
+        clients.removeIf(client -> !client.getId().equals(id));
     }
 
 }
