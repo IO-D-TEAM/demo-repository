@@ -5,13 +5,12 @@ import { Settings } from "../../interfaces/Settings";
 import { TextField, Button, Stack, Select, MenuItem } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useForm } from "react-hook-form";
-import { SendSettingsForm } from "../../services/LobbyData/LobbyDataService";
+import { sendSettingsForm } from "../../services/LobbyData/LobbyDataService";
 
 interface SettingFormProps {}
 
 const SettingForm: FC<SettingFormProps> = () => {
   const [buttonPopup, setButtonPopup] = useState(false);
-
   const form = useForm<Settings>({
     // defaultValues: {
     //   numberOfPlayers: 1,
@@ -23,15 +22,13 @@ const SettingForm: FC<SettingFormProps> = () => {
     //   boardPattern: 1,
     // },
   });
-
   const { register, handleSubmit, formState } = form;
+  const { errors } = formState;
 
   const onSubmit = (data: Settings) => {
     console.log(data);
-    SendSettingsForm(data);
+    sendSettingsForm(data);
   };
-
-  const { errors } = formState;
 
   const sets = [
     {
@@ -66,9 +63,9 @@ const SettingForm: FC<SettingFormProps> = () => {
               variant="outlined"
               type="number"
               {...register("numberOfPlayers", {
-                required: "Ilość grczy jest wymagana.",
+                required: "Ilość graczy jest wymagana.",
                 validate: (value) =>
-                  value > 0 || "Ilość graczy musi być większy od 0.",
+                  value > 0 || "Ilość graczy musi być większa od 0.",
               })}
               error={!!errors.numberOfPlayers}
               helperText={errors.numberOfPlayers?.message}

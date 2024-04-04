@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import "./Lobby.css";
-import { GetGameCode } from "../../services/LobbyData/LobbyDataService";
+import { getGameCode } from "../../services/LobbyData/LobbyDataService";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { Player } from "../../interfaces/Player";

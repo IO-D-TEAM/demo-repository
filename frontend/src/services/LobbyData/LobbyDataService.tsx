@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from "react";
 import { Settings } from "../../interfaces/Settings";
 
-export const GetGameCode = async (): Promise<string> => {
+export const getGameCode = async (): Promise<string> => {
   return await fetch("/gameCode")
     .then((response) => response.json())
     .then((data: string) => {
@@ -14,7 +14,7 @@ export const GetGameCode = async (): Promise<string> => {
     });
 };
 
-export const SendSettingsForm = async (form: Settings) => {
+export const sendSettingsForm = async (form: Settings) => {
   const response = await fetch(`/lobby/settings`, {
     method: "POST",
     headers: {
