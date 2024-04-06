@@ -1,6 +1,5 @@
 package org.io_web.backend.questions;
 
-import org.io_web.backend.board.Player;
 
 /**
  * Class prepared to keep question, 4 possible answers, and correct answer

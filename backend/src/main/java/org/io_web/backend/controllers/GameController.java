@@ -1,6 +1,5 @@
 package org.io_web.backend.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.io_web.backend.Utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;

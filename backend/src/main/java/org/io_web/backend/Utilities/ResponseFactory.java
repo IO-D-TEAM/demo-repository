@@ -3,7 +3,6 @@ package org.io_web.backend.Utilities;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
-import org.springframework.util.StringUtils;
 
 /**
  * Similar to prev Response class.

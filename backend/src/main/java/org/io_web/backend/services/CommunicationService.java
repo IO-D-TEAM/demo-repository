@@ -1,10 +1,8 @@
 package org.io_web.backend.services;
 
-import org.io_web.backend.client.PlayerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 /**
