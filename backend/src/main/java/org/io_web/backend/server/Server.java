@@ -5,7 +5,11 @@ import org.io_web.backend.questions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +46,9 @@ public class Server implements Runnable {
      */
     public void informClientOfHisTurn(int diceRoll) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) return;
+        if (clientID == null) {
+            return;
+        }
         Response r = new Response(gameEngine.getCurrentTask(), null, diceRoll);
 
         template.convertAndSend("/client/" + clientID, r);
@@ -56,7 +62,9 @@ public class Server implements Runnable {
     public void sendQuestion() {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         Question currentQuestion = gameEngine.getCurrentQuestion();
-        if (clientID == null || currentQuestion == null) return;
+        if (clientID == null || currentQuestion == null) {
+            return;
+        }
 
         Response r = new Response(gameEngine.getCurrentTask(), currentQuestion, null);
         template.convertAndSend("/client/" + clientID, r);
@@ -125,8 +133,9 @@ public class Server implements Runnable {
                 response.setQuestion(gameEngine.getCurrentQuestion());
                 response.setTask(PlayerTask.ANSWERING_QUESTION);
             }
-            else
+            else {
                 response.setTask(PlayerTask.THROWING_DICE);
+            }
         }
         response.setTask(PlayerTask.IDLE);
 
@@ -166,8 +175,9 @@ public class Server implements Runnable {
 
         switch (gameEngine.getGameStatus()) {
             case LOBBY, ENDED:
-                if (clientPool.getClientByNickname(newClient.getNickname()) != null)
-                        return createMessageResponse(HttpStatus.CONFLICT, "Nickname already in use");
+                if (clientPool.getClientByNickname(newClient.getNickname()) != null) {
+                    return createMessageResponse(HttpStatus.CONFLICT, "Nickname already in use");
+                }
                 break;
             case PENDING:
                 Client prevClient = clientPool.getClientByNickname(newClient.getNickname());
@@ -202,9 +212,13 @@ public class Server implements Runnable {
     // client observes game, getting information about throwing, questions
     @GetMapping("{gameCode}/{clientID}")
     public Response attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
-        if (!gameCode.equals(this.gameCode)) return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        if (!gameCode.equals(this.gameCode)) {
+            return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        }
         Client client = clientPool.getClientById(clientID);
-        if (client == null) return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        if (client == null) {
+            return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        }
 
         return createResponse(HttpStatus.OK, client);
     }
@@ -212,10 +226,16 @@ public class Server implements Runnable {
     // client sends his answer
     @PostMapping("{gameCode}/{clientID}")
     public Response giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
-        if (!gameCode.equals(this.gameCode)) return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        if (!gameCode.equals(this.gameCode)) {
+            return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
+        }
         Client client = clientPool.getClientById(clientID);
-        if (client == null) return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId()))) return createMessageResponse(HttpStatus.FORBIDDEN, "Not your turn");
+        if (client == null) {
+            return createMessageResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        }
+        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId()))) {
+            return createMessageResponse(HttpStatus.FORBIDDEN, "Not your turn");
+        }
 
         gameEngine.playerAnswered(answer);
         return createResponse(HttpStatus.ACCEPTED, client);

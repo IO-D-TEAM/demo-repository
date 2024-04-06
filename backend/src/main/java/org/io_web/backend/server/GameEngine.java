@@ -39,7 +39,9 @@ public class GameEngine {
     }
 
     public void addPlayer(String id) {
-        if (gameStatus != GameStatus.LOBBY) return;
+        if (gameStatus != GameStatus.LOBBY) {
+            return;
+        }
         Player newPlayer = new Player(0, 0, id);
         playersList.add(newPlayer);
     }
@@ -68,7 +70,9 @@ public class GameEngine {
 
     // game stages
     public void start() {
-        if (playersList.size() < 2) return; // informacja o niepowodzeniu
+        if (playersList.size() < 2) {
+            return;
+        }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
         currentMovingPlayer = playerIterator.next();
         currentTask = PlayerTask.THROWING_DICE;
@@ -81,8 +85,9 @@ public class GameEngine {
     // method to change players, inform server
     public void nextTurn() {
         // reset turn if ended
-        if (!playerIterator.hasNext())
+        if (!playerIterator.hasNext()) {
             playerIterator = playersList.iterator();
+        }
 
         currentMovingPlayer = playerIterator.next();
         currentTask = PlayerTask.THROWING_DICE;
