@@ -1,5 +1,7 @@
 package org.io_web.backend.server;
 
+import org.io_web.backend.questions.Answer;
+import org.io_web.backend.questions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,26 +27,44 @@ public class Server implements Runnable {
 
     private final SimpMessagingTemplate template;
 
-
     private int maxPlayers = 10,
             currentPlayers = 0;
 
     @Autowired
     public Server(SimpMessagingTemplate template) {
         this.template = template;
-        this.gameEngine = new GameEngine();
+        this.gameEngine = new GameEngine(this);
         this.gameCode = generateGameCode();
         System.out.println(gameCode);
     }
 
-
     // Game Engine Communication
 
-    // function to comunicate to client that he's been chosen for next
-    public void informClientOfHisTurn(){
+    /**
+     * Inform client that it's their turn,
+     * needed for the client to roll the dice
+     */
+    public void informClientOfHisTurn(int diceRoll) {
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        if (clientID == null) return;
+        Response r = new Response(gameEngine.getCurrentTask(), null, diceRoll);
 
+        template.convertAndSend("/client/" + clientID, r);
     }
 
+    /**
+     * Send question to client
+     * In order to receive it, client will need to be subscribed to a websocket,
+     * that is bound to their id - /client/{clientID}
+     */
+    public void sendQuestion() {
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        Question currentQuestion = gameEngine.getCurrentQuestion();
+        if (clientID == null || currentQuestion == null) return;
+
+        Response r = new Response(gameEngine.getCurrentTask(), currentQuestion, null);
+        template.convertAndSend("/client/" + clientID, r);
+    }
 
     // Server logic
     private String generateGameCode() {
@@ -201,7 +221,7 @@ public class Server implements Runnable {
 
     // client sends his answer
     @PostMapping("{gameCode}/{clientID}")
-    public Response giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody ClientAnswer answer) {
+    public Response giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
         if (!gameCode.equals(this.gameCode)) {
             return createMessageResponse(HttpStatus.NOT_FOUND, "No game with that code");
         }
@@ -213,14 +233,8 @@ public class Server implements Runnable {
             return createMessageResponse(HttpStatus.FORBIDDEN, "Not your turn");
         }
 
-        if (gameEngine.getCurrentTask() == PlayerTask.THROWING_DICE) {
-            gameEngine.diceRollOutcome(answer.getDice());
-        }
-        else {
-            gameEngine.playerAnswered(answer.getAnswer());
-        }
+        gameEngine.playerAnswered(answer);
         return createResponse(HttpStatus.ACCEPTED, client);
-
     }
 
     @Override

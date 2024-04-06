@@ -21,5 +21,13 @@ public class Response {
 
     private Question question = null;
 
+    private Integer dice = 0;
 
+
+    public Response() {};
+    public Response(PlayerTask task, Question question, Integer dice) {
+        this.task = task;
+        this.question = question;
+        this.dice = dice;
+    }
 }
