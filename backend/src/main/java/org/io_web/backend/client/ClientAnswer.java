@@ -1,4 +1,4 @@
-package org.io_web.backend.server;
+package org.io_web.backend.client;
 
 import lombok.Getter;
 import lombok.Setter;

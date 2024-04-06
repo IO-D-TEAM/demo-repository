@@ -1,4 +1,4 @@
-package org.io_web.backend.server;
+package org.io_web.backend.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,9 +12,7 @@ import java.util.UUID;
 public class Client {
 
     private final String id = UUID.randomUUID().toString();
-
     private String nickname;
-
     private ClientStatus status;
 
     @JsonCreator

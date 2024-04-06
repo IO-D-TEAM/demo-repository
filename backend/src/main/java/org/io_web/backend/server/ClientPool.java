@@ -1,9 +1,9 @@
 package org.io_web.backend.server;
 
 import lombok.Getter;
+import org.io_web.backend.client.Client;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,13 +11,14 @@ import java.util.Optional;
  */
 @Getter
 public class ClientPool {
-
     ArrayList<Client> clients = new ArrayList<>();
 
     public Client getClientByNickname(String nickname){
         Optional<Client> searchedClient = clients.stream().filter(client -> client.getNickname().equals(nickname)).findFirst();
         return searchedClient.orElse(null);
     }
+
+
     public Client getClientById(String id){
         Optional<Client> searchedClient = clients.stream().filter(client -> client.getId().equals(id)).findFirst();
         return searchedClient.orElse(null);
