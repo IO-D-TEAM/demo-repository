@@ -46,7 +46,9 @@ public class Server implements Runnable {
      */
     public void informClientOfHisTurn(int diceRoll) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) return;
+        if (clientID == null) {
+            return;
+        }
         Response r = new Response(gameEngine.getCurrentTask(), null, diceRoll);
 
         template.convertAndSend("/client/" + clientID, r);
@@ -60,7 +62,9 @@ public class Server implements Runnable {
     public void sendQuestion() {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         Question currentQuestion = gameEngine.getCurrentQuestion();
-        if (clientID == null || currentQuestion == null) return;
+        if (clientID == null || currentQuestion == null) {
+            return;
+        }
 
         Response r = new Response(gameEngine.getCurrentTask(), currentQuestion, null);
         template.convertAndSend("/client/" + clientID, r);
