@@ -1,5 +1,6 @@
 package org.io_web.backend.controllers;
 
+import org.io_web.backend.utilities.NetworkUtils;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;
@@ -16,11 +17,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Enumeration;
 import java.util.Random;
 
@@ -87,57 +93,28 @@ public class GameController {
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
 
-        return ResponseFactory.simpleResponse(HttpStatus.OK);
+        return ResponseFactory.createResponse(HttpStatus.OK, "Game with that code exists");
     }
 
+    /**
+     * Returns valid join game link
+     *
+     * @method GET
+     * @return ResponseEntity with valid link or error message
+     *
+     * <p>>Method is iterating over all network interfaces in computer.
+     * Then it iterate over all NI's addresses. If one address is in correct form
+     * could be valid address we test it with api call.
+     */
     @GetMapping({"get_url"})
     public ResponseEntity<String> getGameUrl(){
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            String result = "http://";
+            String joinGameUrl = NetworkUtils.createUrl(this.dataService.getGameCode());
 
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+            if(joinGameUrl != null)
+                return ResponseFactory.createResponse(HttpStatus.OK, joinGameUrl);
 
-                while (inetAddresses.hasMoreElements()) {
-                    InetAddress inetAddress = inetAddresses.nextElement();
-                    if (inetAddress instanceof Inet4Address) { // Ensure IPv4 address
-                        String ipAddress = inetAddress.getHostAddress();
-
-                        System.out.println(ipAddress);
-
-                        if (classifyIP(ipAddress)) {
-                            result += ipAddress + ":8080/game/" + this.dataService.getGameCode();
-                            return ResponseFactory.createResponse(HttpStatus.OK, result);
-                        }
-                    }
-                }
-            }
-        } catch (IOException ignored){}
-
-            return null;
+            return ResponseFactory.createResponse(HttpStatus.SERVICE_UNAVAILABLE, "Message unavailable!");
         }
-
-
-        public boolean classifyIP(String ipAddress){
-        String[] parts = ipAddress.split("\\.");
-        int[] ipComponents = new int[4];
-
-        for (int i = 0; i < 4; i++)
-            ipComponents[i] = Integer.parseInt(parts[i]);
-
-        if(ipComponents[0] == 127)
-            return false;
-
-        if(ipComponents[0] == 169 && ipComponents[1] == 254)
-            return false;
-
-        if(ipComponents[0] >= 224 && ipComponents[0] <= 239)
-            return false;
-
-        return ipComponents[0] != 255 || ipComponents[1] != 255 || ipComponents[2] != 255 || ipComponents[3] != 255;
-    }
 
     /**
      * Handles the process of a client joining a game session.
