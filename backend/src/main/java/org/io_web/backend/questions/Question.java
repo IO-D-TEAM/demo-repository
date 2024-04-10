@@ -1,9 +1,16 @@
 package org.io_web.backend.questions;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+
 /**
  * Class prepared to keep question, 4 possible answers, and correct answer
  */
-public class Question {
+
+public class Question implements Serializable {
     private String question;
     private String[] answers;
     private String correctAnswer;
