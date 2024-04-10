@@ -3,8 +3,6 @@ package org.io_web.backend.board;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 /**
  * Class for specify each field
  */
