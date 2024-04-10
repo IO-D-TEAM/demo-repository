@@ -28,7 +28,7 @@ public class Board {
             Field newField = new Field(false);
             path.add(newField);
         }
-        players.forEach(obj -> playerPosition.put(obj, path.getFirst()));
+        players.forEach(obj -> playerPosition.put(obj, path.get(0)));
     }
 
     public void addQuestion(Question... questions) {
