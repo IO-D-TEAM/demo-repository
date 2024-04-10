@@ -29,7 +29,7 @@ const JoinGame: FC<JoinGameProps> = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`/${gamecode}/join_game`, {
+      const response = await fetch(`/game/${gamecode}/join_game`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,13 +42,14 @@ const JoinGame: FC<JoinGameProps> = () => {
           throw new Error("Failed to connect to server");
       }
       const data = await response.json();
+      console.log(data);
 
       // server error - can't register the client
-      if (data.status != "OK") {
+      if (!response.ok) {
           throw new Error(data.message);
       }
 
-      setClientId(data.clientId);
+      setClientId(data.id);
     } catch (error) {
       console.error('Error:', error);
     }
