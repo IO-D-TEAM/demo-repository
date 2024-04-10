@@ -1,5 +1,6 @@
 package org.io_web.backend.controllers;
 
+import lombok.Setter;
 import org.io_web.backend.Utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;
@@ -12,30 +13,53 @@ import org.io_web.backend.questions.Question;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Random;
 
+
+/**
+ * Contains all methods to handle game service.
+ */
 @RestController
 @RequestMapping("/game")
 public class GameController {
     private final SharedDataService dataService;
     private final CommunicationService communicationService;
 
-    private final GameEngine gameEngine;
+    private GameEngine gameEngine;
     private final int maxPlayers = 10;
 
+    /**
+     * Launches controller with Spring's dependency injection mechanism,
+     * and generate & set new Game Code
+     *
+     * @param communicationService - WebSocket communication service
+     * @param sharedDataService - Service for data exchange between controllers
+     * @param gameEngine - Game Engine (Lazy initialize to break the cycle)
+     */
     @Autowired
-    public GameController(CommunicationService communicationService, SharedDataService sharedDataService) {
+    public GameController(CommunicationService communicationService, SharedDataService sharedDataService, @Lazy GameEngine gameEngine) {
         this.communicationService = communicationService;
         this.dataService = sharedDataService;
+        this.gameEngine = gameEngine;
 
         this.dataService.setGameCode(generateGameCode());
-        this.gameEngine = new GameEngine(this);
     }
 
+
+    /**
+     * Returns generated game code
+     *
+     * @return - Generated code
+     */
     public static String generateGameCode() {
         Random random = new Random();
         StringBuilder stringBuilder = new StringBuilder();
@@ -53,7 +77,11 @@ public class GameController {
 
 
     /**
-     * GET: Return OK if game with ID exists
+     * Returns information if game with code is existing.
+     *
+     * @method GET
+     * @param gameCode - Unique game identifier
+     * @return - ResponseEntity with HttpStatus and answer
      */
     @GetMapping("{gameCode}/join_game")
     public ResponseEntity<String> mainPage(@PathVariable String gameCode) {
@@ -64,20 +92,29 @@ public class GameController {
     }
 
     /**
-     * Handle new user joining game.
-     * <p>
-     * Method: POST
-     * @param newClient The Class representing client
+     * Handles the process of a client joining a game session.
+     *
+     * @method POST
+     * @param gameCode Unique game identifier
+     * @param newClient Client object representing new client attempting to join.
+     * @return ResponseEntity wih HttpStatus and additional data.
+     *
+     *  <p>The method handles scenarios based on game status:<ul>
+     *  <li> If the game is in lobby, check if nick is available </li>
+     *  <li> If the game is pending then: <ul>
+     *      <li> Reconnect client if client was disconnected during the game </li>
+     *      <li> Add player as spectator if lobby is not full </li>
+     *  </ul></ul>
      */
     @PostMapping("{gameCode}/join_game")
-    public ResponseEntity joinGame(@PathVariable String gameCode, @RequestBody Client newClient) {
+    public ResponseEntity<Object> joinGame(@PathVariable String gameCode, @RequestBody Client newClient) {
 
         if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "No game with that code");
         }
 
         boolean reconnected = false;
-        ResponseEntity response = null;
+        ResponseEntity<Object> response = null;
 
         switch (gameEngine.getGameStatus()) {
             case LOBBY, ENDED:
@@ -110,13 +147,24 @@ public class GameController {
         }
 
         // nauczyciel
-        communicationService.sendMessageToLobby(this.dataService.getClientPool());
+        this.communicationService.sendMessageToLobby(this.dataService.getClientPool());
+
         return response;
     }
 
     // client observes game, getting information about throwing, questions
+
+    /**
+     * Handles situation when client is observing the game. Provide user with information
+     * about questions, dice throwing etc.
+     *
+     * @param gameCode Unique game identifier
+     * @param clientID Unique user identifier
+     * @return ResponseEntity wih HttpStatus and Game Data.
+     */
     @GetMapping("{gameCode}/{clientID}")
-    public ResponseEntity attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
+    public ResponseEntity<Object> attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
+
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
 
@@ -128,15 +176,30 @@ public class GameController {
         return ResponseFactory.createResponse(HttpStatus.OK, client);
     }
 
+    /**
+     * Returns Game Code
+     *
+     * @method GET
+     * @return ResponseEntity wih HttpStatus and Game Data.
+     */
     @GetMapping("/gamecode")
     public String showGeneratedCode() {
         return this.dataService.getGameCode();
     }
 
-
-    // client sends his answer
+    /**
+     * Handles client answer during game session.
+     * <p> Verifies all necessary data
+     *
+     * @method POST
+     * @param gameCode Unique game identifier
+     * @param clientID Unique user identifier
+     * @param answer Class representing Client Answer
+     * @return ResponseEntity wih HttpStatus and Game Data.
+     */
     @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
+    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
+
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
 
@@ -152,6 +215,9 @@ public class GameController {
         return ResponseFactory.createResponse(HttpStatus.ACCEPTED, client);
     }
 
+    /**
+     * Update players statuses when game status is changed.
+     */
     public void gameStatusChanged(){
         if (gameEngine.getGameStatus() != GameStatus.PENDING) {
             for(Client client : this.dataService.getClientPool().getClients()){
@@ -172,14 +238,19 @@ public class GameController {
         }
     }
 
+    /**
+     * Inform Client about his turn via WebSockets
+     *
+     * @param diceRoll Question dice roll
+     */
     public void informClientOfHisTurn(int diceRoll) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         if (clientID == null) return;
 
         PlayerTask currentTask = this.gameEngine.getCurrentTask();
-        TaskWrapper task =  new TaskWrapper(null, null, PlayerTask.ANSWERING_QUESTION);
+        TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
 
-        this.communicationService.sendMessageToClient(clientID, task.serialize());
+        this.communicationService.sendMessageToClient(clientID, task);
     }
 
     /**
@@ -193,6 +264,7 @@ public class GameController {
         if (clientID == null || currentQuestion == null) return;
 
         TaskWrapper task =  new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
-        this.communicationService.sendMessageToClient(clientID, task.serialize());
+        this.communicationService.sendMessageToClient(clientID, task);
     }
+
 }

@@ -16,7 +16,7 @@ public class ResponseFactory {
         if (body instanceof String messageBody) {
 
             if (!messageBody.isEmpty()) {
-                body = (T) ((String) "{\"message\": \"" + messageBody + "\"}");
+                body = (T) ("{\"message\": \"" + messageBody + "\"}");
             }
         }
 

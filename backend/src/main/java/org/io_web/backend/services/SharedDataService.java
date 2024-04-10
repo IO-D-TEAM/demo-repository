@@ -3,20 +3,20 @@ package org.io_web.backend.services;
 import lombok.Getter;
 import lombok.Setter;
 import org.io_web.backend.client.Client;
-import org.io_web.backend.server.ClientPool;
+import org.io_web.backend.client.ClientPool;
 import org.springframework.stereotype.Service;
 
 /**
  * This is to provide centralized data management
  */
+@Getter
 @Service
 public class SharedDataService {
 
-    @Getter @Setter
+    @Setter
     private String GameCode = "";
 
-    @Getter
-    private ClientPool clientPool = new ClientPool();
+    private final ClientPool clientPool = new ClientPool();
 
     public void addNewClient(Client client){
         this.clientPool.add(client);

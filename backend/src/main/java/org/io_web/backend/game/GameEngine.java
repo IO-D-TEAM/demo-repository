@@ -1,5 +1,6 @@
 package org.io_web.backend.game;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.io_web.backend.board.Board;
 import org.io_web.backend.board.Player;
@@ -43,10 +44,12 @@ public class GameEngine {
         this.controller = controller;
         gameStatus = GameStatus.LOBBY;
     }
+
     private void setGameStatus(GameStatus newStatus){
         gameStatus = newStatus;
         this.controller.gameStatusChanged();
     }
+
 
     public void addPlayer(String id) {
         if (gameStatus != GameStatus.LOBBY) return;

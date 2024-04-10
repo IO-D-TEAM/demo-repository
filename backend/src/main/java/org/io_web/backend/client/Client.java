@@ -19,4 +19,5 @@ public class Client {
     public Client(@JsonProperty("nickname") String nickName) {
         this.nickname = nickName;
     }
+
 }

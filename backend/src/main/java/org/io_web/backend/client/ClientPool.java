@@ -1,8 +1,11 @@
-package org.io_web.backend.server;
+package org.io_web.backend.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.io_web.backend.client.Client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -10,7 +13,7 @@ import java.util.Optional;
  * Clas needed to manage clients
  */
 @Getter
-public class ClientPool {
+public class ClientPool implements Serializable {
     ArrayList<Client> clients = new ArrayList<>();
 
     public Client getClientByNickname(String nickname){
@@ -34,6 +37,15 @@ public class ClientPool {
 
     public void remove(String id){
         clients.removeIf(client -> !client.getId().equals(id));
+    }
+
+    public byte[] serialize() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsBytes(this);
+        } catch (JsonProcessingException e){
+            return new byte[0];
+        }
     }
 
 }

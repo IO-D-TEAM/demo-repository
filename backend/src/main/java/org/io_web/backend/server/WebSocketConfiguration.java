@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
+import org.springframework.messaging.converter.JsonbMessageConverter;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -26,8 +28,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/lobby");
-        config.enableSimpleBroker("/client");
+        config.enableSimpleBroker("/client", "/lobby");
         config.setApplicationDestinationPrefixes("/app");
     }
 
@@ -42,6 +43,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         messageConverters.add(new ByteArrayMessageConverter());
+        messageConverters.add(new MappingJackson2MessageConverter());
         return false;
     }
 

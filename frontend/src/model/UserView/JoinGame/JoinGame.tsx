@@ -49,7 +49,7 @@ const JoinGame: FC<JoinGameProps> = () => {
           throw new Error(data.message);
       }
 
-      setClientId(data.clientId);
+      setClientId(data.id);
     } catch (error) {
       console.error('Error:', error);
     }
