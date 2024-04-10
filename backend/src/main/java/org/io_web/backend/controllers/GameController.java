@@ -1,6 +1,5 @@
 package org.io_web.backend.controllers;
 
-import lombok.Setter;
 import org.io_web.backend.Utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;
@@ -17,7 +16,13 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * Contains all methods to handle game service.
@@ -83,6 +88,52 @@ public class GameController {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
 
         return ResponseFactory.simpleResponse(HttpStatus.OK);
+    }
+
+    @GetMapping({"getUrl"})
+    public ResponseEntity<String> getGameUrl(){
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    String ipAddress = inetAddress.getHostAddress();
+                    if(classifyIP(ipAddress)){
+                        System.out.println("Valid IP " +  ipAddress);
+                    }
+                }
+
+            }
+        } catch (IOException ignored){
+
+        }
+        return ResponseFactory.createResponse(HttpStatus.OK, "");
+    }
+
+    public boolean classifyIP(String ipAddress){
+        String[] parts = ipAddress.split("\\.");
+        int[] ipComponents = new int[4];
+
+        for (int i = 0; i < 4; i++)
+            ipComponents[i] = Integer.parseInt(parts[i]);
+
+        if(ipComponents[0] == 127)
+            return false;
+
+        if(ipComponents[0] == 192 && ipComponents[1] == 168)
+            return false;
+
+        if(ipComponents[0] == 169 && ipComponents[1] == 254)
+            return false;
+
+        if(ipComponents[0] >= 224 && ipComponents[0] <= 239)
+            return false;
+
+        return ipComponents[0] != 255 || ipComponents[1] != 255 || ipComponents[2] != 255 || ipComponents[3] != 255;
     }
 
     /**

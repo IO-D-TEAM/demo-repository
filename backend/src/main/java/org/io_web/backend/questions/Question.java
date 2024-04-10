@@ -1,14 +1,11 @@
 package org.io_web.backend.questions;
 
-<<<<<<< HEAD
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
 
-=======
->>>>>>> main
 /**
  * Class prepared to keep question, 4 possible answers, and correct answer
  */
