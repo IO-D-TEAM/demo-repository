@@ -27,16 +27,21 @@ public class ClientPool implements Serializable {
         return searchedClient.orElse(null);
     }
 
-    public void add(Client client){
+    public void addNewClient(Client client){
         clients.add(client);
     }
 
-    public void remove(Client client){
+    public void removeClient(Client client){
         clients.remove(client);
     }
 
     public void remove(String id){
         clients.removeIf(client -> !client.getId().equals(id));
+    }
+
+
+    public boolean isClientPresent(String nickname){
+        return getClientByNickname(nickname) != null;
     }
 
     public byte[] serialize() {

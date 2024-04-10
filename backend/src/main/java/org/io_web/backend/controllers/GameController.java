@@ -17,13 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Random;
-
 
 /**
  * Contains all methods to handle game service.
@@ -118,7 +112,7 @@ public class GameController {
 
         switch (gameEngine.getGameStatus()) {
             case LOBBY, ENDED:
-                if (this.dataService.isClientPresent(newClient.getNickname()))
+                if (this.dataService.getClientPool().isClientPresent(newClient.getNickname()))
                     return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Nickname already in use");
                 break;
             case PENDING:
@@ -141,7 +135,7 @@ public class GameController {
         }
 
         if (!reconnected) {
-            this.dataService.addNewClient(newClient);
+            this.dataService.getClientPool().addNewClient(newClient);
             gameEngine.addPlayer(newClient.getId());
             response = ResponseFactory.createResponse(HttpStatus.OK, newClient);
         }
@@ -152,7 +146,6 @@ public class GameController {
         return response;
     }
 
-    // client observes game, getting information about throwing, questions
 
     /**
      * Handles situation when client is observing the game. Provide user with information
@@ -222,7 +215,7 @@ public class GameController {
         if (gameEngine.getGameStatus() != GameStatus.PENDING) {
             for(Client client : this.dataService.getClientPool().getClients()){
                 if(client.getStatus() == ClientStatus.LOST_CONNECTION ) {
-                    this.dataService.removeClient(client);
+                    this.dataService.getClientPool().removeClient(client);
                     this.gameEngine.removePlayer(client.getId());
                 }
             }

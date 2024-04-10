@@ -18,16 +18,5 @@ public class SharedDataService {
 
     private final ClientPool clientPool = new ClientPool();
 
-    public void addNewClient(Client client){
-        this.clientPool.add(client);
-    }
-
-    public void removeClient(Client client){
-        this.clientPool.remove(client);
-    }
-
-    public boolean isClientPresent(String nickname){
-        return this.clientPool.getClientByNickname(nickname) != null;
-    }
 
 }
