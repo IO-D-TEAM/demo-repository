@@ -1,7 +1,5 @@
 package org.io_web.backend.server;
 
-<<<<<<< HEAD
-=======
 import org.io_web.backend.questions.Answer;
 import org.io_web.backend.questions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +10,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
->>>>>>> main
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Needed to handle connection before the game start
- *
  */
 
-public class Server {
+@RestController
+public class Server implements Runnable {
+    private final ClientPool clientPool = new ClientPool();
+    private GameEngine gameEngine;
+    private String gameCode;
 
-<<<<<<< HEAD
-=======
     private final SimpMessagingTemplate template;
 
     private int maxPlayers = 10,
@@ -244,5 +245,4 @@ public class Server {
     public void run() {
 
     }
->>>>>>> main
 }

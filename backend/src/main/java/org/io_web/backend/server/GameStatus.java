@@ -1,4 +1,4 @@
-package org.io_web.backend.game;
+package org.io_web.backend.server;
 
 public enum GameStatus {
     LOBBY("lobby"),

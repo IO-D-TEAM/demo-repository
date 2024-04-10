@@ -1,4 +1,4 @@
-package org.io_web.backend.client;
+package org.io_web.backend.server;
 
 public enum ClientStatus {
     CONNECTED,          // Connected and playing

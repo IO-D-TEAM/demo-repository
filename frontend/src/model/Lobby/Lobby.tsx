@@ -16,30 +16,28 @@ export const Lobby: FC<LobbyProps> = () => {
   const [stompClient, setStompClient] = useState<Stomp.Client>();
   const [connected, setConnected] = useState(false);
 
-
-  const WS_URL = "http://localhost:8080/ws"
+  const WS_URL = "http://localhost:8080/ws";
 
   useEffect(() => {
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
-      client.subscribe(`/lobby/players`, (notification) => {
-        setPlayers(JSON.parse(notification.body)["clients"]);
+      client.subscribe("/lobby/players", (notification) => {
+        setPlayers(JSON.parse(notification.body));
         setConnected(true);
-        console.log(players);
       });
     });
 
-    setStompClient(client)
+    setStompClient(client);
     if (connected) {
       return () => {
         client.disconnect(() => {
-          console.log("Connection closed...")
-          return null 
-        })
-      }
-    } 
+          console.log("Connection closed...");
+          return null;
+        });
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -71,9 +69,9 @@ export const Lobby: FC<LobbyProps> = () => {
           </Button>
         </div>
         <div className="show-players">
-        {players.map((player) => (
-           <span key={player.id}>{player.nickname}</span>
-        ))}
+          {players.map((player, index) => (
+            <span key={index}>{player.nickName}</span>
+          ))}
         </div>
         <div className="settings-cmp">
           <SettingForm></SettingForm>

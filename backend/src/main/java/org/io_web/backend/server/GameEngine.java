@@ -1,15 +1,10 @@
-package org.io_web.backend.game;
+package org.io_web.backend.server;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.io_web.backend.board.Board;
 import org.io_web.backend.board.Player;
-import org.io_web.backend.client.PlayerTask;
-import org.io_web.backend.controllers.GameController;
 import org.io_web.backend.questions.Answer;
 import org.io_web.backend.questions.Question;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,38 +13,30 @@ import java.util.Random;
 /**
  * In this class we should do all the logic relates to managing questions, moving players, updating board state etc.
  */
-
-@Component
 public class GameEngine {
     private Board board;
-
     @Getter
     private GameStatus gameStatus;
-
+    private ArrayList<Player> playersList = new ArrayList<>();
+    private Player currentMovingPlayer = null;
     @Getter
     private Question currentQuestion = null;
+    private int diceRoll = 0;
 
+    private Iterator<Player> playerIterator;
+
+    private Server server;
     @Getter
     private PlayerTask currentTask;
 
-    private ArrayList<Player> playersList = new ArrayList<>();
-    private Player currentMovingPlayer = null;
-
-    private int diceRoll = 0;
-    private Iterator<Player> playerIterator;
-    private final GameController controller;
-
-    @Autowired
-    public GameEngine(GameController controller) {
-        this.controller = controller;
+    public GameEngine(Server server) {
+        this.server = server;
         gameStatus = GameStatus.LOBBY;
     }
-
     private void setGameStatus(GameStatus newStatus){
         gameStatus = newStatus;
-        this.controller.gameStatusChanged();
+        server.gameStatusChanged();
     }
-
 
     public void addPlayer(String id) {
         if (gameStatus != GameStatus.LOBBY) {
@@ -70,7 +57,7 @@ public class GameEngine {
 
         String[] answers = { "a", "b" };
         currentQuestion = new Question("xd?", answers, answers[0]);
-        this.controller.sendQuestion();
+        server.sendQuestion();
         currentTask = PlayerTask.ANSWERING_QUESTION;
     }
 
@@ -93,7 +80,7 @@ public class GameEngine {
         Random random = new Random();
         diceRoll = random.nextInt(6) + 1;
 
-        this.controller.informClientOfHisTurn(diceRoll);
+        server.informClientOfHisTurn(diceRoll);
     }
     // method to change players, inform server
     public void nextTurn() {
@@ -108,7 +95,7 @@ public class GameEngine {
         Random random = new Random();
         diceRoll = random.nextInt(6) + 1;
 
-        this.controller.informClientOfHisTurn(diceRoll);
+        server.informClientOfHisTurn(diceRoll);
     }
 
     public String getCurrentMovingPlayerId() {
