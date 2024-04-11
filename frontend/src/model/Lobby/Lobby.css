@@ -27,14 +27,10 @@ p {
 }
 
 .join {
-  background-color: rgba(255, 255, 255, 0.7);
-  margin: auto;
-  margin-bottom: 2rem;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: fit-content;
+  margin-bottom: 2rem;
 }
 
 .code {
@@ -44,14 +40,14 @@ p {
 .middle-coint {
   max-width: 80%;
   margin: auto;
+  margin-bottom: 2rem;
 }
 
 .start {
-  background-color: rgba(255, 255, 255, 0.7);
   display: flex;
   justify-content: space-between;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin: auto;
 }
 
 .show-players {
@@ -60,7 +56,7 @@ p {
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .show-players > * {

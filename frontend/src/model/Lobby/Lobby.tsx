@@ -7,6 +7,7 @@ import { Player } from "../../interfaces/Player";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
+import WhiteBackgroundDiv from "../../globalStyles/whiteBackgroundDiv/whiteBackgroundDiv";
 
 interface LobbyProps {}
 
@@ -48,26 +49,32 @@ export const Lobby: FC<LobbyProps> = () => {
   return (
     <div className="lobby-img">
       <div className="join">
-        <p>
-          Dołącz do gry za pomocą linku:{" "}
-          <a href="/">http://localhost:3000/{gameCode}</a>
-        </p>
-        <p>albo kody do gry: </p>
-        <p className="code">{gameCode}</p>
+        <WhiteBackgroundDiv>
+          <p>
+            Dołącz do gry za pomocą linku:{" "}
+            <a href="/">http://localhost:3000/{gameCode}</a>
+          </p>
+          <p>albo kody do gry: </p>
+          <p className="code">{gameCode}</p>
+        </WhiteBackgroundDiv>
       </div>
+
       <div className="middle-coint">
-        <div className="start">
-          <p>players: {players.length}</p>
-          <p>Lista graczy</p>
-          <Button
-            variant="contained"
-            color="success"
-            component={Link}
-            to="/board"
-          >
-            Start
-          </Button>
-        </div>
+        <WhiteBackgroundDiv>
+          <div className="start">
+            <p>players: {players.length}</p>
+            <p>Lista graczy</p>
+            <Button
+              variant="contained"
+              color="success"
+              component={Link}
+              to="/board"
+            >
+              Start
+            </Button>
+          </div>
+        </WhiteBackgroundDiv>
+
         <div className="show-players">
           {players.map((player, index) => (
             <span key={index}>{player.nickName}</span>
