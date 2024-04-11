@@ -45,7 +45,7 @@ public class NetworkUtils {
                             try {
                                 HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
                                 if(response.statusCode() == 200)
-                                    return url;
+                                    return "http://" + ipAddress + ":3000/userView/" + gameCode;
                             } catch (IOException | InterruptedException e) {
                                 return valid_url;
                             }
