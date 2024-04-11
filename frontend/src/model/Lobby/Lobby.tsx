@@ -15,20 +15,13 @@ export const Lobby: FC<LobbyProps> = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [stompClient, setStompClient] = useState<Stomp.Client>();
   const [connected, setConnected] = useState(false);
-  const [gameUrl, setGameUrl] = useState("");
+
 
   const WS_URL = "http://localhost:8080/ws"
 
   useEffect(() => {
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
-
-    fetch('http://localhost:8080/game/get_url')
-      .then(response => response.json())
-      .then(data =>{
-        const gameUrl = data.message; 
-        setGameUrl(gameUrl);
-      });
 
     client.connect({}, () => {
       client.subscribe(`/lobby/players`, (notification) => {
@@ -49,7 +42,6 @@ export const Lobby: FC<LobbyProps> = () => {
     } 
   }, []);
 
-
   useEffect(() => {
     // wywołanie funkcji getGameCode
     setGameCode("123456");
@@ -60,7 +52,7 @@ export const Lobby: FC<LobbyProps> = () => {
       <div className="join">
         <p>
           Dołącz do gry za pomocą linku:{" "}
-          <a href="/">{gameUrl}</a>
+          <a href="/">http://localhost:3000/{gameCode}</a>
         </p>
         <p>albo kody do gry: </p>
         <p className="code">{gameCode}</p>
