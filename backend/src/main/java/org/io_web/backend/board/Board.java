@@ -2,12 +2,7 @@ package org.io_web.backend.board;
 
 import org.io_web.backend.questions.Question;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents state of the board.
@@ -31,9 +26,6 @@ public class Board {
         players.forEach(obj -> playerPosition.put(obj, path.get(0)));
     }
 
-    public void addQuestion(Question... questions) {
-        setOfQuestions.addAll(Arrays.asList(questions));
-    }
 
     public void movePlayer(Player player, int steps) {
         if (sizeOfBoard == player.getPosition()) {

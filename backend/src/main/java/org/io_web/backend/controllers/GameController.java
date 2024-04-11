@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Random;
-import java.util.TreeMap;
 
 /**
  * Contains all methods to handle game service.
@@ -309,6 +309,10 @@ public class GameController {
 
         TaskWrapper task =  new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
         this.communicationService.sendMessageToClient(clientID, task);
+    }
+
+    public final ArrayList<Question> getQuestions(){
+        return dataService.getQuestions();
     }
 
 }
