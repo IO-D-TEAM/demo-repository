@@ -9,6 +9,7 @@ import { Player } from "../../interfaces/Player";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
+import QRCode from "react-qr-code";
 
 interface LobbyProps {}
 
@@ -69,8 +70,9 @@ export const Lobby: FC<LobbyProps> = () => {
           Dołącz do gry za pomocą linku:{" "}
           <a href="/">{gameUrl}</a>
         </p>
-        <p>albo kody do gry: </p>
-        <p className="code">{gameCode}</p>
+        <div id="Container">
+          <QRCode value={gameUrl} />
+        </div>
       </div>
       <div className="middle-coint">
         <div className="start">
