@@ -33,8 +33,8 @@ public class GameController {
     private final SharedDataService dataService;
     private final CommunicationService communicationService;
 
-    private GameEngine gameEngine;
-    private final int maxPlayers = 10;
+    private final GameEngine gameEngine;
+    private final int maxPlayers = 20;
 
     /**
      * Launches controller with Spring's dependency injection mechanism,
@@ -312,7 +312,7 @@ public class GameController {
     }
 
     public final ArrayList<Question> getQuestions(){
-        return dataService.getQuestions();
+        return dataService.getSettings().questionsSet();
     }
 
 }
