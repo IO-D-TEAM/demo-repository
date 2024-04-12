@@ -1,6 +1,7 @@
 package org.io_web.backend.controllers;
 
 import org.io_web.backend.Utilities.ResponseFactory;
+import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;
 import org.io_web.backend.client.PlayerTask;
@@ -311,4 +312,13 @@ public class GameController {
         this.communicationService.sendMessageToClient(clientID, task);
     }
 
+    public void updateTeachersView(int playerMove) {
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        if (clientID == null) return;
+
+        Question currentQuestion = gameEngine.getCurrentQuestion();
+
+        BoardMessage message = new BoardMessage(clientID, playerMove, currentQuestion);
+        this.communicationService.sendMessageToBoard(message);
+    }
 }
