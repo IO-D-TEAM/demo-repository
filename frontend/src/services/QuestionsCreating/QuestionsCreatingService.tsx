@@ -24,7 +24,7 @@ export default class QuestionService {
     }
 
     private notifySubscribers() {
-        this.subscribers.forEach(subscriber => subscriber(this.actualQuestion));
+        this.subscribers.forEach(subscriber => subscriber());
     }
 
     
@@ -40,7 +40,6 @@ export default class QuestionService {
         return this.actualQuestion;
     }
 
-      // Method to unsubscribe from actualQuestion changes
     unsubscribe(callback: Function) {
         this.subscribers = this.subscribers.filter(subscriber => subscriber !== callback);
     }
@@ -51,13 +50,26 @@ export default class QuestionService {
         this.notifySubscribers();
     }
 
-    addQuestion(question: QuestionInterface) {
+    addQuestion() {
+        const question: QuestionInterface = {
+            question: "New Question",
+            correctAnswer: "Undefined",
+            answers: ["", "", "", ""]
+        };
         this.questions.push(question);
+        this.setActualQuestion(question, this.questions.lastIndexOf(question))
+        this.notifySubscribers();
     }
 
-    updateQuestion(newAnswers: string[]){
-        console.log(this.index);
-        this.questions[this.index].answers = newAnswers;
+    updateCorrectAnswer(correctAnswer: string){
+        this.questions[this.index].correctAnswer = correctAnswer;
+        this.notifySubscribers();
+    }
+
+
+    updateQuestionValue(question: QuestionInterface){
+        this.actualQuestion = question;
+        this.questions[this.index].question = question.question;
         this.notifySubscribers();
     }
 

@@ -9,6 +9,7 @@ import QuestionService from './../../../../services/QuestionsCreating/QuestionsC
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import StarIcon from '@mui/icons-material/Star';
+import Button from '@mui/material/Button';
 
 interface QuestionBoardProps {
   service: QuestionService;
@@ -25,7 +26,6 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
       const fetchQuestions = await service.getQuestions();
       setQuestions(fetchQuestions);
       setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
-
     };
 
     service.subscribe(handleQuestionChanges);
@@ -43,12 +43,26 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
     service.setActualQuestion(questions[index], index);
   };
 
+  const handleNewQuestion = (() => {
+    service.addQuestion();
+  })
+
   return (
     <List
       key={rerenderKey} // Use the service as key to force re-render when it changes
       sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
       aria-label="contacts"
     >
+
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleNewQuestion} // Add a function to handle adding a new question
+      sx={{ marginTop: '20px' }} // Add margin top to the button
+    >
+      Add Question
+    </Button>
+
       {questions.map((question, index) => (
         <ListItem key={index} disablePadding>
           <ListItemButton onClick={(event) => handleListItemClick(event, index)}>

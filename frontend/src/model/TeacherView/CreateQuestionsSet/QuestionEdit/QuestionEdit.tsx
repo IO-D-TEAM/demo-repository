@@ -18,17 +18,12 @@ interface QuestionEditProps {
   service: QuestionService;
 }
 
-export const QuestionEdit: FC<QuestionEditProps> = ({service}) => {
-  const [question, setQuestion] = useState<QuestionInterface | null>();
+export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
+  const [question, setQuestion] = useState<QuestionInterface | null | undefined>();
   const [checked, setChecked] =  useState<number | null>(null);
 
   useEffect(() => {
-    setQuestion(service.getActualQuestion());
-  }, [service]);
-
-  useEffect(() => {
     const handleActualQuestionChange = () => {
-      console.log('Actual question changed:', service.getActualQuestion());
       setQuestion(service.getActualQuestion());
       setChecked(0);
     };
@@ -44,11 +39,24 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service}) => {
     const newAnswers = [...(question?.answers || [])];
     newAnswers[index] = event.target.value; 
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers }));
-    service.updateQuestion(newAnswers);
-    service.setActualQuestion({ ...question!, answers: newAnswers }, index); // Update the actual question in the service with the new answers
-    });
 
-  const changeChecked = ((index: number) => {
+    if(question)
+      service.updateQuestionValue({...question, answers: newAnswers })
+
+    service.setActualQuestion({ ...question!, answers: newAnswers }, index); 
+  });
+
+  const handleQeustionChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const newQuestion = event.target.value;
+    setQuestion(prevQuestion => ({ ...prevQuestion!, question: newQuestion }));
+    
+    if(question)
+      service.updateQuestionValue({...question, question: newQuestion });
+  });
+
+  const changeChecked = ((index: number, answer: string) => {
+    service.updateCorrectAnswer(answer);
+    service.setActualQuestion({ ...question!, correctAnswer: answer }, index); // Update the actual question in the service with the new answers
     setChecked(index);
   });
 
@@ -61,36 +69,37 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service}) => {
   })
 
   return (
-    <List>
+    <div>
+  <List>
+    {question && (
       <ListItem alignItems="center">
         <Box sx={{ flexGrow: 1 }}>
 
-        <Typography variant="body1">
-          {question?.question}
-        </Typography>
+          <TextField
+            value={question?.question}
+            onChange={(event) => handleQeustionChange(event)} // handleAnswerChange function to handle answer changes
+          />
 
-        {question?.answers.map((answer, index) => (
-         <div key={index} style={{ display: 'flex', alignItems: 'center',  marginTop: '20px' }}>
-         <FormControlLabel
-           control={
-             <Checkbox
-               checked={index == checked}
-               onChange={(event) => changeChecked(index)}
-             />
-           }
-           label={""}
-         />
-
-         <TextField
-           fullWidth
-           label={`Answer ${index + 1}`} // Displaying answer number as label
-           value={answer}
-           onChange={(event) => handleAnswerChange(event, index)} // handleAnswerChange function to handle answer changes
-         />
-       </div>
-
-        ))}
-
+          {question?.answers.map((answer, index) => (
+            <div key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={answer === question.correctAnswer}
+                    onChange={(event) => changeChecked(index, answer)}
+                  />
+                }
+                label={""}
+              />
+              <TextField
+                fullWidth
+                label={`Answer ${index + 1}`} // Displaying answer number as label
+                value={answer}
+                onChange={(event) => handleAnswerChange(event, index)} // handleAnswerChange function to handle answer changes
+              />
+            </div>
+          ))}
+          
           <Button
             variant="contained"
             color="error"
@@ -99,11 +108,13 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service}) => {
           >
             Delete Question
           </Button>
-  
         </Box>
-        </ListItem>
-    </List>
+      </ListItem>
+    )}
+  </List>
+</div>
   );
+    
 };
 
 export default QuestionEdit;

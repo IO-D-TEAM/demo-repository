@@ -25,7 +25,7 @@ function App() {
           <Route path="/teacherView/results" element={<Results/>}/>
           <Route path="/userView" element={<UserView/>}/>
           <Route path="/userView/answerQuestion" element={<AnswerQuestion/>}/>
-          <Route path="/userView/joinGame" element={<JoinGame/>}/>
+          <Route path="/userView/joinGame/:gamecode_id" element={<JoinGame/>}/>
           <Route path="/userView/move" element={<Move/>}/>
           <Route path="/board" element={<BoardView/>}/>
           <Route path="/lobby" element={<Lobby/>}/>
