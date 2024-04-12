@@ -312,7 +312,7 @@ public class GameController {
     }
 
     public final ArrayList<Question> getQuestions(){
-        return dataService.getSettings().questionsSet();
+        return dataService.getSettings().getQuestions();
     }
 
 }

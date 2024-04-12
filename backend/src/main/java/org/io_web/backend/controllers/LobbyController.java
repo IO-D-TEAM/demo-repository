@@ -38,6 +38,7 @@ public class LobbyController {
     @PostMapping("/settings")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings){
         dataService.setSettings(settings);
+
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 }
