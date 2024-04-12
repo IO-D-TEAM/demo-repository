@@ -5,7 +5,7 @@ import { Settings } from "../../interfaces/Settings";
 import { TextField, Button, Stack, Select, MenuItem } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useForm } from "react-hook-form";
-import { SendSettingsForm } from "../../services/LobbyData/LobbyDataService";
+import { sendSettingsForm } from "../../services/LobbyData/LobbyDataService";
 
 interface SettingFormProps {}
 
@@ -28,7 +28,7 @@ const SettingForm: FC<SettingFormProps> = () => {
 
   const onSubmit = (data: Settings) => {
     console.log(data);
-    SendSettingsForm(data);
+    sendSettingsForm(data);
   };
 
   const { errors } = formState;
