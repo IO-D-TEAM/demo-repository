@@ -1,12 +1,15 @@
 import React, { FC, useEffect, useState } from "react";
 import "./Lobby.css";
 import { getGameCode } from "../../services/LobbyData/LobbyDataService";
+import { getGameUrl } from "../../services/LobbyData/LobbyDataService";
+
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { Player } from "../../interfaces/Player";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
+import QRCode from "react-qr-code";
 import WhiteBackgroundDiv from "../../globalStyles/whiteBackgroundDiv/whiteBackgroundDiv";
 
 interface LobbyProps {}
@@ -16,7 +19,7 @@ export const Lobby: FC<LobbyProps> = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [stompClient, setStompClient] = useState<Stomp.Client>();
   const [connected, setConnected] = useState(false);
-
+  const [gameUrl, setGameUrl] = useState("");
 
   const WS_URL = "http://localhost:8080/ws"
 
@@ -44,6 +47,19 @@ export const Lobby: FC<LobbyProps> = () => {
   }, []);
 
   useEffect(() => {
+    const fetchGameUrl = async () => {
+      try {
+        const url = await getGameUrl();
+        setGameUrl(url);
+      } catch (error) {
+        console.error('Error fetching game URL:', error);
+      }
+    };
+
+    fetchGameUrl();
+  }, []);
+
+  useEffect(() => {
     // wywołanie funkcji getGameCode
     setGameCode("123456");
   }, []);
@@ -51,14 +67,13 @@ export const Lobby: FC<LobbyProps> = () => {
   return (
     <div className="lobby-img">
       <div className="join">
-        <WhiteBackgroundDiv>
-          <p>
-            Dołącz do gry za pomocą linku:{" "}
-            <a href="/">http://localhost:3000/{gameCode}</a>
-          </p>
-          <p>albo kody do gry: </p>
-          <p className="code">{gameCode}</p>
-        </WhiteBackgroundDiv>
+        <p>
+          Dołącz do gry za pomocą linku:{" "}
+          <a href="/">{gameUrl}</a>
+        </p>
+        <div id="Container">
+          <QRCode value={gameUrl} />
+        </div>
       </div>
 
       <div className="middle-coint">

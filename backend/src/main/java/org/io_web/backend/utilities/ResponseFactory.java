@@ -1,4 +1,4 @@
-package org.io_web.backend.Utilities;
+package org.io_web.backend.utilities;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
