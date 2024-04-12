@@ -2,7 +2,12 @@ package org.io_web.backend.board;
 
 import org.io_web.backend.questions.Question;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents state of the board.
@@ -23,7 +28,7 @@ public class Board {
             Field newField = new Field(false);
             path.add(newField);
         }
-        players.forEach(obj -> playerPosition.put(obj, path.getFirst()));
+        players.forEach(obj -> playerPosition.put(obj, path.get(0)));
     }
 
     public void addQuestion(Question... questions) {

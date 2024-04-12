@@ -7,11 +7,12 @@ import { GetGameConfig } from "../../services/GameConfig/GameConfigService";
 import Board from "./Board/Board";
 import FinishWindow from "./FinishWindow/FinishWindow";
 import "./GameView.css";
+import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 
 
 const GameView = () => {
     const { fields, players, rows, columns, gameFinished,
-    setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows } = useGameStore((state) => state);
+    setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows } = useGameStore((state:GameState ) => state);
 
     useEffect(() => {
         const fetchData = async () => {
