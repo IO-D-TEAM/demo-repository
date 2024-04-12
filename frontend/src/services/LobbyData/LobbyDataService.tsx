@@ -1,32 +1,18 @@
-import React, { FC, useEffect } from "react";
-import { error } from "console"
+import { Player } from "../../interfaces/Player";
 import { Settings } from "../../interfaces/Settings";
 
-export const getGameCode = async (): Promise<string> => {
-  return await fetch("/gameCode")
+export const getGameUrl = async (): Promise<string> => {
+  return await fetch("http://localhost:8080/game/get_url")
     .then((response) => response.json())
-    .then((data: string) => {
-      return data;
+    .then((data: any) => {
+      console.log(data);
+      return data.message;
     })
     .catch((error) => {
       throw new Error(
-        `HTTP GET error while getting a game code! Status: ${error}`
+        `HTTP GET error while getting a game link! Status: ${error}`
       );
     });
-};
-
-export const getGameUrl = async (): Promise<string> => {
-  try {
-    const response = await fetch('http://localhost:8080/game/get_url');
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const data = await response.json();
-    const url = data.message; // Extracting URL from the JSON response
-    return url;
-  } catch (error) {
-    throw new Error(`Error while getting the game URL: ${error}`);
-  }
 };
 
 export const sendSettingsForm = async (form: Settings) => {
@@ -43,4 +29,15 @@ export const sendSettingsForm = async (form: Settings) => {
       `HTTP POST error while sending a form! Status: ${response.status}`
     );
   }
+};
+
+export const getPlayers = async (): Promise<Player[]> => {
+  return await fetch("http://localhost:3000/lobby/players")
+    .then((response) => response.json())
+    .then((players: Player[]) => {
+      return players;
+    })
+    .catch((error) => {
+      throw new Error(`HTTP GET error while getting players! Status: ${error}`);
+    });
 };
