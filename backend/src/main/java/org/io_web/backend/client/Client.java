@@ -16,8 +16,8 @@ public class Client {
     private ClientStatus status;
 
     @JsonCreator
-    public Client(@JsonProperty("nickname") String nickName) {
-        this.nickname = nickName;
+    public Client(@JsonProperty("nickname") String nickname) {
+        this.nickname = nickname;
     }
 
 }
