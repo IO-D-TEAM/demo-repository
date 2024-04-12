@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useState } from "react";
 import "./Lobby.css";
-import { getGameCode } from "../../services/LobbyData/LobbyDataService";
-import { getGameUrl } from "../../services/LobbyData/LobbyDataService";
-
+import {
+  getGameUrl,
+  getPlayers,
+} from "../../services/LobbyData/LobbyDataService";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import { Player } from "../../interfaces/Player";
@@ -10,18 +11,17 @@ import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
 import QRCode from "react-qr-code";
-import WhiteBackgroundDiv from "../../globalStyles/whiteBackgroundDiv/whiteBackgroundDiv";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface LobbyProps {}
 
 export const Lobby: FC<LobbyProps> = () => {
-  const [gameCode, setGameCode] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
   const [stompClient, setStompClient] = useState<Stomp.Client>();
   const [connected, setConnected] = useState(false);
   const [gameUrl, setGameUrl] = useState("");
 
-  const WS_URL = "http://localhost:8080/ws"
+  const WS_URL = "http://localhost:8080/ws";
 
   useEffect(() => {
     const socket = new SockJS(WS_URL);
@@ -35,67 +35,69 @@ export const Lobby: FC<LobbyProps> = () => {
       });
     });
 
-    setStompClient(client)
+    setStompClient(client);
     if (connected) {
       return () => {
         client.disconnect(() => {
-          console.log("Connection closed...")
-          return null 
-        })
-      }
-    } 
+          console.log("Connection closed...");
+          return null;
+        });
+      };
+    }
   }, []);
 
   useEffect(() => {
-    const fetchGameUrl = async () => {
-      try {
-        const url = await getGameUrl();
+    getGameUrl()
+      .then((url: string) => {
         setGameUrl(url);
-      } catch (error) {
-        console.error('Error fetching game URL:', error);
-      }
-    };
+      })
+      .catch((error) => {
+        console.error(`Error fetching game URL: ${error}`);
+      });
 
-    fetchGameUrl();
-  }, []);
-
-  useEffect(() => {
-    // wywołanie funkcji getGameCode
-    setGameCode("123456");
+    getPlayers()
+      .then((data: Player[]) => {
+        setPlayers(data);
+      })
+      .catch((error) => {
+        console.log(`Error fetching game URL: ${error}`);
+      });
   }, []);
 
   return (
     <div className="lobby-img">
       <div className="join">
-        <p>
-          Dołącz do gry za pomocą linku:{" "}
-          <a href="/">{gameUrl}</a>
-        </p>
-        <div id="Container">
-          <QRCode value={gameUrl} />
+        <p id="joinMsg">Dołącz do gry za pomocą linku albo kodu QR!</p>
+        <div className="joinMethods">
+          <Link id="link" to={gameUrl}>
+            {gameUrl}
+          </Link>
+          <div id="qrCode">
+            <QRCode value={gameUrl} />
+          </div>
         </div>
       </div>
 
       <div className="middle-coint">
-        <WhiteBackgroundDiv>
-          <div className="start">
-            <p>players: {players.length}</p>
-            <p>Lista graczy</p>
-            <Button
-              variant="contained"
-              color="success"
-              component={Link}
-              to="/board"
-            >
-              Start
-            </Button>
-          </div>
-        </WhiteBackgroundDiv>
+        <div className="start">
+          <p>players: {players.length}</p>
+          <p>Lista graczy</p>
+          <Button
+            variant="contained"
+            color="success"
+            component={Link}
+            to="/board"
+          >
+            Start
+          </Button>
+        </div>
 
         <div className="show-players">
-        {players.map((player) => (
-           <span key={player.id}>{player.nickname}</span>
-        ))}
+          {players.map((player) => (
+            <span key={player.id}>
+              {player.nickname} <ClearIcon id="icon"></ClearIcon>
+            </span>
+          ))}
         </div>
         <div className="settings-cmp">
           <SettingForm></SettingForm>

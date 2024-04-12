@@ -110,7 +110,6 @@ public class GameController {
         return ResponseFactory.createResponse(HttpStatus.SERVICE_UNAVAILABLE, "Message unavailable!");
     }
 
-
     /**
      * Handles the process of a client joining a game session.
      *
