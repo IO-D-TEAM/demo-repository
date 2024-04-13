@@ -4,7 +4,10 @@ import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
+import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,4 +34,10 @@ public class LobbyController {
         return this.dataService.getClientPool().getClients();
     }
 
+
+    @PostMapping("/deletePlayer")
+    public ResponseEntity<String> deletePlayer(@RequestBody Client client) {
+        this.dataService.getClientPool().removeClient(client);
+        return ResponseFactory.simpleResponse(HttpStatus.OK);
+    }
 }

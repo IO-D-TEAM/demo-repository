@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import "./Lobby.css";
 import {
+  deletePlayer,
   getGameUrl,
   getPlayers,
 } from "../../services/LobbyData/LobbyDataService";
@@ -12,6 +13,7 @@ import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
 import QRCode from "react-qr-code";
 import ClearIcon from "@mui/icons-material/Clear";
+import { error } from "console";
 
 interface LobbyProps {}
 
@@ -20,6 +22,7 @@ export const Lobby: FC<LobbyProps> = () => {
   const [stompClient, setStompClient] = useState<Stomp.Client>();
   const [connected, setConnected] = useState(false);
   const [gameUrl, setGameUrl] = useState("");
+  const [userDeleted, setUserDeleted] = useState(false);
 
   const WS_URL = "http://localhost:8080/ws";
 
@@ -54,7 +57,10 @@ export const Lobby: FC<LobbyProps> = () => {
       .catch((error) => {
         console.error(`Error fetching game URL: ${error}`);
       });
+  }, []);
 
+  useEffect(() => {
+    console.log(userDeleted);
     getPlayers()
       .then((data: Player[]) => {
         setPlayers(data);
@@ -62,7 +68,20 @@ export const Lobby: FC<LobbyProps> = () => {
       .catch((error) => {
         console.log(`Error fetching game URL: ${error}`);
       });
-  }, []);
+  }, [userDeleted]);
+
+  const deleteUser = (player: Player) => {
+    console.log(player);
+    deletePlayer(player)
+      .then((res: boolean) => {
+        if (res === true) {
+          setUserDeleted(!userDeleted);
+        }
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className="lobby-img">
@@ -95,7 +114,10 @@ export const Lobby: FC<LobbyProps> = () => {
         <div className="show-players">
           {players.map((player) => (
             <span key={player.id}>
-              {player.nickname} <ClearIcon id="icon"></ClearIcon>
+              {player.nickname}{" "}
+              <span onClick={() => deleteUser(player)}>
+                <ClearIcon id="icon"></ClearIcon>
+              </span>
             </span>
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { error } from "console";
 import { Player } from "../../interfaces/Player";
 import { Settings } from "../../interfaces/Settings";
 
@@ -39,5 +40,27 @@ export const getPlayers = async (): Promise<Player[]> => {
     })
     .catch((error) => {
       throw new Error(`HTTP GET error while getting players! Status: ${error}`);
+    });
+};
+
+export const deletePlayer = async (player: Player): Promise<boolean> => {
+  return await fetch(`/lobby/deletePlayer`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(player),
+  })
+    .then((res: any) => {
+      console.log(res.status);
+      if (res.ok) {
+        return true;
+      }
+      return false;
+    })
+    .catch((error) => {
+      throw new Error(
+        `HTTP POST error while deleting player! Status: ${error}`
+      );
     });
 };

@@ -20,4 +20,10 @@ public class Client {
         this.nickname = nickname;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Client) return this.id.equals(((Client) o).id);
+        return false;
+    }
+
 }

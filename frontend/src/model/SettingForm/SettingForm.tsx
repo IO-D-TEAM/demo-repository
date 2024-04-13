@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import Popup from "../Popup/Popup";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Settings } from "../../interfaces/Settings";
-import { TextField, Button, Stack, Select, MenuItem } from "@mui/material";
+import { TextField, Button, Stack } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useForm } from "react-hook-form";
 import { sendSettingsForm } from "../../services/LobbyData/LobbyDataService";
@@ -102,7 +102,9 @@ const SettingForm: FC<SettingFormProps> = () => {
               type="file"
               label="Wybierz plik"
               InputLabelProps={{ shrink: true }} // Potrzebne, aby etykieta TextField nie zachowywała się dziwnie w przypadku input typu file
-              // onChange={handleFileChange}
+              {...register("questionsFile", {
+                required: "Plik z pytaniami jest wymagany.",
+              })}
               error={!!errors.questionsFile}
               helperText={errors.questionsFile?.message}
               inputProps={{ multiple: false, accept: ".json" }}
