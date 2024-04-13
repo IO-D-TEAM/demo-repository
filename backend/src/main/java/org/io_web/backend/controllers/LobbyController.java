@@ -1,6 +1,6 @@
 package org.io_web.backend.controllers;
 
-import org.io_web.backend.Utilities.ResponseFactory;
+import org.io_web.backend.utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.services.CommunicationService;
