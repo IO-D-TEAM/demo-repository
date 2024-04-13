@@ -56,6 +56,13 @@ export default class QuestionService {
     }
 
     getActualQuestion(): QuestionInterface {
+        if(this.actualQuestion == null){
+            return {
+                question: "What is the capital of France?",
+                correctAnswer: "Paris",
+                answers: ["Paris", "Berlin", "London", "Madrid"]
+            };
+        }
         return this.actualQuestion;
     }
 
