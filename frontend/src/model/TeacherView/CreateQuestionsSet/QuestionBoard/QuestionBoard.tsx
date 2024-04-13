@@ -7,6 +7,10 @@ import QuestionService from './../../../../services/QuestionsCreating/QuestionsC
 import List from '@mui/material/List';
 import Button from '@mui/material/Button';
 import './QuestionBoard.css'
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import QuestionValidationService from '../../../../services/QuestionsCreating/QuestionValidator';
+import { QuestionAnswer } from '@mui/icons-material';
 
 interface QuestionBoardProps {
   service: QuestionService;
@@ -17,13 +21,12 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
   const [questions, setQuestions] = useState<QuestionInterface[]>([]);
   const [rerenderKey, setRerenderKey] = useState<string>('a'); // State variable to trigger rerender
 
-   {/* Subscribeses for changes in QuestionService, 
-      and gets question list. Main functionality is 
-      to subscribe service to know when edited question is changed.   */}
+  {/* Subscribeses for changes in QuestionService, 
+    and gets question list. Main functionality is 
+    to subscribe service to know when edited question is changed.   */}
   useEffect(() => {
-    const handleQuestionChanges = async () => {
-      const fetchQuestions = await service.getQuestions();
-      setQuestions(fetchQuestions);
+    const handleQuestionChanges = () => {
+      setQuestions(service.getQuestions());
       setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
@@ -43,9 +46,16 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
     service.setActualQuestion(questions[index], index);
   };
 
+ 
   // Add new empty question onClick 
   const handleNewQuestion = (() => {
     service.addQuestion();
+  })
+
+  const handleDeleteQuestion = ((
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    question: QuestionInterface,) => {
+      service.removeQuestion(question);
   })
 
   return (
@@ -54,9 +64,9 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
       variant="contained"
       color="primary"
       onClick={handleNewQuestion} // Add a function to handle adding a new question
-      sx={{ marginTop: '10px', width: '90%' }}
+      sx={{ marginTop: '10px', width: '100%' }}
     >
-      Add Question
+      Dodaj nowe pytanie
     </Button>
 
     <List
@@ -68,10 +78,15 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
       aria-label="contacts"
     >
       {questions.map((question, index) => (
-        <ListItem key={index} disablePadding>
+        <ListItem key={index} disablePadding secondaryAction={
+          <IconButton edge="end" aria-label="delete" onClick={(event) => handleDeleteQuestion(event, question)}>
+            <DeleteIcon />
+          </IconButton>
+        }>
           <ListItemButton onClick={(event) => handleListItemClick(event, index)}>
-            <ListItemText primary={question.question} style={{ textAlign: 'center' }} />
+            <ListItemText primary={question.question} style={{ textAlign: 'center'}} />
           </ListItemButton>
+          
         </ListItem>
       ))}
     </List>

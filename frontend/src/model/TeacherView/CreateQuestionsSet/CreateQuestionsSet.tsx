@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import "./CreateQuestionsSet.css"
 
 import QuestionService from './../../../services/QuestionsCreating/QuestionsCreatingService';
+import QuestionExporter from "./QuestionExporter/QuestionExporter";
 
 interface CreateQuestionsSetProps {}
 
@@ -67,16 +68,7 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         marginRight: '20px'
       }}
     >
-      <Button
-        fullWidth
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit} // Add a function to handle the deletion of the question
-        sx={{ marginTop: '20px' }} // Add margin top to the button
-      >
-        Save Questions
-      </Button>
-      
+     
 
       <Button // TODO IMPORT QUESTIONS
         fullWidth
@@ -87,14 +79,9 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         Import Questions
       </Button>
 
-      <Button // TODO EXPORT QUESTIONS
-        fullWidth
-        variant="contained"
-        color="secondary"
-        sx={{ marginTop: '10px' }}
-      >
-        Export Questions
-      </Button>
+      <QuestionExporter service={questionService}></QuestionExporter>
+
+     
     </Box>
     </div>
   )
