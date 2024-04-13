@@ -28,32 +28,33 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
       correctAnswer: "Paris",
       answers: ["Paris", "Berlin", "London", "Madrid"]
   });
-  
+
   const [checked, setChecked] =  useState<number | null>(null);
   const [buttonClicked, setButtonClicked] = useState(true);
   const [buttonIndex, setButtonIndex] = useState<number|null>(null);
   const [newAnswerValue, setNewAnswerValue] = useState<string>("Wpisz swoją odpowiedź");
-  const [rerenderKey, setRerenderKey] = useState<string>('a'); // State variable to trigger rerender
+  const [rerenderKey, setRerenderKey] = useState<string>('a'); 
   const [error, setError] = useState<string>("");
 
   {/* Subscribeses for changes in QuestionService, 
       and gets actual edited question. Main functionality is 
       to subscribe service to know when edited question is changed.   */}
+
   useEffect(() => {
     const handleActualQuestionChange = () => {
       setNewAnswerValue("Wpisz swoją odpowiedź");
-      setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
       setQuestion(service.getActualQuestion());
       setChecked(service.getActualQuestion().answers.indexOf(service.getActualQuestion().correctAnswer));
       setError("");
 
       try{
-        QuestionValidationService.validateQuestion(service.getActualQuestion())
+        QuestionValidationService.validateQuestion(service.getActualQuestion(), service.getQuestions());
       } catch(error){
         if(error instanceof Error)
           setError(error.message);
       }
 
+      setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
     service.subscribe(handleActualQuestionChange);

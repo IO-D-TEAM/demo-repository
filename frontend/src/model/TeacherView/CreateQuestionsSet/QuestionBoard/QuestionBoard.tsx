@@ -19,7 +19,7 @@ interface QuestionBoardProps {
 {/* Component that will show all questions */ }
 export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
   const [questions, setQuestions] = useState<QuestionInterface[]>([]);
-  const [rerenderKey, setRerenderKey] = useState<string>('a'); // State variable to trigger rerender
+  let [rerenderKey, setRerenderKey] = useState<number>(0); // State variable to trigger rerender
 
   {/* Subscribeses for changes in QuestionService, 
     and gets question list. Main functionality is 
@@ -27,7 +27,11 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
   useEffect(() => {
     const handleQuestionChanges = () => {
       setQuestions(service.getQuestions());
-      setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
+      
+      if(rerenderKey>100)
+        rerenderKey %= 100;
+
+      setRerenderKey(prevKey => prevKey === rerenderKey ? rerenderKey++ : rerenderKey++);
     };
 
     service.subscribe(handleQuestionChanges);
@@ -40,23 +44,34 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
 
    {/* Change Actual Edited Question on click   */}
   const handleListItemClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     index: number,
   ) => {
     service.setActualQuestion(questions[index], index);
   };
 
- 
   // Add new empty question onClick 
   const handleNewQuestion = (() => {
     service.addQuestion();
   })
 
+  // Delete question
   const handleDeleteQuestion = ((
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    question: QuestionInterface,) => {
+    question: QuestionInterface) => {
       service.removeQuestion(question);
   })
+
+  const simpleValidate = ((
+    question: QuestionInterface,
+    questions: QuestionInterface[]) => {
+      try{
+        QuestionValidationService.validateQuestion(question, questions);
+        return true;
+      } catch(error){
+        if(error instanceof Error){
+          return false;
+        }
+      }
+    });
 
   return (
     <div>
@@ -79,12 +94,14 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
     >
       {questions.map((question, index) => (
         <ListItem key={index} disablePadding secondaryAction={
-          <IconButton edge="end" aria-label="delete" onClick={(event) => handleDeleteQuestion(event, question)}>
+          <IconButton  edge="end" aria-label="delete" onClick= {() => handleDeleteQuestion( question)}>
             <DeleteIcon />
           </IconButton>
         }>
-          <ListItemButton onClick={(event) => handleListItemClick(event, index)}>
-            <ListItemText primary={question.question} style={{ textAlign: 'center'}} />
+          <ListItemButton onClick={() => handleListItemClick(index)}>
+            <ListItemText 
+              primary={question.question} 
+              style={{ textAlign: 'center', color: simpleValidate(question, questions)? "green": "red"}} />
           </ListItemButton>
           
         </ListItem>

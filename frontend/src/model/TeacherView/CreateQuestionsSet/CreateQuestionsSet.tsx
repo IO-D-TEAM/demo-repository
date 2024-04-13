@@ -8,6 +8,7 @@ import "./CreateQuestionsSet.css"
 
 import QuestionService from './../../../services/QuestionsCreating/QuestionsCreatingService';
 import QuestionExporter from "./QuestionExporter/QuestionExporter";
+import QuestionImporter from "./QuestionInporter/QuestionImporter";
 
 interface CreateQuestionsSetProps {}
 
@@ -69,19 +70,9 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
       }}
     >
      
-
-      <Button // TODO IMPORT QUESTIONS
-        fullWidth
-        variant="contained"
-        color="secondary"
-        sx={{ marginTop: '10px' }}
-      >
-        Import Questions
-      </Button>
-
       <QuestionExporter service={questionService}></QuestionExporter>
+      <QuestionImporter service={questionService}></QuestionImporter>
 
-     
     </Box>
     </div>
   )

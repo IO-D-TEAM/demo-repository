@@ -34,7 +34,7 @@ export default class QuestionService {
 
     // Notify about change
     private notifySubscribers() {
-        this.subscribers.forEach(subscriber => subscriber());
+        this.subscribers.forEach(subscriber => subscriber(this.actualQuestion));
     }
 
     subscribe(callback: () => void) {
@@ -47,6 +47,12 @@ export default class QuestionService {
 
     getQuestions(): QuestionInterface[] {
         return this.questions;
+    }
+
+    setQuestions(questions: QuestionInterface[]): void {
+        this.questions = questions;
+        this.setActualQuestion(questions[0], 0);
+        this.notifySubscribers();
     }
 
     getActualQuestion(): QuestionInterface {
@@ -119,8 +125,8 @@ export default class QuestionService {
     removeQuestion(question: QuestionInterface) : void {
         if(question === this.actualQuestion){
             this.questions.splice(this.questions.indexOf(question), 1)
-            this.notifySubscribers();
             this.setActualQuestion(this.questions[0], 0);
+            this.notifySubscribers();
             return;
         }
 
