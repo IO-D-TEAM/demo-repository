@@ -104,6 +104,9 @@ public class GameEngine {
         if (!playerIterator.hasNext()) {
             playerIterator = playersList.iterator();
         }
+        if (!questionIterator.hasNext()) {
+            questionIterator = questions.iterator();
+        }
 
         currentMovingPlayer = playerIterator.next();
         currentTask = PlayerTask.THROWING_DICE;
