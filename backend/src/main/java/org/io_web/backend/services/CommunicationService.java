@@ -41,4 +41,8 @@ public class CommunicationService {
         else if(message instanceof Serializable)
             template.convertAndSend("/lobby/players", message);
     }
+
+    public void sendMessageToBoard(Object message) {
+        template.convertAndSend("/move", message);
+    }
 }

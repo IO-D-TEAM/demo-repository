@@ -10,6 +10,7 @@ import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.game.GameStatus;
 import org.io_web.backend.questions.Answer;
 import org.io_web.backend.questions.Question;
+import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,8 +288,17 @@ public class GameController {
         this.communicationService.sendMessageToClient(clientID, task);
     }
 
+    public void updateTeachersView(int playerMove) {
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        if (clientID == null) return;
+
+        Question currentQuestion = gameEngine.getCurrentQuestion();
+
+        BoardMessage message = new BoardMessage(clientID, playerMove, currentQuestion);
+        this.communicationService.sendMessageToBoard(message);
+    }
+
     public final ArrayList<Question> getQuestions(){
         return dataService.getSettings().getQuestions();
     }
-
 }

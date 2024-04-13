@@ -44,6 +44,7 @@ public class GameEngine {
     @Autowired
     public GameEngine(GameController controller) {
         this.controller = controller;
+        this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
     }
 
@@ -67,13 +68,22 @@ public class GameEngine {
 
     // communication with server
 
-    public void diceRollOutcome(int dice){
-        currentMovingPlayer.move(dice);
+    public void diceRollOutcome(int dice) {
+        int oldPos = currentMovingPlayer.getPosition();
+        boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
+        int newPos = currentMovingPlayer.getPosition();
+
+        if (gameFinished) {
+            setGameStatus(GameStatus.ENDED);
+        }
+
+
 
         String[] answers = { "a", "b" };
         currentQuestion = new Question("xd?", answers, answers[0]);
-        this.controller.sendQuestion();
         currentTask = PlayerTask.ANSWERING_QUESTION;
+        this.controller.sendQuestion();
+        this.controller.updateTeachersView(newPos - oldPos);
     }
 
     public void playerAnswered(Answer answer){
