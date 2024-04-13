@@ -2,17 +2,13 @@ import React, { FC, useState, useEffect } from 'react';
 import {QuestionInterface} from "./../../../../interfaces/QuestionInterfaces/Question"
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import QuestionService from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 import List from '@mui/material/List';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { Label, QuestionAnswer } from '@mui/icons-material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Button from '@mui/material/Button';
+import "./QuestionEdit.css"
 
 interface QuestionEditProps {
   service: QuestionService;
@@ -22,6 +18,9 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
   const [question, setQuestion] = useState<QuestionInterface | null | undefined>();
   const [checked, setChecked] =  useState<number | null>(null);
 
+  {/* Subscribeses for changes in QuestionService, 
+      and gets actual edited question. Main functionality is 
+      to subscribe service to know when edited question is changed.   */}
   useEffect(() => {
     const handleActualQuestionChange = () => {
       setQuestion(service.getActualQuestion());
@@ -35,37 +34,35 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
     };
   }, [service]);
 
+  {/* Update question, change current question answers to new ones */}
   const handleAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-    const newAnswers = [...(question?.answers || [])];
-    newAnswers[index] = event.target.value; 
-    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers }));
-
-    if(question)
-      service.updateQuestionValue({...question, answers: newAnswers })
-
-    service.setActualQuestion({ ...question!, answers: newAnswers }, index); 
+    const newAnswers = [...(question?.answers || [])]; // Get CURRENT question answers
+    newAnswers[index] = event.target.value; // Change it with value of new one
+    service.updateQuestionAnswers(newAnswers); // Update question answers with new ones
+    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
   });
 
+  {/* Update question, change current questions to new*/}
   const handleQeustionChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newQuestion = event.target.value;
-    setQuestion(prevQuestion => ({ ...prevQuestion!, question: newQuestion }));
-    
-    if(question)
-      service.updateQuestionValue({...question, question: newQuestion });
+    const newQuestion = event.target.value; // New question value
+    service.updateQuestionValue(newQuestion); // Update current edited question with new valu
+    setQuestion(prevQuestion => ({ ...prevQuestion!, question: newQuestion })); // Re-render question on page
   });
 
+  {/* Update correct answer */}
   const changeChecked = ((index: number, answer: string) => {
     service.updateCorrectAnswer(answer);
-    service.setActualQuestion({ ...question!, correctAnswer: answer }, index); // Update the actual question in the service with the new answers
     setChecked(index);
   });
 
+  {/* Delete current edited question, this could be moved to QuestionBoard 
+      with new method in service, like removeQuestion(ID) to make better UX, 
+      but I do not care. 
+  */}
   const handleDeleteQuestion = (() => {
-    if (checked !== null) {
-      service.removeQuestion();
-      setChecked(null);
-      setQuestion(null);
-    }
+    service.removeQuestion();
+    setChecked(null);
+    setQuestion(null);
   })
 
   return (
@@ -73,15 +70,17 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
   <List>
     {question && (
       <ListItem alignItems="center">
-        <Box sx={{ flexGrow: 1 }}>
+        <Box className="mainBox" sx={{marginTop: '10px'}}>
 
-          <TextField
-            value={question?.question}
+          <TextField // Question 
+            fullWidth
+            value={question.question}
             onChange={(event) => handleQeustionChange(event)} // handleAnswerChange function to handle answer changes
           />
 
-          {question?.answers.map((answer, index) => (
-            <div key={index} style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+          {question.answers.map((answer, index) => ( // Answers
+            <div key={index} className="answerField">
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -91,7 +90,8 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
                 }
                 label={""}
               />
-              <TextField
+
+              <TextField 
                 fullWidth
                 label={`Answer ${index + 1}`} // Displaying answer number as label
                 value={answer}
@@ -100,7 +100,8 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
             </div>
           ))}
           
-          <Button
+          <Button // Delete question button
+            fullWidth
             variant="contained"
             color="error"
             onClick={handleDeleteQuestion} // Add a function to handle the deletion of the question
@@ -108,6 +109,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
           >
             Delete Question
           </Button>
+
         </Box>
       </ListItem>
     )}
