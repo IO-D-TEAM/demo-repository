@@ -19,6 +19,8 @@ public class Board {
 
         // first and last fields must be normal
         // fields with odd indexes will be of question type
+        // indexes of all other fields will go into a pool,
+        // from which special fields will be selected
         ArrayList<Integer> fieldIndexPool = new ArrayList<>();
         for (int i = 1; i < sizeOfBoard - 1; ++i) {
             if (i % 2 == 1) path.set(i, Field.QUESTION);

@@ -83,7 +83,7 @@ public class GameEngine {
         currentQuestion = new Question("xd?", answers, answers[0]);
         currentTask = PlayerTask.ANSWERING_QUESTION;
         this.controller.sendQuestion();
-        this.controller.updateTeachersView(oldPos - newPos);
+        this.controller.updateTeachersView(newPos - oldPos);
     }
 
     public void playerAnswered(Answer answer){
