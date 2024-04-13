@@ -12,11 +12,14 @@ public class Player {
 
     @Getter
     private String id;
+    @Getter
+    private String nickname;
 
-    public Player(int position, int correctAnswers, String id) {
+    public Player(int position, int correctAnswers, String id, String nickname) {
         this.position = position;
         this.correctAnswers = correctAnswers;
         this.id = id;
+        this.nickname = nickname;
     }
 
     public void move(int steps) {

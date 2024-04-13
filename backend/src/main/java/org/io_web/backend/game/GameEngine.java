@@ -21,6 +21,7 @@ import java.util.Random;
 
 @Component
 public class GameEngine {
+    @Getter
     private Board board;
 
     @Getter
@@ -34,6 +35,7 @@ public class GameEngine {
     @Getter
     private PlayerTask currentTask;
 
+    @Getter
     private ArrayList<Player> playersList = new ArrayList<>();
     private Player currentMovingPlayer = null;
 
@@ -54,11 +56,11 @@ public class GameEngine {
     }
 
 
-    public void addPlayer(String id) {
+    public void addPlayer(String id, String nickname) {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id);
+        Player newPlayer = new Player(0, 0, id, nickname);
         playersList.add(newPlayer);
     }
 

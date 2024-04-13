@@ -1,5 +1,7 @@
 package org.io_web.backend.board;
 
+import lombok.Getter;
+
 import java.util.*;
 
 /**
@@ -8,6 +10,7 @@ import java.util.*;
 public class Board {
     private final int sizeOfBoard;
     private final int specialFields;
+    @Getter
     private ArrayList<Field> path;
     private Map<Player, Field> playerPosition;
 

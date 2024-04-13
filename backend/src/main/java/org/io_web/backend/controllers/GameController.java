@@ -1,5 +1,9 @@
 package org.io_web.backend.controllers;
 
+import org.io_web.backend.board.Field;
+import org.io_web.backend.board.Player;
+import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
+import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.utilities.NetworkUtils;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
@@ -19,11 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -164,7 +166,7 @@ public class GameController {
 
         if (!reconnected) {
             this.dataService.getClientPool().addNewClient(newClient);
-            gameEngine.addPlayer(newClient.getId());
+            gameEngine.addPlayer(newClient.getId(), newClient.getNickname());
             response = ResponseFactory.createResponse(HttpStatus.OK, newClient);
         }
 
@@ -253,7 +255,7 @@ public class GameController {
             for(Client client : this.dataService.getClientPool().getClients()){
                 if(client.getStatus() == ClientStatus.SPECTATOR ) {
                     client.setStatus(ClientStatus.SPECTATOR);
-                    this.gameEngine.addPlayer(client.getId());
+                    this.gameEngine.addPlayer(client.getId(), client.getNickname());
                 }
             }
         }
@@ -300,5 +302,59 @@ public class GameController {
 
     public final ArrayList<Question> getQuestions(){
         return dataService.getSettings().getQuestions();
+    }
+
+    @GetMapping("/settings")
+    public ResponseEntity<Object> getBoardConfiguration() {
+        List<PlayerResponse> playersResponse = new ArrayList<>();
+
+        // Colors for players are generated only here at the moment
+        // Need changes if we want to have client app use different colors
+        for (Player player : gameEngine.getPlayersList()) {
+            playersResponse.add(new PlayerResponse(
+                    player.getId(),
+                    player.getNickname(),
+                    generateRandomColor(),
+                    player.getPosition()
+            ));
+        }
+
+        BoardConfigurationResponse configResponse = new BoardConfigurationResponse(
+                dataService.getSettings().getTimeForGame(),
+                gameEngine.getBoard().getPath().size(),
+                gameEngine.getBoard().getPath(),
+                playersResponse
+        );
+
+        return ResponseFactory.createResponse(HttpStatus.OK, configResponse);
+    }
+
+    private String generateRandomColor() {
+        Color playerColor = new Color((int) (Math.random() * 0x1000000));
+        return String.format("rgb(%d, %d, %d)", playerColor.getRed(), playerColor.getGreen(), playerColor.getBlue());
+    }
+
+    @GetMapping("/mock")
+    public ResponseEntity<Object> getMockBoardConfiguration() {
+        // For now frontend uses this endpoint because configuration form at the moment is outdated
+
+        List<PlayerResponse> mockPlayers = List.of(
+                new PlayerResponse("12345", "P1", generateRandomColor(), 0),
+                new PlayerResponse("12346", "P2", generateRandomColor(), 0),
+                new PlayerResponse("12347", "P3", generateRandomColor(), 0),
+                new PlayerResponse("12348", "P4", generateRandomColor(), 17),
+                new PlayerResponse("12349", "P5", generateRandomColor(), 17)
+        );
+        List<Field> mockFields = List.of(
+                Field.NORMAL, Field.QUESTION, Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
+                Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
+                Field.NORMAL, Field.QUESTION, Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
+                Field.NORMAL, Field.NORMAL
+        );
+        BoardConfigurationResponse mockConfig = new BoardConfigurationResponse(
+                15, 20, mockFields, mockPlayers
+        );
+
+        return ResponseFactory.createResponse(HttpStatus.OK, mockConfig);
     }
 }

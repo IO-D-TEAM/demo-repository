@@ -11,19 +11,31 @@ import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 
 
 const GameView = () => {
-    const { fields, players, rows, columns, gameFinished,
-    setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows } = useGameStore((state:GameState ) => state);
+    // It is awful but unfortunately it has to be like that
+    const {
+        fields,
+        players,
+        rows,
+        columns,
+        gameFinished,
+        setBoardSize,
+        setColumns,
+        setFields,
+        setFinish,
+        setGameDuration,
+        setPlayers,
+        setRows
+    } = useGameStore((state:GameState ) => state);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const config: GameConfig = await GetGameConfig();
-                const [f, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
-    
+                const [fieldsRepr, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
                 setFinish(false);
                 setGameDuration(config.gameDuration);
                 setPlayers(config.players);
-                setFields(f);
+                setFields(fieldsRepr);
                 setRows(r);
                 setColumns(c);
                 setBoardSize(config.boardSize);
