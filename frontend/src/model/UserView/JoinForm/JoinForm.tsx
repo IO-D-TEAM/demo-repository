@@ -1,22 +1,19 @@
-import React, { FC } from "react";
 import "./JoinForm.css";
-import { useForm } from "react-hook-form";
-import { RegisterInfo } from "../../../interfaces/RegisterInfo";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { TextField, Button, Stack, Select, MenuItem } from "@mui/material";
-import WhiteBackgroundDiv from "../../../globalStyles/whiteBackgroundDiv/whiteBackgroundDiv";
+import { Player } from "../../../interfaces/Player";
 
-const JoinForm = ({
-  onSubmitParent,
-}: {
-  onSubmitParent: (gamecode: string, nickname: string) => void;
-}) => {
-  const form = useForm<RegisterInfo>();
-  const { register, handleSubmit, formState } = form;
+interface JoinFormProps {
+  onSubmitParent: (data: Player) => void;
+}
+
+const JoinForm: React.FC<JoinFormProps> = ({ onSubmitParent }) => {
+  const { register, handleSubmit, formState } = useForm<Player>();
   const { errors } = formState;
 
-  const onSubmit = (data: RegisterInfo) => {
-    console.log(data);
-    onSubmitParent(data.gamecode, data.nickname);
+  const onSubmit = (data: Player) => {
+    console.log(data); // data zawiera dane z formularza
+    onSubmitParent(data);
   };
 
   return (
@@ -30,12 +27,15 @@ const JoinForm = ({
             type="string"
             {...register("nickname", {
               required: "Nazwa gracza jest wymagana.",
+              validate: (value) =>
+                value.length < 45 ||
+                "Twoja nazwa musi miec mniej niż 45 znaków.",
             })}
             error={!!errors.nickname}
             helperText={errors.nickname?.message}
           ></TextField>
           <Button type="submit" variant="contained" color="primary">
-            prześlij
+            Dołącz
           </Button>
         </Stack>
       </form>

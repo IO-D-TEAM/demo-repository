@@ -105,7 +105,7 @@ export const Lobby: FC<LobbyProps> = () => {
             variant="contained"
             color="success"
             component={Link}
-            to="/board"
+            to="/gameView"
           >
             Start
           </Button>

@@ -167,7 +167,6 @@ public class GameController {
 
         // nauczyciel
         this.communicationService.sendMessageToLobby(this.dataService.getClientPool());
-
         return response;
     }
 

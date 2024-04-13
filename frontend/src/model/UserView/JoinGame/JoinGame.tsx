@@ -4,42 +4,45 @@ import SockJS from "sockjs-client";
 import { connectToTheGame } from "../../../services/ClientInfo/ClientInfo/ClientInfo";
 import JoinForm from "../JoinForm/JoinForm";
 import "./JoinGame.css";
+import { Player } from "../../../interfaces/Player";
+import { useParams } from "react-router-dom";
 
 interface JoinGameProps {}
 
 const JoinGame: FC<JoinGameProps> = () => {
-  const [clientId, setClientId] = useState("");
-  const [stompClient, setStompClient] = useState<Stomp.Client>();
-  const [error, setError] = useState("");
+  const { gameCode } = useParams<{ gameCode: string }>();
+  const [player, setPlayer] = useState<Player>();
+  // const [stompClient, setStompClient] = useState<Stomp.Client>();
 
-  const WS_URL = "http://localhost:8080/ws";
-  useEffect(() => {
-    if (clientId === "" || stompClient !== null) return;
-    const socket = new SockJS(WS_URL);
-    const client = Stomp.over(socket);
+  // const WS_URL = "http://localhost:8080/ws";
+  // useEffect(() => {
+  //   if (player?.id === "" || stompClient !== null) return;
+  //   const socket = new SockJS(WS_URL);
+  //   const client = Stomp.over(socket);
 
-    client.connect({}, () => {
-      client.subscribe(`/client/${clientId}`, (notification) => {
-        //TODO handle incomming questions
+  //   client.connect({}, () => {
+  //     client.subscribe(`/client/${player?.id}`, (notification) => {
+  //       //TODO handle incomming questions
+  //     });
+  //   });
+
+  //   setStompClient(client);
+  // }, [player?.id]);
+
+  const handleSubmit = (player: Player) => {
+    if (typeof gameCode === "undefined") {
+      console.log("There is no game code!!!");
+      return;
+    }
+    connectToTheGame(gameCode, player)
+      .then((player: Player) => {
+        // server error - can't register the client
+        console.log(player);
+        setPlayer(player);
+      })
+      .catch((error) => {
+        throw new Error(error);
       });
-    });
-
-    setStompClient(client);
-  }, [clientId]);
-
-  const handleSubmit = (gamecode: string, nickname: string) => {
-    let data;
-    connectToTheGame(gamecode, nickname).then((response: any) => {
-      data = response;
-      // server error - can't register the client
-
-      console.log(data);
-      if (data.status !== "OK") {
-        throw new Error(data.message);
-      }
-
-      setClientId(data.clientId);
-    });
   };
 
   return (

@@ -1,23 +1,20 @@
-import React, { FC } from "react";
+import { Player } from "../../../interfaces/Player";
 
 export const connectToTheGame = async (
-  gamecode: string,
-  nickname: string
-): Promise<any> => {
-  try {
-    const response = await fetch(`/${gamecode}/join_game`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ nickname: nickname }),
+  gamecode: string | undefined,
+  player: Player
+): Promise<Player> => {
+  return await fetch(`/game/${gamecode}/join_game`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json", // Poprawiono typ danych na application/json
+    },
+    body: JSON.stringify({ gamecode: gamecode, nickname: player.nickname }),
+  })
+    .then((response: any) => {
+      return response.json();
+    })
+    .catch((error: any) => {
+      console.log(`Couldn't proccess player. Status: ${error}`);
     });
-
-    if (!response.ok) {
-      throw new Error("Failed to connect to server");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error:", error);
-  }
 };
