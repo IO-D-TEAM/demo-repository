@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Random;
 
@@ -34,8 +35,8 @@ public class GameController {
     private final SharedDataService dataService;
     private final CommunicationService communicationService;
 
-    private GameEngine gameEngine;
-    private final int maxPlayers = 10;
+    private final GameEngine gameEngine;
+    private final int maxPlayers = 20;
 
     /**
      * Launches controller with Spring's dependency injection mechanism,
@@ -295,5 +296,9 @@ public class GameController {
 
         BoardMessage message = new BoardMessage(clientID, playerMove, currentQuestion);
         this.communicationService.sendMessageToBoard(message);
+    }
+
+    public final ArrayList<Question> getQuestions(){
+        return dataService.getSettings().getQuestions();
     }
 }

@@ -1,7 +1,5 @@
 package org.io_web.backend.board;
 
-import org.io_web.backend.questions.Question;
-
 import java.util.*;
 
 /**
@@ -11,15 +9,12 @@ public class Board {
     private final int sizeOfBoard;
     private final int specialFields;
     private ArrayList<Field> path;
-    private ArrayList<Question> questions;
-    private int currQuestionIndex = 0;
     private Map<Player, Field> playerPosition;
 
     public Board(int sizeOfBoard, int specialFields, List<Player> players) {
         this.sizeOfBoard = sizeOfBoard;
         this.specialFields = specialFields;
         this.path = new ArrayList<>(Collections.nCopies(sizeOfBoard, Field.NORMAL));
-        this.questions = new ArrayList<>();
         this.playerPosition = new HashMap<>();
 
         // first and last fields must be normal
@@ -40,23 +35,6 @@ public class Board {
 
         fieldIndexPool.forEach(i -> path.set(i, Field.SPECIAL));
         players.forEach(obj -> playerPosition.put(obj, path.getFirst()));
-    }
-
-    public void addQuestions(Question... questions) {
-        this.questions.addAll(Arrays.asList(questions));
-        Collections.shuffle(this.questions);
-    }
-
-    public Question getQuestion(int playerPosition) {
-        Field playerField = path.get(playerPosition);
-        if (!playerField.equals(Field.QUESTION) || currQuestionIndex >= questions.size())
-            return null;
-        Question q = questions.get(currQuestionIndex);
-
-        ++currQuestionIndex;
-        if (currQuestionIndex >= questions.size()) currQuestionIndex = 0;
-
-        return q;
     }
 
     /**

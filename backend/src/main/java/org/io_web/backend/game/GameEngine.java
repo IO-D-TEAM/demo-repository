@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -27,6 +28,8 @@ public class GameEngine {
 
     @Getter
     private Question currentQuestion = null;
+    private Iterator<Question> questionIterator;
+    private ArrayList<Question> questions;
 
     @Getter
     private PlayerTask currentTask;
@@ -96,19 +99,23 @@ public class GameEngine {
             return;
         }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
-        currentMovingPlayer = playerIterator.next();
-        currentTask = PlayerTask.THROWING_DICE;
 
-        Random random = new Random();
-        diceRoll = random.nextInt(6) + 1;
+        questions = new ArrayList<>(controller.getQuestions());
+        Collections.shuffle(questions);
 
-        this.controller.informClientOfHisTurn(diceRoll);
+        questionIterator = questions.iterator();
+
+        nextTurn();
     }
+
     // method to change players, inform server
     public void nextTurn() {
         // reset turn if ended
         if (!playerIterator.hasNext()) {
             playerIterator = playersList.iterator();
+        }
+        if (!questionIterator.hasNext()) {
+            questionIterator = questions.iterator();
         }
 
         currentMovingPlayer = playerIterator.next();
