@@ -2,7 +2,6 @@ import React, { FC, useState, useEffect } from 'react';
 import {QuestionInterface} from "./../../../../interfaces/QuestionInterfaces/Question"
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
-import QuestionService from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 import List from '@mui/material/List';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
@@ -15,12 +14,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OutlinedInput, FormHelperText } from '@mui/material';
 import QuestionValidationService from '../../../../services/QuestionsCreating/QuestionValidator';
+import { useQuestionService }  from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 
 interface QuestionEditProps {
-  service: QuestionService;
 }
 
-export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
+export const QuestionEdit: FC<QuestionEditProps> = ()  => {
 
   // Mock Question
   const [question, setQuestion] = useState<QuestionInterface>({
@@ -35,11 +34,11 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
   const [newAnswerValue, setNewAnswerValue] = useState<string>("Wpisz swoją odpowiedź");
   const [rerenderKey, setRerenderKey] = useState<string>('a'); 
   const [error, setError] = useState<string>("");
+  const questionService = useQuestionService(); // Access the QuestionService instance
 
-  {/* Subscribeses for changes in QuestionService, 
+  /* Subscribeses for changes in QuestionService, 
       and gets actual edited question. Main functionality is 
-      to subscribe service to know when edited question is changed.   */}
-
+      to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (question: QuestionInterface) => {
       setNewAnswerValue("Wpisz swoją odpowiedź");
@@ -47,7 +46,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
       setChecked(question.answers.indexOf(question.correctAnswer));
 
       try{
-        QuestionValidationService.validateQuestion(question, service.getQuestions());
+        QuestionValidationService.validateQuestion(question, questionService.getQuestions());
         setError("");
       } catch(error){
         if(error instanceof Error)
@@ -57,49 +56,55 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
       setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
-    service.subscribe(handleActualQuestionChange, "question");
+    questionService.subscribe(handleActualQuestionChange, "question");
 
     return () => {
-      service.unsubscribe(handleActualQuestionChange);
+      questionService.unsubscribe(handleActualQuestionChange);
     };
-  }, [service]);
+  }, [questionService]);
 
-  {/* Update question, change current question answers to new */}
+  /* Update question, change current question answers to new */
   const handleAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) :void => {
-    question.answers[index] = event.target.value;
-    service.updateQuestionAnswers(question.answers); // Update question answers with new ones
 
-    if(checked == index)
-      service.updateCorrectAnswer(event.target.value);
+    if(question.answers.indexOf(event.target.value) !== -1){
+      setError("Odpowiedzi nie mogą się powtarzać!");
+      return;
+    }
+
+    question.answers[index] = event.target.value;
+    questionService.updateQuestionAnswers(question.answers); // Update question answers with new ones
+
+    if(checked === index)
+      questionService.updateCorrectAnswer(event.target.value);
 
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: question.answers })) // Re-render answers on page
   });
 
-  {/* Update question, change current questions to new*/}
+  /* Update question, change current questions to new*/
   const handleQeustionChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) :void => {
-    service.updateQuestionValue(event.target.value); // Update current edited question with new value
+    questionService.updateQuestionValue(event.target.value); // Update current edited question with new value
     setQuestion(prevQuestion => ({ ...prevQuestion!, question: event.target.value })); // Re-render question on page
   });
 
-  {/* Update correct answer */}
+  /* Update correct answer */
   const changeChecked = ((index: number, answer: string) : void => {
-    service.updateCorrectAnswer(answer);
+    questionService.updateCorrectAnswer(answer);
     setChecked(index);
   });
 
   const handleNewAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) :void => {
-    if(service.getActualQuestion().answers.length >= 4){
+    if(questionService.getActualQuestion().answers.length >= 4){
       setError("Maksymalna liczba odpowiedzi wynosi 4!");
       return;
     }
 
-    if(service.getActualQuestion().answers.indexOf(newAnswerValue) != -1){
+    if(questionService.getActualQuestion().answers.indexOf(newAnswerValue) !== -1){
       setError("Ta odpowiedź już istnieje!")
       return;
     }
 
     const newAnswers = [...(question?.answers || []), newAnswerValue]; // Get CURRENT question answers
-    service.updateQuestionAnswers(newAnswers); // Update question answers with new ones
+    questionService.updateQuestionAnswers(newAnswers); // Update question answers with new ones
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
   });
 
@@ -113,16 +118,16 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
   });
 
   const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) : void => {
-    if(error == "")
-      service.saveChanges();      
+    if(error === "")
+      questionService.saveChanges();      
   });
 
   const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
     const newAnswers = [...(question?.answers || [])]; 
     newAnswers.splice(index, 1);
-    service.updateQuestionAnswers(newAnswers); // Update question answers with new ones    
+    questionService.updateQuestionAnswers(newAnswers); // Update question answers with new ones    
 
-    if(index == checked)
+    if(index === checked)
       changeChecked(0, question.answers[0] ? question.answers[0] as string : ""); // Set first answer as correct
 
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
@@ -154,7 +159,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={answer === question.correctAnswer &&( index == checked || checked == null)}
+                    checked={answer === question.correctAnswer &&( index === checked || checked === null)}
                     onChange={() => changeChecked(index, answer)}
                   />
                 }
@@ -162,7 +167,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
               />
 
               <OutlinedInput 
-              disabled={!(!buttonClicked && index == buttonIndex )}
+              disabled={!(!buttonClicked && index === buttonIndex )}
               fullWidth
               id="outlined-disabled"
               value={answer}
@@ -185,7 +190,6 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
               }}
             />
 
-         
             </div>
           ))}
 
@@ -220,11 +224,11 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
           <Button // Delete question button
             fullWidth
             variant="contained"
-            color={service.getActualIndex() == -1? "secondary": "primary"}
+            color={questionService.getActualIndex() === -1? "secondary": "primary"}
             onClick={(event) => saveChanges(event)}
             sx={{ marginTop: '20px' }} // Add margin top to the button
           >
-            {service.getActualIndex() == -1? "Dodaj pytanie": "Zapisz zmiany"}
+            {questionService.getActualIndex() === -1? "Dodaj pytanie": "Zapisz zmiany"}
           </Button>
 
         </Box>

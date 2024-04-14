@@ -1,15 +1,15 @@
 import React, { FC, useRef } from "react";
 import Button from '@mui/material/Button';
-import QuestionService from '../../../../services/QuestionsCreating/QuestionsCreatingService';
 import QuestionValidationService from "../../../../services/QuestionsCreating/QuestionValidator";
 import {QuestionInterface} from "./../../../../interfaces/QuestionInterfaces/Question"
+import { useQuestionService }  from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 
 interface QuestionImporterProp {
-  service: QuestionService; 
 }
 
-export const QuestionImporter: FC<QuestionImporterProp> = ({service}) => {
+export const QuestionImporter: FC<QuestionImporterProp> = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const questionService = useQuestionService(); // Access the QuestionService instance
 
     const fileUploadInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -27,7 +27,7 @@ export const QuestionImporter: FC<QuestionImporterProp> = ({service}) => {
                   return;
                 }
 
-                service.setQuestions(questions);
+                questionService.setQuestions(questions);
 
             };
             reader.readAsText(file);

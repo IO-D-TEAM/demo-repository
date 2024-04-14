@@ -1,25 +1,25 @@
 import React, { FC } from "react";
 import Button from '@mui/material/Button';
-import QuestionService from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 import QuestionValidationService from "../../../../services/QuestionsCreating/QuestionValidator";
+import { useQuestionService }  from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 
 interface QuestionExporterProps {
-    service: QuestionService; 
 }
 
-export const QuestionExporter: FC<QuestionExporterProps> = ({service}) => {
-  
+export const QuestionExporter: FC<QuestionExporterProps> = () => {
+  const questionService = useQuestionService(); // Access the QuestionService instance
+
     const saveFile = async () => {
 
         try{
-          QuestionValidationService.validateSet(service.getQuestions())
+          QuestionValidationService.validateSet(questionService.getQuestions())
         } catch(error){
           if(error instanceof Error)
             alert(error.message)
           return;
         }
 
-        const blob = new Blob([JSON.stringify(service.getQuestions())], {type : 'application/json'});
+        const blob = new Blob([JSON.stringify(questionService.getQuestions())], {type : 'application/json'});
         const a = document.createElement('a');
         a.download = 'my-file.json';
         a.href = URL.createObjectURL(blob);

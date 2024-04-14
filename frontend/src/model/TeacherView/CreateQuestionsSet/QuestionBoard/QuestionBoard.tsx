@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useContext } from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -8,20 +8,20 @@ import './QuestionBoard.css'
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import QuestionValidationService from '../../../../services/QuestionsCreating/QuestionValidator';
-import QuestionService from './../../../../services/QuestionsCreating/QuestionsCreatingService';
+// import QuestionService from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 import {QuestionInterface} from "./../../../../interfaces/QuestionInterfaces/Question"
 import "./QuestionBoard.css";
+import { useQuestionService }  from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 
 interface QuestionBoardProps {
-  service: QuestionService;
 }
 
 {/* Component that will show all questions */ }
-export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
+export const QuestionBoard: FC<QuestionBoardProps> = () => {
   const [questions, setQuestions] = useState<QuestionInterface[]>([]);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-
   let [rerenderKey, setRerenderKey] = useState<number>(0); // State variable to trigger rerender
+  const questionService = useQuestionService(); // Access the QuestionService instance
 
   {/* Subscribeses for changes in QuestionService, 
     and gets question list. Main functionality is 
@@ -29,40 +29,39 @@ export const QuestionBoard: FC<QuestionBoardProps> = ({service}) => {
   useEffect(() => {
     const handleQuestionChanges = (questions: QuestionInterface[]) => {
       setQuestions(questions);
-      setSelectedIndex(service.getActualIndex());
+      setSelectedIndex(questionService.getActualIndex());
       setRerenderKey(prevKey => prevKey === rerenderKey ? rerenderKey++ : rerenderKey++);
       rerenderKey %= 100;
     };
 
-    service.subscribe(handleQuestionChanges, "questions");
-    setQuestions(service.getQuestions());
+    questionService.subscribe(handleQuestionChanges, "questions");
+    setQuestions(questionService.getQuestions());
 
     return () => {
-      service.unsubscribe(handleQuestionChanges);
+      questionService.unsubscribe(handleQuestionChanges);
     };
-  }, [service]);
+  }, [questionService]);
 
    {/* Change Actual Edited Question on click   */}
   const handleListItemClick = (
     index: number,
   ) => {
-    setSelectedIndex(index);
-    service.setActualQuestion(questions[index], index);
+    // setSelectedIndex(index);
+    questionService.setActualQuestion(questions[index], index);
   };
 
   const handleNewQuestion = (() => {
-    service.addQuestion();  // Add new empty question onClick 
+    questionService.addQuestion();  // Add new empty question onClick 
   })
 
   const handleDeleteQuestion = ((
     question: QuestionInterface ) => {
-      service.removeQuestion(question);  // Delete question
+      questionService.removeQuestion(question);  // Delete question
   })
 
   // Mark invalid questions on board
   const simpleValidate = ((
-    question: QuestionInterface,
-    questions: QuestionInterface[]) => {
+    question: QuestionInterface, questions: QuestionInterface[]) => {
       try{
         QuestionValidationService.validateQuestion(question, questions);
         return true;

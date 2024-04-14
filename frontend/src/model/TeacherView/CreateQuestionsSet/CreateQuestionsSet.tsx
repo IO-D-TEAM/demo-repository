@@ -5,76 +5,56 @@ import QuestionEdit from "./QuestionEdit/QuestionEdit";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import "./CreateQuestionsSet.css"
-
-import QuestionService from './../../../services/QuestionsCreating/QuestionsCreatingService';
+import { QuestionServiceProvider } from './../../../services/QuestionsCreating/QuestionsCreatingService';
 import QuestionExporter from "./QuestionExporter/QuestionExporter";
 import QuestionImporter from "./QuestionInporter/QuestionImporter";
 
 interface CreateQuestionsSetProps {}
 
 export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
-  const questionService = new QuestionService();
-
-  // Send QuestionSet to server
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/questions/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(questionService.getQuestions()),
-      });
-
-      if (!response.ok) {
-          throw new Error("Failed to connect to server");
-      }
-
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
 
   return ( 
-    <div className="mainControler" >
+    <QuestionServiceProvider>
+      <div className="mainControler" >
+        <Box
+        sx={{
+          width: '35%',
+          height: 400,
+          bgcolor: 'background.paper',
+          marginBottom: '20px' // Adding margin between components
+        }}
+      >
+        <QuestionBoard />
+      </Box>
+
       <Box
-      sx={{
-        width: '35%',
-        height: 400,
-        bgcolor: 'background.paper',
-        marginBottom: '20px' // Adding margin between components
-      }}
-    >
-      <QuestionBoard service={questionService} />
-    </Box>
+        sx={{
+          width: '35%',
+          height: 400,
+          bgcolor: 'background.paper',
+          marginBottom: '20px' // Adding margin between components
+        }}
+      >
+        <QuestionEdit />
+      </Box>
 
-    <Box
-      sx={{
-        width: '35%',
-        height: 400,
-        bgcolor: 'background.paper',
-        marginBottom: '20px' // Adding margin between components
-      }}
-    >
-      <QuestionEdit service={questionService} />
-    </Box>
+      <Box
+        sx={{
+          width: '30%',
+          height: 400,
+          bgcolor: 'background.paper',
+          marginBottom: '20px', // Adding margin between components
+          marginLeft: '20px',
+          marginRight: '20px'
+        }}
+      >
+      
+        <QuestionExporter ></QuestionExporter>
+        <QuestionImporter ></QuestionImporter>
 
-    <Box
-      sx={{
-        width: '30%',
-        height: 400,
-        bgcolor: 'background.paper',
-        marginBottom: '20px', // Adding margin between components
-        marginLeft: '20px',
-        marginRight: '20px'
-      }}
-    >
-     
-      <QuestionExporter service={questionService}></QuestionExporter>
-      <QuestionImporter service={questionService}></QuestionImporter>
-
-    </Box>
-    </div>
+      </Box>
+      </div>
+    </QuestionServiceProvider>
   )
 };
 

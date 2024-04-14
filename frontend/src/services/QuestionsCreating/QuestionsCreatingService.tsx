@@ -1,161 +1,190 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { QuestionInterface } from "../../interfaces/QuestionInterfaces/Question";
-import Popup from "./../../model/Popup/Popup";
-import QuestionValidationService from "./QuestionValidator";
-import { error } from "console";
+import {QuestionService, SubscriberCallback } from "../../interfaces/QuestionInterfaces/QuestionService"; 
 
-type SubscriberCallback = (data: any) => void;
+const QuestionServiceContext = createContext<QuestionService | undefined>(undefined);
 
-/*{ 
-    Centralized service to handle all question-related methods na utilities
-    actualQuestion - question edited by QuestionEdit component! 
-}*/ 
-export default class QuestionService {
-    private questions: QuestionInterface[] = [];
-    private subscribers: { callback: SubscriberCallback, dataIdentifier: string }[] = [];
-    private index: number = 0;
-    private unsavedChanges: boolean = false;
+// This is to allow components to use our service 
+export const useQuestionService = () => {
+    const context = useContext(QuestionServiceContext);
+    if (!context) {
+        throw new Error('useQuestionService must be used within a QuestionServiceProvider');
+    }
+    return context;
+};
 
-    // Empty template for question creating 
-    private actualQuestion: QuestionInterface = {
-        question: "Wpisz swoje pytanie!",
-        correctAnswer: "",
-        answers: []
+interface QuestionServiceProviderProps {
+    children: ReactNode;
+}
+
+const mockQuestion: QuestionInterface = {
+    question: "What is the capital of France?",
+    correctAnswer: "Paris",
+    answers: ["Paris", "Berlin", "London", "Madrid"]
+}
+
+const initialState: QuestionInterface[] = [
+    mockQuestion
+]; // Your initial questions data
+
+
+// Main service functionality
+export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = ({ children }) => {
+    const [questions, setQuestionsValue] = useState<QuestionInterface[]>(initialState); // Your initial questions data
+    const [actualQuestion, setActualQuestionValue] = useState<QuestionInterface>(mockQuestion); // Your initial questions data
+    const [index, setIndex] = useState<number>(0);
+
+    let subscribers: { callback: SubscriberCallback, dataIdentifier: string }[] = [];
+
+    useEffect(() => {
+        notifySubscribers();
+    }, [questions, actualQuestion]);
+
+    const notifySubscribers = () => {
+        subscribers.forEach(subscriber => {
+        if (subscriber.dataIdentifier === "question")
+            subscriber.callback(actualQuestion);
+        
+        if (subscriber.dataIdentifier === "questions")
+            subscriber.callback(questions);
+        });
     };
 
-    constructor(){
-        // Mock Question
-        const question: QuestionInterface = {
-            question: "What is the capital of France?",
-            correctAnswer: "Paris",
-            answers: ["Paris", "Berlin", "London", "Madrid"]
-        };
-        this.questions.push(question);
-        this.setActualQuestion(question, 0);
-    }
-    
-    notifySubscribers(): void {
-        this.subscribers.forEach(subscriber => {
-            if (subscriber.dataIdentifier === "question")
-                subscriber.callback(this.actualQuestion);
-            
-            if (subscriber.dataIdentifier === "questions")
-                subscriber.callback(this.questions);
-        });
+    const subscribe = (callback: SubscriberCallback, dataIdentifier: string) => {
+        subscribers.push({ callback, dataIdentifier });
+    };
+
+    const unsubscribe = (callback: SubscriberCallback) => {
+        subscribers = subscribers.filter(subscriber => subscriber.callback !== callback);
+    };
+
+    const getQuestions = (): QuestionInterface[] => {
+        return questions;
     }
 
-    subscribe(callback: SubscriberCallback, dataIdentifier: string): void {
-        this.subscribers.push({ callback, dataIdentifier });
+    const getActualIndex = (): number  => {
+        return index;
     }
 
-    unsubscribe(callback: SubscriberCallback): void {
-        this.subscribers = this.subscribers.filter(subscriber => subscriber.callback !== callback);
+    const setActualQuestion = (question: QuestionInterface, newIndex: number): void => {
+        setIndex(newIndex);
+        setActualQuestionValue(question);
     }
 
-    getQuestions(): QuestionInterface[] {
-        return this.questions;
-    }
-
-    setQuestions(questions: QuestionInterface[]): void {
-        this.questions = questions;
-        this.setActualQuestion(questions[0], 0);
-        this.notifySubscribers();
-    }
-
-    getActualQuestion(): QuestionInterface {
-        if(this.actualQuestion == null){
+    const getActualQuestion = (): QuestionInterface => {
+        if(actualQuestion == null){
             return {
                 question: "What is the capital of France?",
                 correctAnswer: "Paris",
                 answers: ["Paris", "Berlin", "London", "Madrid"]
             };
         }
-        return this.actualQuestion;
+        return actualQuestion;
     }
 
-    getActualIndex(): number {
-        return this.index;
+    const saveChanges = () : void  => {
+
+        if(index == -1)
+            questions.push(actualQuestion);
+
+        setIndex(questions.indexOf(actualQuestion));
     }
 
-    getUnsavedChanges(): boolean {
-        return this.unsavedChanges;
+    const setQuestions = (newQuestions: QuestionInterface[]): void  => {
+        setQuestionsValue(newQuestions);
+        setActualQuestion(questions[0], 0);
     }
 
-    isQuestionPresent(questionValue: string): boolean {
-        return this.questions.some(question => question.question === questionValue);
-    }
-
-    setActualQuestion(question: QuestionInterface, index: number): void {
-        this.actualQuestion = question;
-        this.index = index;
-        this.notifySubscribers();
-    }
-
-    saveChanges() : void {
-
-        if(this.index == -1)
-            this.questions.push(this.actualQuestion);
-
-        this.index = this.questions.indexOf(this.actualQuestion);
-        this.notifySubscribers();
-    }
-
-    addQuestion() : void {
+    const addQuestion = () : void => {
         const question: QuestionInterface = {
             question: "Wpisz swoje pytanie!",
             correctAnswer: "",
             answers: []
         };
 
-        if(this.index === -1){
-            this.notifySubscribers();
+        if(index === -1){
+            notifySubscribers();
             return;
         }
 
-        this.index = -1;
-        this.actualQuestion = question;
-        this.notifySubscribers();
+        setIndex(-1);
+        setActualQuestionValue(question);
     }
 
-    updateCorrectAnswer(correctAnswer: string) : void {
-        this.actualQuestion.correctAnswer = correctAnswer;
-        this.notifySubscribers();
-        this.notifySubscribers();
+    const updateCorrectAnswer = (correctAnswer: string) : void => {
+        setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, correctAnswer: correctAnswer}))
+        if (index !== -1 && questions.length > index) {
+            setQuestionsValue(prevQuestions => {
+                const updatedQuestions = [...prevQuestions];
+                updatedQuestions[index].correctAnswer = correctAnswer;
+                return updatedQuestions;
+            });
+        }
     }
 
-    updateQuestionAnswers(newAnswers: string[]) : void {
-        this.actualQuestion.answers = newAnswers;
-
-        if(this.actualQuestion.answers.length == 1)
-            this.actualQuestion.correctAnswer = newAnswers[0];
-
-        this.notifySubscribers();
-    }
-
-    updateQuestionValue(question: string) : void {
-        this.actualQuestion.question = question;
-        this.notifySubscribers();
-    }
-
-    removeQuestion(question: QuestionInterface) : void {
-        if(question === this.actualQuestion){
-            this.questions.splice(this.questions.indexOf(question), 1)
-
-            if(this.questions.length == 0) // Mock question when ther is no questions in array
-                this.setActualQuestion({
-                    question: "What is the capital of France?",
-                    correctAnswer: "Paris",
-                    answers: ["Paris", "Berlin", "London", "Madrid"]
-                }, 0)
-            else
-                this.setActualQuestion(this.questions[0], 0);
-
-            this.notifySubscribers();
-            return;
+    const updateQuestionAnswers = (newAnswers: string[]) : void => {
+        setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, answers: newAnswers}))
+        if (index !== -1 && questions.length > index) {
+            setQuestionsValue(prevQuestions => {
+                const updatedQuestions = [...prevQuestions];
+                updatedQuestions[index].answers = newAnswers;
+                return updatedQuestions;
+            });
         }
 
-        this.questions.splice(this.questions.indexOf(question), 1)
-        this.notifySubscribers();
+        // if(actualQuestion.answers.length == 1)
+        //     setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, correctAnswer: newAnswers[0]}))
     }
-}
 
+    const updateQuestionValue = (newQuestion: string) : void => {
+        if (index !== -1 && questions.length > index) {
+            setQuestionsValue(prevQuestions => {
+                const updatedQuestions = [...prevQuestions];
+                updatedQuestions[index].question = newQuestion;
+                return updatedQuestions;
+            });
+        }
+
+        setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, question: newQuestion}))
+    }
+
+    const removeQuestion = (question: QuestionInterface): void => {
+        if (question === actualQuestion) {
+            const updatedQuestions = [...questions];
+            updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
+
+            if (updatedQuestions.length === 0)
+                setActualQuestion(mockQuestion, 0);
+            else 
+                setActualQuestion(updatedQuestions[0], 0);
+
+            setQuestions(updatedQuestions);
+        } else {
+            const updatedQuestions = [...questions];
+            updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
+            setQuestions(updatedQuestions);
+        }
+    };
+
+    const service: QuestionService = {
+        subscribe,
+        unsubscribe,
+        getQuestions,
+        setActualQuestion,
+        removeQuestion,
+        addQuestion,
+        updateQuestionValue,
+        updateQuestionAnswers,
+        updateCorrectAnswer,
+        setQuestions,
+        saveChanges,
+        getActualQuestion,
+        getActualIndex
+    };
+
+    return (
+        <QuestionServiceContext.Provider value={service}>
+            {children}
+        </QuestionServiceContext.Provider>
+    );
+};
