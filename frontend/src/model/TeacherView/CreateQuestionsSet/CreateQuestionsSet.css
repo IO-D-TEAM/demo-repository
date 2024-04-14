@@ -1,4 +1,13 @@
 .mainControler {
     display: flex;
-    margin-top : '10px';
+    margin-top : '50px';
+    justify-content: space-between;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.reactComponent{
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+    margin-bottom: 1rem;
 }

@@ -16,11 +16,10 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
   return ( 
     <QuestionServiceProvider>
       <div className="mainControler" >
-        <Box
+        <Box 
+        className="reactComponent"
         sx={{
-          width: '35%',
-          height: 400,
-          bgcolor: 'background.paper',
+          width: '32%',
           marginBottom: '20px' // Adding margin between components
         }}
       >
@@ -28,24 +27,18 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
       </Box>
 
       <Box
+        className="reactComponent"
         sx={{
-          width: '35%',
-          height: 400,
-          bgcolor: 'background.paper',
-          marginBottom: '20px' // Adding margin between components
+          width: '32%',
         }}
       >
         <QuestionEdit />
       </Box>
 
       <Box
+        className="reactComponent"
         sx={{
           width: '30%',
-          height: 400,
-          bgcolor: 'background.paper',
-          marginBottom: '20px', // Adding margin between components
-          marginLeft: '20px',
-          marginRight: '20px'
         }}
       >
       
