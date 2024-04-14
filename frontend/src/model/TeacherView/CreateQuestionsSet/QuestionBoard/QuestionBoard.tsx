@@ -73,7 +73,7 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
     });
 
   return (
-    <div>
+    <div style={{overflow: "auto"}}>
       <Button
         variant="contained"
         color="primary"
