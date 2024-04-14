@@ -1,6 +1,5 @@
 package org.io_web.backend.game;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.io_web.backend.board.Board;
 import org.io_web.backend.board.Player;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -21,6 +21,7 @@ import java.util.Random;
 
 @Component
 public class GameEngine {
+    @Getter
     private Board board;
 
     @Getter
@@ -28,10 +29,13 @@ public class GameEngine {
 
     @Getter
     private Question currentQuestion = null;
+    private Iterator<Question> questionIterator;
+    private ArrayList<Question> questions;
 
     @Getter
     private PlayerTask currentTask;
 
+    @Getter
     private ArrayList<Player> playersList = new ArrayList<>();
     private Player currentMovingPlayer = null;
 
@@ -42,6 +46,7 @@ public class GameEngine {
     @Autowired
     public GameEngine(GameController controller) {
         this.controller = controller;
+        this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
     }
 
@@ -51,11 +56,11 @@ public class GameEngine {
     }
 
 
-    public void addPlayer(String id) {
+    public void addPlayer(String id, String nickname) {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id);
+        Player newPlayer = new Player(0, 0, id, nickname);
         playersList.add(newPlayer);
     }
 
@@ -65,13 +70,22 @@ public class GameEngine {
 
     // communication with server
 
-    public void diceRollOutcome(int dice){
-        currentMovingPlayer.move(dice);
+    public void diceRollOutcome(int dice) {
+        int oldPos = currentMovingPlayer.getPosition();
+        boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
+        int newPos = currentMovingPlayer.getPosition();
+
+        if (gameFinished) {
+            setGameStatus(GameStatus.ENDED);
+        }
+
+
 
         String[] answers = { "a", "b" };
         currentQuestion = new Question("xd?", answers, answers[0]);
-        this.controller.sendQuestion();
         currentTask = PlayerTask.ANSWERING_QUESTION;
+        this.controller.sendQuestion();
+        this.controller.updateTeachersView(newPos - oldPos);
     }
 
     public void playerAnswered(Answer answer){
@@ -87,19 +101,23 @@ public class GameEngine {
             return;
         }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
-        currentMovingPlayer = playerIterator.next();
-        currentTask = PlayerTask.THROWING_DICE;
 
-        Random random = new Random();
-        diceRoll = random.nextInt(6) + 1;
+        questions = new ArrayList<>(controller.getQuestions());
+        Collections.shuffle(questions);
 
-        this.controller.informClientOfHisTurn(diceRoll);
+        questionIterator = questions.iterator();
+
+        nextTurn();
     }
+
     // method to change players, inform server
     public void nextTurn() {
         // reset turn if ended
         if (!playerIterator.hasNext()) {
             playerIterator = playersList.iterator();
+        }
+        if (!questionIterator.hasNext()) {
+            questionIterator = questions.iterator();
         }
 
         currentMovingPlayer = playerIterator.next();

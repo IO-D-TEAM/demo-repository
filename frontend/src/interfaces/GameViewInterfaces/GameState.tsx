@@ -1,15 +1,15 @@
-import { GamePlayer } from "./GamePlayer";
+import { PlayerType } from "./PlayerType";
 import { FieldType } from "./FieldType";
 
 interface GameState {
-  players: GamePlayer[];
+  players: PlayerType[];
   fields: FieldType[];
   gameDuration: number;
   gameFinished: boolean;
   boardSize: number;
   rows: number;
   columns: number;
-  setPlayers: (value: GamePlayer[]) => void;
+  setPlayers: (value: PlayerType[]) => void;
   setFields: (value: FieldType[]) => void;
   setGameDuration: (value: number) => void;
   setFinish: (value: boolean) => void;

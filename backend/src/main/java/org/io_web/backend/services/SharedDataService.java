@@ -2,7 +2,6 @@ package org.io_web.backend.services;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientPool;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +17,7 @@ public class SharedDataService {
 
     private final ClientPool clientPool = new ClientPool();
 
+    @Setter
+    private Settings settings;
 
 }

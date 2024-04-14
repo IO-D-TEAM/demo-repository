@@ -1,13 +1,13 @@
 import React from "react";
+import { PlayerType } from "../../../interfaces/GameViewInterfaces/PlayerType";
 import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 import Field from "../Field/Field";
 import Timer from "../Timer/Timer";
 import "./Board.css";
-import { GamePlayer } from "../../../interfaces/GameViewInterfaces/GamePlayer";
 
 interface Props {
   fields: FieldType[];
-  players: GamePlayer[];
+  players: PlayerType[];
   rows: number;
   columns: number;
 }

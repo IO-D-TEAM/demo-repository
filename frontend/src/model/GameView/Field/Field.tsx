@@ -1,11 +1,11 @@
 import React from "react";
-import { GamePlayer } from "../../../interfaces/GameViewInterfaces/GamePlayer";
+import { PlayerType } from "../../../interfaces/GameViewInterfaces/PlayerType";
 import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 import { useGameStore } from "../GameStore/GameStore";
 import "./Field.css";
 
 interface Props {
-  players: GamePlayer[];
+  players: PlayerType[];
   field: FieldType;
 }
 
@@ -13,27 +13,18 @@ const Field = (props: Props) => {
   const { boardSize } = useGameStore((state) => state);
 
   const getColor = () => {
-    if (props.field.position === boardSize - 1) {
-      return "#DACC3E";
-    }
+    if (props.field.position === boardSize - 1) return "#DACC3E";
 
-    if (props.field.isSpecial) return "#DF3030";
+    if (props.field.speciality === "SPECIAL") return "#DF3030";
 
-    return props.field.position % 2 === 1 ? "#6db922" : "#c6c5c5";
-  };
-
-  const getBorder = () => {
-    if (props.field.position % 2 === 1 && props.field.isSpecial) {
-      return "5px solid #6db922";
-    }
-    return "none";
+    return props.field.speciality === "QUESTION" ? "#6db922" : "#c6c5c5";
   };
 
   const FieldStyle: React.CSSProperties = {
-    border: getBorder(),
     background: getColor(),
     gridRow: props.field.row,
     gridColumn: props.field.column,
+    flexDirection: props.field.row % 2 === 1 ? "column" : "row",
   };
 
   return (
