@@ -115,7 +115,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
 
   const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if(error == "")
-      service.saveChanges();
+      service.saveChanges();      
   });
 
   const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
