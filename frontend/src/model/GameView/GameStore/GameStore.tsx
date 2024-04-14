@@ -1,6 +1,6 @@
 import React from "react";
 import { create } from "zustand";
-import { Player } from "../../../interfaces/GameViewInterfaces/Player";
+import { PlayerType } from "../../../interfaces/GameViewInterfaces/PlayerType";
 import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 import { GameState } from "../../../interfaces/GameViewInterfaces/GameState";
 
@@ -13,7 +13,7 @@ const useGameStore = create<GameState> ((set) => ({
     boardSize: 0,
     rows: 0,
     columns: 14,
-    setPlayers: (list: Player[]) => set((state) => ({
+    setPlayers: (list: PlayerType[]) => set((state) => ({
         players: list
     })),
     setFields: (list: FieldType[]) => set((state) => ({
