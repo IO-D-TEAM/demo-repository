@@ -1,13 +1,12 @@
 import React, { FC, useRef } from "react";
 import Button from '@mui/material/Button';
 import QuestionValidationService from "../../../../services/QuestionsCreating/QuestionValidator";
-import {QuestionInterface} from "./../../../../interfaces/QuestionInterfaces/Question"
-import { useQuestionService }  from './../../../../services/QuestionsCreating/QuestionsCreatingService';
+import { QuestionInterface } from "./../../../../interfaces/QuestionInterfaces/Question";
+import { useQuestionService } from './../../../../services/QuestionsCreating/QuestionsCreatingService';
 
-interface QuestionImporterProp {
-}
+interface QuestionImporterProps {}
 
-export const QuestionImporter: FC<QuestionImporterProp> = () => {
+export const QuestionImporter: FC<QuestionImporterProps> = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const questionService = useQuestionService(); // Access the QuestionService instance
 
@@ -16,19 +15,19 @@ export const QuestionImporter: FC<QuestionImporterProp> = () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const content = e.target?.result as string;
-                const questions: QuestionInterface[] = parseJSON(content);
-                
-                try{
-                  QuestionValidationService.validateSet(questions);
-                } catch(error){
-                  if(error instanceof Error)
-                    alert(error.message)
-                  return;
+                try {
+                    if (!e.target?.result) {
+                        throw new Error('No content found');
+                    }
+                    const content = e.target.result as string;
+                    const questions = parseJSON(content);
+                    QuestionValidationService.validateSet(questions);
+                    questionService.setQuestions(questions);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        alert(error.message);
+                    }
                 }
-
-                questionService.setQuestions(questions);
-
             };
             reader.readAsText(file);
         }
@@ -43,7 +42,7 @@ export const QuestionImporter: FC<QuestionImporterProp> = () => {
             return jsonData as QuestionInterface[];
         } catch (error) {
             console.error('Error parsing JSON:', error);
-            return [];
+            throw new Error('Invalid JSON format');
         }
     };
 
@@ -56,11 +55,12 @@ export const QuestionImporter: FC<QuestionImporterProp> = () => {
     return (
         <div>
             <input type="file" hidden ref={fileInputRef} onChange={fileUploadInputChange} />
-            <Button 
-              fullWidth
-              sx={{marginTop:"10px"}}
-              color="secondary"
-              variant="contained" onClick={fileUploadAction}>
+            <Button
+                fullWidth
+                sx={{ marginTop: "10px" }}
+                color="secondary"
+                variant="contained"
+                onClick={fileUploadAction}>
                 Import Questions
             </Button>
         </div>
