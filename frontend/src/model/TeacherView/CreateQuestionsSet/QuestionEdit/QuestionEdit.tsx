@@ -49,10 +49,10 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
         QuestionValidationService.validateQuestion(question, questionService.getQuestions());
         setError("");
       } catch(error){
-        if(error instanceof Error)
+        if(error instanceof Error){
           setError(error.message);
+        }
       }
-
       setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
@@ -109,17 +109,23 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   });
 
   const handleButtonClick = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
-    if (buttonIndex != null) 
-      setButtonClicked(index === buttonIndex);
+    console.log(buttonClicked && buttonIndex === index, buttonClicked, !buttonClicked)
+    if(buttonClicked && buttonIndex === index)
+      setButtonClicked(false)
+    else if(buttonClicked)
+      setButtonClicked(buttonClicked);
     else 
-      setButtonClicked(false);
+      setButtonClicked(!buttonClicked);
     
+
     setButtonIndex(index);
+    console.log(buttonClicked && index === buttonIndex )
   });
 
   const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) : void => {
-    if(error === "")
-      questionService.saveChanges();      
+    if(error === "" && questionService.getActualIndex() == -1)
+      questionService.saveChanges(); 
+
   });
 
   const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
@@ -130,6 +136,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     if(index === checked)
       changeChecked(0, question.answers[0] ? question.answers[0] as string : ""); // Set first answer as correct
 
+    setButtonClicked(false);
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
     });
 
@@ -167,9 +174,8 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
               />
 
               <OutlinedInput 
-              disabled={!(!buttonClicked && index === buttonIndex )}
+              disabled={!(buttonClicked && index === buttonIndex )}
               fullWidth
-              id="outlined-disabled"
               value={answer}
               onChange={(event) => handleAnswerChange(event, index)} // handleAnswerChange function to handle answer changes
 
@@ -184,10 +190,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
                   </IconButton>
                 </InputAdornment>
               }
-              aria-describedby="outlined-weight-helper-text"
-              inputProps={{
-                'aria-label': 'weight',
-              }}
+              
             />
 
             </div>
@@ -196,18 +199,16 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
         <hr style={{ marginTop: '30px' }} />
           <OutlinedInput sx ={{marginTop: '10px'}}
             key={rerenderKey}
-            itemID='newAnswerValue'
             fullWidth
             placeholder='Wpisz swoją odpowiedź'
             id="outlined-adornment-weight"
             onChange={handleNewAnswerChange}
-            aria-describedby="outlined-weight-helper-text"
             inputProps={{
               'aria-label': 'weight',
             }}
           />    
           { error &&(
-            <FormHelperText error >
+            <FormHelperText sx={{color: "#CD5C5C", fontWeight: "bold"}} >
               {error}
             </FormHelperText>
           )}

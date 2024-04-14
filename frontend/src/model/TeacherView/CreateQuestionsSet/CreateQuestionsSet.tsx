@@ -21,7 +21,7 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         className="reactComponent"
         sx={{
           width: '32%',
-          height: '700px'
+          height: '670px'
         }}
       >
         <QuestionBoard />

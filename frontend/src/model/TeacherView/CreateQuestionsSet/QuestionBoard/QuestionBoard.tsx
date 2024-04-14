@@ -106,7 +106,7 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
             }>
             <ListItemButton 
               onClick={() => handleListItemClick(index)}
-              selected={index === selectedIndex}
+              selected={index == questionService.getActualIndex()}
             >
               <ListItemText 
                 className="questionBoardItem"
