@@ -18,3 +18,19 @@ export const connectToTheGame = async (
       console.log(`Couldn't proccess player. Status: ${error}`);
     });
 };
+
+export const getPlayerById = async (
+  gmaeCode: string | undefined,
+  id: string | undefined
+): Promise<Player> => {
+  return await fetch(`/userView/${gmaeCode}/${id}`)
+    .then((response) => response.json())
+    .then((response: Player) => {
+      console.log(response);
+      return response;
+    })
+    .catch((error: any) => {
+      console.log(error.message);
+      throw new Error(error.message);
+    });
+};

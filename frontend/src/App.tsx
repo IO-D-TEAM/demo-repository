@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import BoardView from "./model/BoardView/BoardView";
@@ -12,6 +11,7 @@ import Lobby from "./model/Lobby/Lobby";
 import CreateQuestionsSet from "./model/TeacherView/CreateQuestionsSet/CreateQuestionsSet";
 import Results from "./model/TeacherView/Results/Results";
 import GameView from "./model/GameView/GameView";
+import WaitingScreen from "./model/UserView/WaitingScreen/WaitingScreen";
 
 function App() {
   return (
@@ -29,7 +29,11 @@ function App() {
           <Route path="/userView" element={<UserView />} />
           <Route path="/userView/answerQuestion" element={<AnswerQuestion />} />
           <Route path="/userView/joinGame/:gameCode" element={<JoinGame />} />
-          <Route path="/userView/move" element={<Move />} />
+          <Route path="/userView/move/:gameCode/:id" element={<Move />} />
+          <Route
+            path="/userView/waitingRoom/:gameCode/:id"
+            element={<WaitingScreen />}
+          />
           <Route path="/board" element={<BoardView />} />
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/gameView" element={<GameView />} />

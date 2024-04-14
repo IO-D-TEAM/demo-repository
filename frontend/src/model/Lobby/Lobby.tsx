@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import SettingForm from "../SettingForm/SettingForm";
 import QRCode from "react-qr-code";
 import ClearIcon from "@mui/icons-material/Clear";
-import { error } from "console";
 
 interface LobbyProps {}
 

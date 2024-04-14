@@ -49,10 +49,8 @@ public class GameController {
         this.communicationService = communicationService;
         this.dataService = sharedDataService;
         this.gameEngine = gameEngine;
-
         this.dataService.setGameCode(generateGameCode());
     }
-
 
     /**
      * Returns generated game code
@@ -73,7 +71,6 @@ public class GameController {
 
         return stringBuilder.toString();
     }
-
 
     /**
      * Returns information if game with code is existing.
@@ -168,29 +165,6 @@ public class GameController {
         // nauczyciel
         this.communicationService.sendMessageToLobby(this.dataService.getClientPool());
         return response;
-    }
-
-
-    /**
-     * Handles situation when client is observing the game. Provide user with information
-     * about questions, dice throwing etc.
-     *
-     * @param gameCode Unique game identifier
-     * @param clientID Unique user identifier
-     * @return ResponseEntity wih HttpStatus and Game Data.
-     */
-    @GetMapping("{gameCode}/{clientID}")
-    public ResponseEntity<Object> attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
-
-        if (!gameCode.equals(this.dataService.getGameCode()))
-            return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
-
-        Client client = this.dataService.getClientPool().getClientById(clientID);
-
-        if (client == null)
-            return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-
-        return ResponseFactory.createResponse(HttpStatus.OK, client);
     }
 
     /**
