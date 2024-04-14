@@ -15,12 +15,13 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
 
   return ( 
     <QuestionServiceProvider>
+      <div className="body" >
       <div className="mainControler" >
         <Box 
         className="reactComponent"
         sx={{
           width: '32%',
-          marginBottom: '20px' // Adding margin between components
+          height: '700px'
         }}
       >
         <QuestionBoard />
@@ -46,6 +47,7 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         <QuestionImporter ></QuestionImporter>
 
       </Box>
+      </div>
       </div>
     </QuestionServiceProvider>
   )
