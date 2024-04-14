@@ -73,14 +73,14 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
     });
 
   return (
-    <div style={{overflow: "auto"}}>
+    <div >
       <Button
         variant="contained"
         color="primary"
         onClick={handleNewQuestion} // Add a function to handle adding a new question
         sx={{ 
-          marginTop: '10px', 
-          width: '100%' }}
+          width: '100%',
+        }}
       >
         Dodaj nowe pytanie
       </Button>
@@ -88,9 +88,12 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
       <List
         key={rerenderKey} // Use the service as key to force re-render when it changes
         sx={{ 
-          position: 'relative',
+          // position: 'relative',
+          marginTop: '5px',
+          paddinngTop: '5px',
           overflow: 'auto',
-          maxHeight: 950, }}
+          maxHeight: '620px'
+        }}
         aria-label="contacts"
       >
         {questions.map((question, index) => (

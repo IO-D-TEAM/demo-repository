@@ -21,7 +21,7 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         className="reactComponent"
         sx={{
           width: '32%',
-          overflow: "auto",
+          // overflow: "auto",
           height: '670px'
         }}
       >
