@@ -72,6 +72,7 @@ const GameView = () => {
 
         client.connect({}, () => {
             client.subscribe(`/move`, (notification) => {
+                setConnected(true);
                 const message: BoardMessage = JSON.parse(notification.body);
                 updateBoard(message);
             });
