@@ -31,7 +31,7 @@ export const QuestionExporter: FC<QuestionExporterProps> = ({service}) => {
     
 
     return (
-        <Button // TODO EXPORT QUESTIONS
+        <Button 
           fullWidth
           variant="contained"
           color="secondary"

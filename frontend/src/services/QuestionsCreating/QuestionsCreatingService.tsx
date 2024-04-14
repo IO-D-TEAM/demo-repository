@@ -1,8 +1,10 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { QuestionInterface } from "../../interfaces/QuestionInterfaces/Question";
 import Popup from "./../../model/Popup/Popup";
 import QuestionValidationService from "./QuestionValidator";
 import { error } from "console";
+
+type SubscriberCallback = (data: any) => void;
 
 /*{ 
     Centralized service to handle all question-related methods na utilities
@@ -10,11 +12,11 @@ import { error } from "console";
 }*/ 
 export default class QuestionService {
     private questions: QuestionInterface[] = [];
-    private subscribers: Function[] = [];
+    private subscribers: { callback: SubscriberCallback, dataIdentifier: string }[] = [];
     private index: number = 0;
     private unsavedChanges: boolean = false;
 
-
+    // Empty template for question creating 
     private actualQuestion: QuestionInterface = {
         question: "Wpisz swoje pytanie!",
         correctAnswer: "",
@@ -31,18 +33,23 @@ export default class QuestionService {
         this.questions.push(question);
         this.setActualQuestion(question, 0);
     }
-
-    // Notify about change
-    private notifySubscribers() {
-        this.subscribers.forEach(subscriber => subscriber(this.actualQuestion));
+    
+    notifySubscribers(): void {
+        this.subscribers.forEach(subscriber => {
+            if (subscriber.dataIdentifier === "question")
+                subscriber.callback(this.actualQuestion);
+            
+            if (subscriber.dataIdentifier === "questions")
+                subscriber.callback(this.questions);
+        });
     }
 
-    subscribe(callback: () => void) {
-        this.subscribers.push(callback);
+    subscribe(callback: SubscriberCallback, dataIdentifier: string): void {
+        this.subscribers.push({ callback, dataIdentifier });
     }
 
-    unsubscribe(callback: Function) {
-        this.subscribers = this.subscribers.filter(subscriber => subscriber !== callback);
+    unsubscribe(callback: SubscriberCallback): void {
+        this.subscribers = this.subscribers.filter(subscriber => subscriber.callback !== callback);
     }
 
     getQuestions(): QuestionInterface[] {
@@ -113,6 +120,7 @@ export default class QuestionService {
     updateCorrectAnswer(correctAnswer: string) : void {
         this.actualQuestion.correctAnswer = correctAnswer;
         this.notifySubscribers();
+        this.notifySubscribers();
     }
 
     updateQuestionAnswers(newAnswers: string[]) : void {
@@ -132,7 +140,16 @@ export default class QuestionService {
     removeQuestion(question: QuestionInterface) : void {
         if(question === this.actualQuestion){
             this.questions.splice(this.questions.indexOf(question), 1)
-            this.setActualQuestion(this.questions[0], 0);
+
+            if(this.questions.length == 0) // Mock question when ther is no questions in array
+                this.setActualQuestion({
+                    question: "What is the capital of France?",
+                    correctAnswer: "Paris",
+                    answers: ["Paris", "Berlin", "London", "Madrid"]
+                }, 0)
+            else
+                this.setActualQuestion(this.questions[0], 0);
+
             this.notifySubscribers();
             return;
         }

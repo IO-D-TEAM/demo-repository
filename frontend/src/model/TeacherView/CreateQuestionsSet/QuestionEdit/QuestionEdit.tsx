@@ -14,7 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { OutlinedInput, FormHelperText } from '@mui/material';
-import { set } from 'react-hook-form';
 import QuestionValidationService from '../../../../services/QuestionsCreating/QuestionValidator';
 
 interface QuestionEditProps {
@@ -23,10 +22,11 @@ interface QuestionEditProps {
 
 export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
 
-  const [question, setQuestion] = useState<QuestionInterface | null | undefined>({
-      question: "What is the capital of France?",
-      correctAnswer: "Paris",
-      answers: ["Paris", "Berlin", "London", "Madrid"]
+  // Mock Question
+  const [question, setQuestion] = useState<QuestionInterface>({
+    question: "What is the capital of France?",
+    correctAnswer: "Paris",
+    answers: ["Paris", "Berlin", "London", "Madrid"]
   });
 
   const [checked, setChecked] =  useState<number | null>(null);
@@ -40,15 +40,15 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
       and gets actual edited question. Main functionality is 
       to subscribe service to know when edited question is changed.   */}
 
-  useEffect(() => {
-    const handleActualQuestionChange = () => {
+  useEffect(()  => {
+    const handleActualQuestionChange = (question: QuestionInterface) => {
       setNewAnswerValue("Wpisz swoją odpowiedź");
-      setQuestion(service.getActualQuestion());
-      setChecked(service.getActualQuestion().answers.indexOf(service.getActualQuestion().correctAnswer));
-      setError("");
+      setQuestion(question);
+      setChecked(question.answers.indexOf(question.correctAnswer));
 
       try{
-        QuestionValidationService.validateQuestion(service.getActualQuestion(), service.getQuestions());
+        QuestionValidationService.validateQuestion(question, service.getQuestions());
+        setError("");
       } catch(error){
         if(error instanceof Error)
           setError(error.message);
@@ -57,78 +57,78 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
       setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
-    service.subscribe(handleActualQuestionChange);
+    service.subscribe(handleActualQuestionChange, "question");
 
     return () => {
       service.unsubscribe(handleActualQuestionChange);
     };
   }, [service]);
 
-  {/* Update question, change current question answers to new ones */}
-  const handleAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-
-    const newAnswers = [...(question?.answers || [])]; // Get CURRENT question answers
-    newAnswers[index] = event.target.value; // Change it with value of new one
-    service.updateQuestionAnswers(newAnswers); // Update question answers with new ones
+  {/* Update question, change current question answers to new */}
+  const handleAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) :void => {
+    question.answers[index] = event.target.value;
+    service.updateQuestionAnswers(question.answers); // Update question answers with new ones
 
     if(checked == index)
       service.updateCorrectAnswer(event.target.value);
 
-    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
+    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: question.answers })) // Re-render answers on page
   });
 
   {/* Update question, change current questions to new*/}
-  const handleQeustionChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newQuestion = event.target.value; // New question value
-    service.updateQuestionValue(newQuestion); // Update current edited question with new valu
-    setQuestion(prevQuestion => ({ ...prevQuestion!, question: newQuestion })); // Re-render question on page
+  const handleQeustionChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) :void => {
+    service.updateQuestionValue(event.target.value); // Update current edited question with new value
+    setQuestion(prevQuestion => ({ ...prevQuestion!, question: event.target.value })); // Re-render question on page
   });
 
   {/* Update correct answer */}
-  const changeChecked = ((index: number, answer: string) => {
+  const changeChecked = ((index: number, answer: string) : void => {
     service.updateCorrectAnswer(answer);
     setChecked(index);
   });
 
-  const handleNewAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if(service.getActualQuestion().answers.length >= 4)
+  const handleNewAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) :void => {
+    if(service.getActualQuestion().answers.length >= 4){
+      setError("Maksymalna liczba odpowiedzi wynosi 4!");
       return;
+    }
 
-    if(service.getActualQuestion().answers.indexOf(newAnswerValue) != -1)
+    if(service.getActualQuestion().answers.indexOf(newAnswerValue) != -1){
+      setError("Ta odpowiedź już istnieje!")
       return;
+    }
 
     const newAnswers = [...(question?.answers || []), newAnswerValue]; // Get CURRENT question answers
-    setNewAnswerValue("Please, enter new answer")
     service.updateQuestionAnswers(newAnswers); // Update question answers with new ones
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
   });
 
-  const handleButtonClick = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
-    if(index == buttonIndex && buttonIndex!= null) 
-      setButtonClicked(!buttonClicked);
-
-    if(buttonIndex == null)
-      setButtonClicked(false)
-
+  const handleButtonClick = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
+    if (buttonIndex != null) 
+      setButtonClicked(index === buttonIndex);
+    else 
+      setButtonClicked(false);
+    
     setButtonIndex(index);
   });
 
-  const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) : void => {
     if(error == "")
       service.saveChanges();      
   });
 
-  const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+  const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
     const newAnswers = [...(question?.answers || [])]; 
     newAnswers.splice(index, 1);
     service.updateQuestionAnswers(newAnswers); // Update question answers with new ones    
-    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
 
     if(index == checked)
-      changeChecked(0, question?.answers[0] ? question.answers[0] as string : "");  
+      changeChecked(0, question.answers[0] ? question.answers[0] as string : ""); // Set first answer as correct
+
+    setQuestion(prevQuestion => ({ ...prevQuestion!, answers: newAnswers })) // Re-render answers on page
     });
 
-  const handleNewAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleNewAnswerChange = ((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) : void => {
     setNewAnswerValue(event.target.value);
   })
 
@@ -195,7 +195,6 @@ export const QuestionEdit: FC<QuestionEditProps> = ({service})  => {
             itemID='newAnswerValue'
             fullWidth
             placeholder='Wpisz swoją odpowiedź'
-            error={newAnswerValue?.trim() === ''}
             id="outlined-adornment-weight"
             onChange={handleNewAnswerChange}
             aria-describedby="outlined-weight-helper-text"
