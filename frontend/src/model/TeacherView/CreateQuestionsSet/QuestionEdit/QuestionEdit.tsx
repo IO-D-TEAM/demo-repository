@@ -41,12 +41,16 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (
-      mewQuestion: QuestionInterface ) => {
-        setQuestion(mewQuestion);
-        setChecked(mewQuestion.answers.indexOf(mewQuestion.correctAnswer));
+      newQuestion: QuestionInterface ) => {
+
+        if(question.question !== newQuestion.question)
+          setButtonClicked(false);
+
+        setQuestion(newQuestion);
+        setChecked(newQuestion.answers.indexOf(newQuestion.correctAnswer));
 
         try{
-          QuestionValidationService.validateQuestion(mewQuestion, questionService.getQuestions());
+          QuestionValidationService.validateQuestion(newQuestion, questionService.getQuestions());
           setError("");
         } catch(error){
           if(error instanceof Error){
