@@ -209,6 +209,26 @@ public class GameController {
         this.gameEngine.playerAnswered(answer);
         return ResponseFactory.createResponse(HttpStatus.ACCEPTED, client);
     }
+    /**
+     * Handles situation when client is observing the game. Provide user with information
+     * about questions, dice throwing etc.
+     *
+     * @param gameCode Unique game identifier
+     * @param clientID Unique user identifier
+     * @return ResponseEntity wih HttpStatus and Game Data.
+     */
+    @GetMapping("/{gameCode}/{clientID}")
+    public ResponseEntity<Object> getPlayerData(@PathVariable String gameCode, @PathVariable String clientID) {
+        if (!gameCode.equals(this.dataService.getGameCode()))
+            return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
+
+        Client client = this.dataService.getClientPool().getClientById(clientID);
+
+        if (client == null)
+            return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+
+        return ResponseFactory.createResponse(HttpStatus.OK, client);
+    }
 
     /**
      * Update players statuses when game status is changed.

@@ -23,7 +23,7 @@ export const getPlayerById = async (
   gmaeCode: string | undefined,
   id: string | undefined
 ): Promise<Player> => {
-  return await fetch(`/userView/${gmaeCode}/${id}`)
+  return await fetch(`/game/${gmaeCode}/${id}`)
     .then((response) => response.json())
     .then((response: Player) => {
       console.log(response);
