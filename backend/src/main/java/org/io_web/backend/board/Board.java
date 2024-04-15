@@ -2,7 +2,11 @@ package org.io_web.backend.board;
 
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents state of the board.
@@ -26,8 +30,12 @@ public class Board {
         // from which special fields will be selected
         ArrayList<Integer> fieldIndexPool = new ArrayList<>();
         for (int i = 1; i < sizeOfBoard - 1; ++i) {
-            if (i % 2 == 1) path.set(i, Field.QUESTION);
-            else fieldIndexPool.add(i);
+            if (i % 2 == 1) {
+                path.set(i, Field.QUESTION);
+            }
+            else {
+                fieldIndexPool.add(i);
+            }
         }
 
         // assuming correct special field quantity,
