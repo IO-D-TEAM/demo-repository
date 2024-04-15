@@ -30,6 +30,8 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
   }
   useEffect(() => {
     const handleQuestionChanges = (questions: QuestionInterface[]) => {
+      if(questions == questions && selectedIndex == questionService.getActualIndex())
+        return;
       setQuestions(questions);
       setSelectedIndex(questionService.getActualIndex());
       setRerenderKey((prevKey) =>

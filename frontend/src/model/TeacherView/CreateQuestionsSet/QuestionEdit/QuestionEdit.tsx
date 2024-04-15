@@ -42,7 +42,6 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   useEffect(()  => {
     const handleActualQuestionChange = (
       question: QuestionInterface ) => {
-        setNewAnswerValue("Wpisz swoją odpowiedź");
         setQuestion(question);
         setChecked(question.answers.indexOf(question.correctAnswer));
 
@@ -54,8 +53,8 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
             setError(error.message);
           }
         }
-        setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
 
+        setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
       };
 
     questionService.subscribe(handleActualQuestionChange, "question");
@@ -75,11 +74,11 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
       return;
     }
 
-    question.answers[index] = event.target.value;
-    questionService.updateQuestionAnswers(question.answers); // Update question answers with new ones
-
     if(checked === index)
       questionService.updateCorrectAnswer(event.target.value);
+    
+    question.answers[index] = event.target.value;
+    questionService.updateQuestionAnswers(question.answers); // Update question answers with new ones
 
     setQuestion(prevQuestion => ({ ...prevQuestion!, answers: question.answers })) // Re-render answers on page
   });
