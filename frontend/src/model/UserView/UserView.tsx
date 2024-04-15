@@ -7,6 +7,7 @@ import Move from "./Move/Move";
 interface UserViewProps {}
 
 const UserView: FC<UserViewProps> = () => (
+
   <div className="main">
     UserView Component
     <br />

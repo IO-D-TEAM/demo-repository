@@ -24,7 +24,7 @@ function App() {
           <Route path="/teacherView/createQuestions" element={<CreateQuestionsSet/>}/>
           <Route path="/teacherView/results" element={<Results/>}/>
           <Route path="/userView" element={<UserView/>}/>
-          <Route path="/userView/answerQuestion" element={<AnswerQuestion/>}/>
+          <Route path="/userView/answerQuestion/:clientId/:gameId" element={<AnswerQuestion />} />
           <Route path="/userView/joinGame" element={<JoinGame/>}/>
           <Route path="/userView/move" element={<Move/>}/>
           <Route path="/board" element={<BoardView/>}/>
