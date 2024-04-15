@@ -18,9 +18,9 @@ interface QuestionServiceProviderProps {
 }
 
 const mockQuestion: QuestionInterface = {
-    question: "What is the capital of France?",
-    correctAnswer: "Paris",
-    answers: ["Paris", "Berlin", "London", "Madrid"]
+    question: "Przykładowe pytanie",
+    correctAnswer: "Odpowiedź 1",
+    answers: ["Odpowiedź 1", "Odpowiedź 2", "Odpowiedź 3", "Odpowiedź 4"]
 }
 
 const initialState: QuestionInterface[] = [
@@ -74,12 +74,8 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
     }
 
     const getActualQuestion = (): QuestionInterface => {
-        if(actualQuestion == null){
-            return {
-                question: "What is the capital of France?",
-                correctAnswer: "Paris",
-                answers: ["Paris", "Berlin", "London", "Madrid"]
-            };
+        if(actualQuestion == null || questions.length === 0){
+            return mockQuestion;
         }
         return actualQuestion;
     }
@@ -162,12 +158,13 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
         } else {
             const updatedQuestions = [...questions];
             updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
-            setQuestions(updatedQuestions);
-        }
 
-        if(questions.length == 0){
-            setQuestions([mockQuestion]);
-            setActualQuestion(mockQuestion, 0);
+            if(questions.length == 0){
+                setQuestions([mockQuestion]);
+                setActualQuestion(mockQuestion, 0);
+            } else {
+                setQuestions(updatedQuestions);
+            }
         }
 
     };

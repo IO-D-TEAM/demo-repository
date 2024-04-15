@@ -23,9 +23,9 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
 
   // Mock Question
   const [question, setQuestion] = useState<QuestionInterface>({
-    question: "What is the capital of France?",
-    correctAnswer: "Paris",
-    answers: ["Paris", "Berlin", "London", "Madrid"]
+    question: "Przykładowe Pytanie",
+    correctAnswer: "Odpowiedź 1",
+    answers: ["Odpowiedź 1", "Odpowiedź 2", "Odpowiedź 3", "Odpowiedź 4"]
   });
 
   const [checked, setChecked] =  useState<number | null>(null);
@@ -123,6 +123,15 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   });
 
   const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) : void => {
+    try{
+      QuestionValidationService.validateQuestion(question, questionService.getQuestions());
+      setError("");
+    } catch(error){
+      if(error instanceof Error){
+        setError(error.message);
+      }
+    }
+
     if(error === "" && questionService.getActualIndex() == -1)
       questionService.saveChanges(); 
 
