@@ -24,19 +24,20 @@ const mockQuestion: QuestionInterface = {
 }
 
 const initialState: QuestionInterface[] = [
-    mockQuestion
-]; // Your initial questions data
-
+    
+];
 
 // Main service functionality
 export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = ({ children }) => {
     const [questions, setQuestionsValue] = useState<QuestionInterface[]>(initialState); // Your initial questions data
-    const [actualQuestion, setActualQuestionValue] = useState<QuestionInterface>(mockQuestion); // Your initial questions data
-    const [index, setIndex] = useState<number>(0);
+    const [actualQuestion, setActualQuestionValue] = useState<QuestionInterface>(structuredClone(mockQuestion)); // Your initial questions data
+    const [index, setIndex] = useState<number>(-1);
 
     let subscribers: { callback: SubscriberCallback, dataIdentifier: string }[] = [];
 
     useEffect(() => {
+        if(questions.length === 0)
+            setActualQuestionValue(structuredClone(mockQuestion));
         notifySubscribers();
     }, [questions, actualQuestion]);
 
@@ -74,39 +75,35 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
     }
 
     const getActualQuestion = (): QuestionInterface => {
-        if(actualQuestion == null || questions.length === 0){
-            return mockQuestion;
-        }
+        if(actualQuestion == null || questions.length === 0)
+            return structuredClone(mockQuestion);
+        
         return actualQuestion;
     }
 
     const saveChanges = () : void  => {
+        if(!checkIfQuestionExists(actualQuestion)) // If question exist, ignore it
+            questions.push(structuredClone(actualQuestion));
 
-        if(index == -1)
-            questions.push(actualQuestion);
-
-        setIndex(questions.indexOf(actualQuestion));
+        notifySubscribers();
     }
 
     const setQuestions = (newQuestions: QuestionInterface[]): void  => {
         setQuestionsValue(newQuestions);
-        setActualQuestion(questions[0], 0);
+
+        if(newQuestions.length == 0)
+            setActualQuestion(structuredClone(mockQuestion), -1);
+
     }
 
     const addQuestion = () : void => {
-        const question: QuestionInterface = {
-            question: "Wpisz swoje pytanie!",
-            correctAnswer: "",
-            answers: []
-        };
-
-        if(index === -1){
+        if(index == -1){
             notifySubscribers();
             return;
         }
 
         setIndex(-1);
-        setActualQuestionValue(question);
+        setActualQuestionValue(structuredClone(mockQuestion));
     }
 
     const updateCorrectAnswer = (correctAnswer: string) : void => {
@@ -120,6 +117,15 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
         }
     }
 
+    const checkIfQuestionExists = (question: QuestionInterface) : boolean => {
+
+        if(questions.length == 0)
+            return false;
+
+        let copiedQuestions = [...questions]; // Create a copy of the original array
+        return copiedQuestions.findIndex(q => q.question === question.question) !== -1;
+    }
+
     const updateQuestionAnswers = (newAnswers: string[]) : void => {
         setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, answers: newAnswers}))
         if (index !== -1 && questions.length > index) {
@@ -129,13 +135,12 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
                 return updatedQuestions;
             });
         }
-
-        // if(actualQuestion.answers.length == 1)
-        //     setActualQuestionValue(prevQuestion => ({ ...prevQuestion!, correctAnswer: newAnswers[0]}))
     }
 
     const updateQuestionValue = (newQuestion: string) : void => {
-        if (index !== -1 && questions.length > index) {
+        console.log(newQuestion, actualQuestion, index);
+
+        if (index != -1) {
             setQuestionsValue(prevQuestions => {
                 const updatedQuestions = [...prevQuestions];
                 updatedQuestions[index].question = newQuestion;
@@ -147,26 +152,17 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
     }
 
     const removeQuestion = (question: QuestionInterface): void => {
-        if (question === actualQuestion) {
-            const updatedQuestions = [...questions];
-            updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
+        const updatedQuestions = [...questions];
+        const questionIndex = questions.indexOf(question);
+        updatedQuestions.splice(questionIndex, 1);
+        console.log("Correct", updatedQuestions);
+        setQuestions(updatedQuestions);
 
-            if (updatedQuestions.length !== 0)
-                setActualQuestion(updatedQuestions[0], 0);
-
-            setQuestions(updatedQuestions);
-        } else {
-            const updatedQuestions = [...questions];
-            updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
-
-            if(questions.length == 0){
-                setQuestions([mockQuestion]);
-                setActualQuestion(mockQuestion, 0);
-            } else {
-                setQuestions(updatedQuestions);
-            }
+        if(question == actualQuestion){
+            setActualQuestion( structuredClone(mockQuestion), -1);
+        } else if(questionIndex< index ){
+            setIndex(index-1);
         }
-
     };
 
     const service: QuestionService = {

@@ -37,13 +37,14 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   const questionService = useQuestionService(); // Access the QuestionService instance
 
   /* Subscribeses for changes in QuestionService, 
-      and gets actual edited question. Main functionality is 
-      to subscribe service to know when edited question is changed.   */
+    and gets actual edited question. Main functionality is 
+    to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (question: QuestionInterface) => {
       setNewAnswerValue("Wpisz swoją odpowiedź");
       setQuestion(question);
       setChecked(question.answers.indexOf(question.correctAnswer));
+      setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
 
       try{
         QuestionValidationService.validateQuestion(question, questionService.getQuestions());
@@ -53,7 +54,6 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
           setError(error.message);
         }
       }
-      setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
     };
 
     questionService.subscribe(handleActualQuestionChange, "question");
@@ -129,11 +129,12 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     } catch(error){
       if(error instanceof Error){
         setError(error.message);
+        setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
+        return;
       }
     }
 
-    if(error === "" && questionService.getActualIndex() == -1)
-      questionService.saveChanges(); 
+    questionService.saveChanges(); 
 
   });
 
