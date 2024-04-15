@@ -1,5 +1,5 @@
 import React from "react";
-import { Player } from "../../../interfaces/GameViewInterfaces/Player";
+import { PlayerType } from "../../../interfaces/GameViewInterfaces/PlayerType";
 import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 import Field from "../Field/Field";
 import Timer from "../Timer/Timer";
@@ -8,7 +8,7 @@ import "./Board.css";
 
 interface Props {
     fields: FieldType[];
-    players: Player[];
+    players: PlayerType[];
     rows: number;
     columns: number;
 }
