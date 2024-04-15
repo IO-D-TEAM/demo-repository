@@ -155,9 +155,7 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
             const updatedQuestions = [...questions];
             updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
 
-            if (updatedQuestions.length === 0)
-                setActualQuestion(mockQuestion, 0);
-            else 
+            if (updatedQuestions.length !== 0)
                 setActualQuestion(updatedQuestions[0], 0);
 
             setQuestions(updatedQuestions);
@@ -166,6 +164,12 @@ export const QuestionServiceProvider: React.FC<QuestionServiceProviderProps> = (
             updatedQuestions.splice(updatedQuestions.indexOf(question), 1);
             setQuestions(updatedQuestions);
         }
+
+        if(questions.length == 0){
+            setQuestions([mockQuestion]);
+            setActualQuestion(mockQuestion, 0);
+        }
+
     };
 
     const service: QuestionService = {

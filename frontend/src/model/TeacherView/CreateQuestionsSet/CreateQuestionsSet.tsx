@@ -20,9 +20,7 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
         <Box 
         className="reactComponent"
         sx={{
-          width: '32%',
-          // overflow: "auto",
-          height: '670px'
+          width: '29%',
         }}
       >
         <QuestionBoard />
@@ -31,16 +29,17 @@ export const CreateQuestionsSet: FC<CreateQuestionsSetProps> = () => {
       <Box
         className="reactComponent"
         sx={{
-          width: '32%',
+          width: '29%',
         }}
       >
         <QuestionEdit />
       </Box>
 
       <Box
-        className="reactComponent"
+        className="reactComponent buttonsController"
         sx={{
-          width: '30%',
+          width: '29%',
+          height: '670px'
         }}
       >
       
