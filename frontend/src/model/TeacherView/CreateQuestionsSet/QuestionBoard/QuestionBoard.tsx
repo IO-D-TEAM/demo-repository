@@ -116,12 +116,13 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
           >
             <ListItemButton
               onClick={() => handleListItemClick(index)}
-              autoFocus={index == questionService.getActualIndex()}
+              // autoFocus={index == questionService.getActualIndex()}
               selected={index == questionService.getActualIndex()}
             >
               <ListItemText
                 className="questionBoardItem"
                 primary={question.question}
+                
                 style={{
                   color: simpleValidate(question, questions) ? "green" : "red",
                 }}
