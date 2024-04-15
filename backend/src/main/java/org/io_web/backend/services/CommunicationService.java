@@ -4,10 +4,10 @@ import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.client.TaskWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.lang.model.type.PrimitiveType;
 import java.io.Serializable;
 
 /**
@@ -19,6 +19,8 @@ public class CommunicationService {
 
     private final SimpMessagingTemplate template;
 
+    private boolean confirmation = false;
+
     @Autowired
     public CommunicationService(@Qualifier("mySimpMessagingTemplate") SimpMessagingTemplate template) {
         this.template = template;
@@ -29,10 +31,29 @@ public class CommunicationService {
      * it on our own.
      */
     public void sendMessageToClient(String clientId, Object message) {
+        confirmation = false;
         if(message instanceof TaskWrapper taskWrapper)
             template.convertAndSend("/client/" + clientId, taskWrapper.serialize());
         else if(message instanceof Serializable)
             template.convertAndSend("/client/" + clientId, message);
+    }
+
+    @MessageMapping("/client/confirmation")
+    public void receiveConfirmFromClient(String message){
+        confirmation = true;
+        notifyAll();
+    }
+
+
+    public boolean waitForConfirm(){
+        if (confirmation) return true;
+        try {
+            wait(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return confirmation;
+
     }
 
     public void sendMessageToLobby(Object message){

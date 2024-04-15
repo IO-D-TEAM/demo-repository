@@ -78,14 +78,12 @@ public class GameEngine {
         if (gameFinished) {
             setGameStatus(GameStatus.ENDED);
         }
-
-
-
         String[] answers = { "a", "b" };
         currentQuestion = new Question("xd?", answers, answers[0]);
         currentTask = PlayerTask.ANSWERING_QUESTION;
         this.controller.sendQuestion();
-        this.controller.updateTeachersView(newPos - oldPos);
+
+        this.controller.updateTeachersView(newPos - oldPos, gameFinished);
     }
 
     public void playerAnswered(Answer answer){
@@ -96,7 +94,7 @@ public class GameEngine {
     }
 
     // game stages
-    public void start() {
+    public void setup() {
         if (playersList.size() < 2) {
             return;
         }// informacja o niepowodzeniu
@@ -107,26 +105,36 @@ public class GameEngine {
 
         questionIterator = questions.iterator();
 
-        nextTurn();
     }
 
     // method to change players, inform server
-    public void nextTurn() {
+    public void run() {
         // reset turn if ended
-        if (!playerIterator.hasNext()) {
-            playerIterator = playersList.iterator();
+        boolean recieved;
+        while (this.gameStatus == GameStatus.PENDING) {
+            if (!playerIterator.hasNext()) {
+                playerIterator = playersList.iterator();
+            }
+            if (!questionIterator.hasNext()) {
+                questionIterator = questions.iterator();
+            }
+
+            currentMovingPlayer = playerIterator.next();
+            currentTask = PlayerTask.THROWING_DICE;
+
+            Random random = new Random();
+            diceRoll = random.nextInt(6) + 1;
+
+            recieved = controller.informClientOfHisTurn(diceRoll);
+            if(!recieved) continue;
+            diceRollOutcome(diceRoll);
+
+
         }
-        if (!questionIterator.hasNext()) {
-            questionIterator = questions.iterator();
-        }
+    }
 
-        currentMovingPlayer = playerIterator.next();
-        currentTask = PlayerTask.THROWING_DICE;
+    public void endGame(){
 
-        Random random = new Random();
-        diceRoll = random.nextInt(6) + 1;
-
-        this.controller.informClientOfHisTurn(diceRoll);
     }
 
     public String getCurrentMovingPlayerId() {

@@ -266,14 +266,15 @@ public class GameController {
      *
      * @param diceRoll Question dice roll
      */
-    public void informClientOfHisTurn(int diceRoll) {
+    public boolean informClientOfHisTurn(int diceRoll) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) return;
+        if (clientID == null) return false;
 
         PlayerTask currentTask = this.gameEngine.getCurrentTask();
         TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
 
         this.communicationService.sendMessageToClient(clientID, task);
+        return communicationService.waitForConfirm();
     }
 
     /**
@@ -290,13 +291,13 @@ public class GameController {
         this.communicationService.sendMessageToClient(clientID, task);
     }
 
-    public void updateTeachersView(int playerMove) {
+    public void updateTeachersView(int playerMove, boolean endingMove) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         if (clientID == null) return;
 
         Question currentQuestion = gameEngine.getCurrentQuestion();
 
-        BoardMessage message = new BoardMessage(clientID, playerMove, currentQuestion);
+        BoardMessage message = new BoardMessage(clientID, playerMove, currentQuestion, endingMove);
         this.communicationService.sendMessageToBoard(message);
     }
 
@@ -332,6 +333,13 @@ public class GameController {
     private String generateRandomColor() {
         Color playerColor = new Color((int) (Math.random() * 0x1000000));
         return String.format("rgb(%d, %d, %d)", playerColor.getRed(), playerColor.getGreen(), playerColor.getBlue());
+    }
+
+    @PostMapping("/endGame")
+    public ResponseEntity<String> endGame(){
+//        gameEngine.stop();
+        gameStatusChanged();
+        return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
     @GetMapping("/mock")

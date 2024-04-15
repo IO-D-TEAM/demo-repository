@@ -7,9 +7,12 @@ public class BoardMessage {
     private final int positionChange;
     private final Question question;
 
-    public BoardMessage(String clientID, int positionChange, Question question) {
+    private final boolean endingMove;
+
+    public BoardMessage(String clientID, int positionChange, Question question, boolean endingMove) {
         this.clientID = clientID;
         this.positionChange = positionChange;
         this.question = question;
+        this.endingMove = endingMove;
     }
 }
