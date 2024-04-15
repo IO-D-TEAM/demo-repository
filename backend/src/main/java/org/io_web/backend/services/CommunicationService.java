@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.lang.model.type.PrimitiveType;
 import java.io.Serializable;
+
 
 /**
  * This is to provide centralized place to handle
@@ -29,17 +29,21 @@ public class CommunicationService {
      * it on our own.
      */
     public void sendMessageToClient(String clientId, Object message) {
-        if(message instanceof TaskWrapper taskWrapper)
+        if(message instanceof TaskWrapper taskWrapper) {
             template.convertAndSend("/client/" + clientId, taskWrapper.serialize());
-        else if(message instanceof Serializable)
+        }
+        else if(message instanceof Serializable) {
             template.convertAndSend("/client/" + clientId, message);
+        }
     }
 
     public void sendMessageToLobby(Object message){
-        if(message instanceof ClientPool clientPool)
+        if(message instanceof ClientPool clientPool) {
             template.convertAndSend("/lobby/players", clientPool.serialize());
-        else if(message instanceof Serializable)
+        }
+        else if(message instanceof Serializable) {
             template.convertAndSend("/lobby/players", message);
+        }
     }
 
     public void sendMessageToBoard(Object message) {
