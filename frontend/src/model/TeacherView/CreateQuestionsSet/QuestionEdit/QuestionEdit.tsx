@@ -41,12 +41,12 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (
-      question: QuestionInterface ) => {
-        setQuestion(question);
-        setChecked(question.answers.indexOf(question.correctAnswer));
+      mewQuestion: QuestionInterface ) => {
+        setQuestion(mewQuestion);
+        setChecked(mewQuestion.answers.indexOf(mewQuestion.correctAnswer));
 
         try{
-          QuestionValidationService.validateQuestion(question, questionService.getQuestions());
+          QuestionValidationService.validateQuestion(mewQuestion, questionService.getQuestions());
           setError("");
         } catch(error){
           if(error instanceof Error){
@@ -64,6 +64,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     };
   }, [questionService]);
 
+
   /* Update question, change current question answers to new */
   const handleAnswerChange = ((
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -76,7 +77,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
 
     if(checked === index)
       questionService.updateCorrectAnswer(event.target.value);
-    
+
     question.answers[index] = event.target.value;
     questionService.updateQuestionAnswers(question.answers); // Update question answers with new ones
 
@@ -113,7 +114,6 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   });
 
   const handleButtonClick = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
-    console.log(buttonClicked && buttonIndex === index, buttonClicked, !buttonClicked)
     if(buttonClicked && buttonIndex === index)
       setButtonClicked(false)
     else if(buttonClicked)
@@ -121,9 +121,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     else 
       setButtonClicked(!buttonClicked);
     
-
     setButtonIndex(index);
-    console.log(buttonClicked && index === buttonIndex )
   });
 
   const saveChanges = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) : void => {

@@ -32,6 +32,7 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
     const handleQuestionChanges = (questions: QuestionInterface[]) => {
       if(questions == questions && selectedIndex == questionService.getActualIndex())
         return;
+      
       setQuestions(questions);
       setSelectedIndex(questionService.getActualIndex());
       setRerenderKey((prevKey) =>
@@ -118,7 +119,7 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
           >
             <ListItemButton
               onClick={() => handleListItemClick(index)}
-              // autoFocus={index == questionService.getActualIndex()}
+              autoFocus={index == questionService.getActualIndex()}
               selected={index == questionService.getActualIndex()}
             >
               <ListItemText
