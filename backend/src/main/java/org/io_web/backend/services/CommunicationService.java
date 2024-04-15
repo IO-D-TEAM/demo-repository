@@ -35,7 +35,7 @@ public class CommunicationService {
             template.convertAndSend("/client/" + clientId, message);
     }
 
-    public void sendMessageToLobby(Object message){
+    public void sendMessageToLobby(Object message) {
         if(message instanceof ClientPool clientPool)
             template.convertAndSend("/lobby/players", clientPool.serialize());
         else if(message instanceof Serializable)

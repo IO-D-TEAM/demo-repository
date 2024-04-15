@@ -193,7 +193,7 @@ public class GameController {
      * @return ResponseEntity wih HttpStatus and Game Data.
      */
     @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
+    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
 
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
@@ -207,7 +207,7 @@ public class GameController {
             return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
 
         this.gameEngine.playerAnswered(answer);
-        return ResponseFactory.createResponse(HttpStatus.ACCEPTED, client);
+        return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
     }
     /**
      * Handles situation when client is observing the game. Provide user with information

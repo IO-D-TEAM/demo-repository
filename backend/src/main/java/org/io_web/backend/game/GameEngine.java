@@ -88,7 +88,7 @@ public class GameEngine {
         this.controller.updateTeachersView(newPos - oldPos);
     }
 
-    public void playerAnswered(Answer answer){
+    public void playerAnswered(String answer){
         //TODO: handle the answer
 
         currentMovingPlayer = null;

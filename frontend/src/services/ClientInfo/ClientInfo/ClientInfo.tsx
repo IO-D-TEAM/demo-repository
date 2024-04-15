@@ -34,3 +34,23 @@ export const getPlayerById = async (
       throw new Error(error.message);
     });
 };
+
+export const sendAnswer = async (
+  answer: string,
+  gameCode: string | undefined,
+  id: string | undefined
+) => {
+  return await fetch(`/game/${gameCode}/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json", // Poprawiono typ danych na application/json
+    },
+    body: JSON.stringify({ gameCode: gameCode, clientID: id, answer: answer }),
+  })
+    .then((response: any) => {
+      return response.json();
+    })
+    .catch((error: any) => {
+      console.log(`Couldn't proccess player's answer. Status: ${error}`);
+    });
+};

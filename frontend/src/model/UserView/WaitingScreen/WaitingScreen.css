@@ -16,6 +16,7 @@
 .msg {
   padding: 1rem;
   background-color: rgba(212, 17, 17, 0.6);
+  margin-bottom: 1rem;
 }
 
 .waiting-gif {
@@ -25,4 +26,15 @@
 
 img {
   width: 100%;
+}
+
+.form {
+  background-color: rgba(212, 17, 17, 0.6);
+  padding: 1rem;
+}
+
+.dice {
+  background-color: rgba(212, 17, 17, 0.4);
+  padding: 2rem;
+  font-size: 10rem;
 }
