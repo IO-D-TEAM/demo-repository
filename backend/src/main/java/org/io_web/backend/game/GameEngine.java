@@ -129,14 +129,14 @@ public class GameEngine extends Thread{
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) continue;
                 diceRollOutcome(diceRoll);
+
             } catch (InterruptedException e) {
                 this.gameStatus = GameStatus.ENDED;
+                currentMovingPlayer = null;
+                currentTask = PlayerTask.IDLE;
+                currentQuestion = null;
             }
         }
-
-    }
-
-    public void endGame(){
 
     }
 

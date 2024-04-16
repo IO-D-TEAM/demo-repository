@@ -337,7 +337,7 @@ public class GameController {
 
     @PostMapping("/endGame")
     public ResponseEntity<String> endGame(){
-        gameEngine.stop();
+        gameEngine.interrupt();
         gameStatusChanged();
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
