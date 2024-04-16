@@ -226,9 +226,9 @@ public class GameController {
      * @return ResponseEntity wih HttpStatus and Game Data.
      * @method POST
      */
-    @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
-
+    @PostMapping("{gameCode}/{clientID}/dice")
+    public ResponseEntity<Object> rolledDice(@PathVariable String gameCode, @PathVariable String clientID) {
+        System.out.println("[GAME CONTROLLER] DICE ROOL");
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
 
@@ -247,6 +247,30 @@ public class GameController {
 //            this.gameEngine.playerAnswered(answer);
             return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
         }
+    }
+
+    @PostMapping("{gameCode}/{clientID}/answer")
+    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
+        System.out.println("[GAME CONTROLLER] Answer Question");
+
+        if (!gameCode.equals(this.dataService.getGameCode()))
+            return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
+
+        Client client = this.dataService.getClientPool().getClientById(clientID);
+
+        if (client == null)
+            return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+
+        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId())))
+            return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
+
+//        if (communicationService.isConfirmation()) return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+//        synchronized (this.communicationService) {
+//            communicationService.setConfirmation(true);
+//            communicationService.notifyAll();
+////            this.gameEngine.playerAnswered(answer);
+//            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+//        }
     }
 
     /**

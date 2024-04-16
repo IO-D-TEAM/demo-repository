@@ -99,14 +99,27 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   };
 
   //szczerze to nie mam pojęcia czy to działa, ale jakby coś się jebało na backu to pewnie przez to ;3 pozdro
-  const sendConfirmation = () => {
-    if (stompClient !== null) {
-      stompClient?.send(
-        "client/confirmation",
-        {},
-        JSON.stringify({ confirm: true })
-      );
-    }
+  const sendConfirmation = async ()  => {
+    // if (stompClient !== null) {
+    //   stompClient?.send(
+    //     "client/confirmation",
+    //     {},
+    //     JSON.stringify({ confirm: true })
+    //   );
+    // }
+    return await fetch(`/game/${gameCode}/${plyaer?.id}/dice`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Poprawiono typ danych na application/json
+      },
+      body: JSON.stringify({}),
+    })
+      .then((response: any) => {
+        return response.json();
+      })
+      .catch((error: any) => {
+        console.log(`Couldn't proccess player. Status: ${error}`);
+      });
   };
 
   return (
