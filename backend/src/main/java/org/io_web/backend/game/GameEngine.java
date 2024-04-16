@@ -106,12 +106,15 @@ public class GameEngine extends Thread{
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
+        System.out.println("[ENGINE] Setting up completed");
     }
 
     // method to change players, inform server
     public void run() {
         // reset turn if ended
+        System.out.println("[ENGINE] Start game");
         while (this.gameStatus == GameStatus.PENDING) {
+
             try {
                 if (!playerIterator.hasNext()) {
                     playerIterator = playersList.iterator();
@@ -122,12 +125,13 @@ public class GameEngine extends Thread{
 
                 currentMovingPlayer = playerIterator.next();
                 currentTask = PlayerTask.THROWING_DICE;
-
+                System.out.println("[ENGINE] New Turn player id: " + currentMovingPlayer.getId());
                 Random random = new Random();
                 diceRoll = random.nextInt(6) + 1;
 
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) continue;
+                System.out.println("[ENGINE] dice rolled: " + diceRoll);
                 diceRollOutcome(diceRoll);
 
             } catch (InterruptedException e) {
