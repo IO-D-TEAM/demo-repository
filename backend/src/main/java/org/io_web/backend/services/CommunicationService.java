@@ -40,18 +40,17 @@ public class CommunicationService {
 
     @MessageMapping("/client/confirmation")
     public void receiveConfirmFromClient(String message){
-        confirmation = true;
-        notifyAll();
+        if (confirmation) return;
+        synchronized (this) {
+            confirmation = true;
+            this.notifyAll();
+        }
     }
 
 
-    public boolean waitForConfirm(){
+    public boolean waitForConfirm() throws InterruptedException{
         if (confirmation) return true;
-        try {
-            wait(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        wait(10000);
         return confirmation;
 
     }

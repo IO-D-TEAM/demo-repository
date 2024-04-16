@@ -266,7 +266,7 @@ public class GameController {
      *
      * @param diceRoll Question dice roll
      */
-    public boolean informClientOfHisTurn(int diceRoll) {
+    public boolean informClientOfHisTurn(int diceRoll) throws InterruptedException {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         if (clientID == null) return false;
 
@@ -337,7 +337,7 @@ public class GameController {
 
     @PostMapping("/endGame")
     public ResponseEntity<String> endGame(){
-//        gameEngine.stop();
+        gameEngine.stop();
         gameStatusChanged();
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }

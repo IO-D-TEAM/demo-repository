@@ -20,7 +20,7 @@ import java.util.Random;
  */
 
 @Component
-public class GameEngine {
+public class GameEngine extends Thread{
     @Getter
     private Board board;
 
@@ -42,6 +42,8 @@ public class GameEngine {
     private int diceRoll = 0;
     private Iterator<Player> playerIterator;
     private final GameController controller;
+
+
 
     @Autowired
     public GameEngine(GameController controller) {
@@ -104,33 +106,34 @@ public class GameEngine {
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
-
     }
 
     // method to change players, inform server
     public void run() {
         // reset turn if ended
-        boolean recieved;
         while (this.gameStatus == GameStatus.PENDING) {
-            if (!playerIterator.hasNext()) {
-                playerIterator = playersList.iterator();
+            try {
+                if (!playerIterator.hasNext()) {
+                    playerIterator = playersList.iterator();
+                }
+                if (!questionIterator.hasNext()) {
+                    questionIterator = questions.iterator();
+                }
+
+                currentMovingPlayer = playerIterator.next();
+                currentTask = PlayerTask.THROWING_DICE;
+
+                Random random = new Random();
+                diceRoll = random.nextInt(6) + 1;
+
+                boolean received = controller.informClientOfHisTurn(diceRoll);
+                if (!received) continue;
+                diceRollOutcome(diceRoll);
+            } catch (InterruptedException e) {
+                this.gameStatus = GameStatus.ENDED;
             }
-            if (!questionIterator.hasNext()) {
-                questionIterator = questions.iterator();
-            }
-
-            currentMovingPlayer = playerIterator.next();
-            currentTask = PlayerTask.THROWING_DICE;
-
-            Random random = new Random();
-            diceRoll = random.nextInt(6) + 1;
-
-            recieved = controller.informClientOfHisTurn(diceRoll);
-            if(!recieved) continue;
-            diceRollOutcome(diceRoll);
-
-
         }
+
     }
 
     public void endGame(){
