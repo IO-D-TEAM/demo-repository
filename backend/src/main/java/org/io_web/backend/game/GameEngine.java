@@ -55,11 +55,11 @@ public class GameEngine {
     }
 
 
-    public void addPlayer(String id, String nickname) {
+    public void addPlayer(String id, String nickname, String color) {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id, nickname);
+        Player newPlayer = new Player(0, 0, id, nickname, color);
         playersList.add(newPlayer);
     }
 
