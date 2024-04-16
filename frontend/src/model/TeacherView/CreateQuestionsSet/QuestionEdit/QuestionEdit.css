@@ -1,0 +1,13 @@
+.mainBox {
+  flex-grow: 1
+}
+
+.answerField { 
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.deleteButton {
+  margin-top: 50px;
+}

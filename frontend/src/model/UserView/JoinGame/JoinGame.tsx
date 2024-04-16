@@ -1,3 +1,4 @@
+
 import React, { FC, useState, useEffect } from "react";
 import { connectToTheGame } from "../../../services/ClientInfo/ClientInfo/ClientInfo";
 import JoinForm from "../JoinForm/JoinForm";
