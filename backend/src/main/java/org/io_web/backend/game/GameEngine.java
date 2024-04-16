@@ -96,7 +96,9 @@ public class GameEngine extends Thread{
     }
 
     // game stages
-    public void setup() {
+
+    // method to change players, inform server
+    public void run() {
         if (playersList.size() < 2) {
             return;
         }// informacja o niepowodzeniu
@@ -107,10 +109,8 @@ public class GameEngine extends Thread{
 
         questionIterator = questions.iterator();
         System.out.println("[ENGINE] Setting up completed");
-    }
 
-    // method to change players, inform server
-    public void run() {
+        controller.gameStatusChanged();
         // reset turn if ended
         System.out.println("[ENGINE] Start game");
         while (this.gameStatus == GameStatus.PENDING) {
