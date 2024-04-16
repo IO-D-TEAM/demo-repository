@@ -253,7 +253,7 @@ public class GameController {
      * @param clientID Unique user identifier
      * @return ResponseEntity wih HttpStatus and Game Data.
      */
-    @GetMapping("/{gameCode}/{clientID}")
+    @GetMapping("/{gameCode}/client/{clientID}")
     public ResponseEntity<Object> getPlayerData(@PathVariable String gameCode, @PathVariable String clientID) {
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
