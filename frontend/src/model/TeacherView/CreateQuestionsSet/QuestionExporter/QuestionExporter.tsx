@@ -15,7 +15,7 @@ export const QuestionExporter: FC<QuestionExporterProps> = () => {
           QuestionValidationService.validateSet(questionService.getQuestions())
         } catch(error){
           if(error instanceof Error)
-            alert(error.message)
+            alert(error.message) 
           return;
         }
 
