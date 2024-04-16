@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ public class LobbyController {
 
     @PostMapping("/settings")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings) {
+        System.out.println("normalnych " + settings.getNormalFields());
         dataService.setSettings(settings);
         System.out.println(dataService.getSettings());
         return ResponseFactory.simpleResponse(HttpStatus.OK);

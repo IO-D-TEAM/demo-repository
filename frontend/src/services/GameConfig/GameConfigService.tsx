@@ -4,7 +4,7 @@ import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
 export const GetGameConfig = async (): Promise<GameConfig> => {
   // Getting mock data for now
   // To get real data just swap mock with settings
-  return await fetch("/game/mock")
+  return await fetch("/game/settings")
     .then((response) => response.json())
     .then((data: GameConfig) => {
       return data;
