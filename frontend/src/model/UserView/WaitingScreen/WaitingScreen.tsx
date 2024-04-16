@@ -92,7 +92,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   const handleRollDiceClick = () => {
     setShowRollDice(true);
     setTimeout(() => {
-      setShowQuestion(false);
+      // setShowQuestion(false);
       setShowDiceResult(true);
       sendConfirmation();
     }, 1000);

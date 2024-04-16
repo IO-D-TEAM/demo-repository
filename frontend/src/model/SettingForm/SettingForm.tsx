@@ -98,7 +98,7 @@ const SettingForm: FC<SettingFormProps> = () => {
               error={!!errors.timeForGame}
               helperText={errors.timeForGame?.message}
             />
-            <TextField
+            {/* <TextField
               type="file"
               label="Wybierz plik"
               InputLabelProps={{ shrink: true }} // Potrzebne, aby etykieta TextField nie zachowywała się dziwnie w przypadku input typu file
@@ -108,7 +108,7 @@ const SettingForm: FC<SettingFormProps> = () => {
               error={!!errors.questionsFile}
               helperText={errors.questionsFile?.message}
               inputProps={{ multiple: false, accept: ".json" }}
-            ></TextField>
+            ></TextField> */}
             <Button type="submit" variant="contained" color="primary">
               zapisz
             </Button>

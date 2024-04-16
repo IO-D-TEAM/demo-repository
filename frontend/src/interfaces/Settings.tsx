@@ -4,5 +4,5 @@ export interface Settings {
   specialFields: number;
   timeForAnswer: number;
   timeForGame: number;
-  questionsFile: File;
+  // questionsFile: File;
 }
