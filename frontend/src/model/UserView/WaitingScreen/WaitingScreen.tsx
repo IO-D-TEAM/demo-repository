@@ -54,6 +54,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
         } else if (notification.task === "ANSWERING_QUESTION") {
           setQuestion(notification.question);
           setShowQuestion(true);
+          setShowDiceResult(true);
         } else {
           setRollingDice(false);
         }
@@ -91,7 +92,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   const handleRollDiceClick = () => {
     setShowRollDice(true);
     setTimeout(() => {
-      // setShowQuestion(true);
+      setShowQuestion(false);
       setShowDiceResult(true);
       sendConfirmation();
     }, 1000);
