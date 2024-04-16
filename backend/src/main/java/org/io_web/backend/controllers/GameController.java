@@ -11,7 +11,6 @@ import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
 import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.game.GameStatus;
-import org.io_web.backend.questions.Answer;
 import org.io_web.backend.questions.Question;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
@@ -50,18 +49,16 @@ public class GameController {
      * and generate & set new Game Code
      *
      * @param communicationService - WebSocket communication service
-     * @param sharedDataService - Service for data exchange between controllers
-     * @param gameEngine - Game Engine (Lazy initialize to break the cycle)
+     * @param sharedDataService    - Service for data exchange between controllers
+     * @param gameEngine           - Game Engine (Lazy initialize to break the cycle)
      */
     @Autowired
     public GameController(CommunicationService communicationService, SharedDataService sharedDataService, @Lazy GameEngine gameEngine) {
         this.communicationService = communicationService;
         this.dataService = sharedDataService;
         this.gameEngine = gameEngine;
-
         this.dataService.setGameCode(generateGameCode());
     }
-
 
     /**
      * Returns generated game code
@@ -83,13 +80,12 @@ public class GameController {
         return stringBuilder.toString();
     }
 
-
     /**
      * Returns information if game with code is existing.
      *
-     * @method GET
      * @param gameCode - Unique game identifier
      * @return - ResponseEntity with HttpStatus and answer
+     * @method GET
      */
     @GetMapping("{gameCode}/join_game")
     public ResponseEntity<String> mainPage(@PathVariable String gameCode) {
@@ -103,39 +99,38 @@ public class GameController {
     /**
      * Returns valid join game link
      *
-     * @method GET
      * @return ResponseEntity with valid link or error message
      *
      * <p>>Method is iterating over all network interfaces in computer.
      * Then it iterate over all NI's addresses. If one address is in correct form
      * could be valid address we test it with api call.
+     * @method GET
      */
     @GetMapping({"get_url"})
-    public ResponseEntity<String> getGameUrl(){
+    public ResponseEntity<String> getGameUrl() {
         String joinGameUrl = NetworkUtils.createUrl(this.dataService.getGameCode());
 
-        if(joinGameUrl != null) {
+        if (joinGameUrl != null) {
             return ResponseFactory.createResponse(HttpStatus.OK, joinGameUrl);
         }
 
         return ResponseFactory.createResponse(HttpStatus.SERVICE_UNAVAILABLE, "Message unavailable!");
     }
 
-
     /**
      * Handles the process of a client joining a game session.
      *
-     * @method POST
-     * @param gameCode Unique game identifier
+     * @param gameCode  Unique game identifier
      * @param newClient Client object representing new client attempting to join.
      * @return ResponseEntity wih HttpStatus and additional data.
      *
-     *  <p>The method handles scenarios based on game status:<ul>
-     *  <li> If the game is in lobby, check if nick is available </li>
-     *  <li> If the game is pending then: <ul>
-     *      <li> Reconnect client if client was disconnected during the game </li>
-     *      <li> Add player as spectator if lobby is not full </li>
-     *  </ul></ul>
+     * <p>The method handles scenarios based on game status:<ul>
+     * <li> If the game is in lobby, check if nick is available </li>
+     * <li> If the game is pending then: <ul>
+     * <li> Reconnect client if client was disconnected during the game </li>
+     * <li> Add player as spectator if lobby is not full </li>
+     * </ul></ul>
+     * @method POST
      */
     @PostMapping("{gameCode}/join_game")
     public ResponseEntity<Object> joinGame(@PathVariable String gameCode, @RequestBody Client newClient) {
@@ -161,12 +156,10 @@ public class GameController {
                         response = ResponseFactory.createResponse(HttpStatus.OK, prevClient);
                         reconnected = true;
 
-                    }
-                    else {
+                    } else {
                         return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Nickname already in use");
                     }
-                }
-                else if (this.maxPlayers == this.dataService.getClientPool().getClients().size() ) {
+                } else if (this.maxPlayers == this.dataService.getClientPool().getClients().size()) {
                     return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Lobby full");
                 }
                 newClient.setStatus(ClientStatus.SPECTATOR);
@@ -181,10 +174,8 @@ public class GameController {
 
         // nauczyciel
         this.communicationService.sendMessageToLobby(this.dataService.getClientPool());
-
         return response;
     }
-
 
     /**
      * Handles situation when client is observing the game. Provide user with information
@@ -213,8 +204,8 @@ public class GameController {
     /**
      * Returns Game Code
      *
-     * @method GET
      * @return ResponseEntity wih HttpStatus and Game Data.
+     * @method GET
      */
     @GetMapping("/gamecode")
     public String showGeneratedCode() {
@@ -225,14 +216,14 @@ public class GameController {
      * Handles client answer during game session.
      * <p> Verifies all necessary data
      *
-     * @method POST
      * @param gameCode Unique game identifier
      * @param clientID Unique user identifier
-     * @param answer Class representing Client Answer
+     * @param answer   Class representing Client Answer
      * @return ResponseEntity wih HttpStatus and Game Data.
+     * @method POST
      */
     @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
+    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
 
         if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
@@ -249,16 +240,39 @@ public class GameController {
         }
 
         this.gameEngine.playerAnswered(answer);
-        return ResponseFactory.createResponse(HttpStatus.ACCEPTED, client);
+        return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+    }
+
+    /**
+     * Handles situation when client is observing the game. Provide user with information
+     * about questions, dice throwing etc.
+     *
+     * @param gameCode Unique game identifier
+     * @param clientID Unique user identifier
+     * @return ResponseEntity wih HttpStatus and Game Data.
+     */
+    @GetMapping("/{gameCode}/client/{clientID}")
+    public ResponseEntity<Object> getPlayerData(@PathVariable String gameCode, @PathVariable String clientID) {
+        if (!gameCode.equals(this.dataService.getGameCode())) {
+            return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
+        }
+
+        Client client = this.dataService.getClientPool().getClientById(clientID);
+
+        if (client == null) {
+            return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
+        }
+
+        return ResponseFactory.createResponse(HttpStatus.OK, client);
     }
 
     /**
      * Update players statuses when game status is changed.
      */
-    public void gameStatusChanged(){
+    public void gameStatusChanged() {
         if (gameEngine.getGameStatus() != GameStatus.PENDING) {
-            for(Client client : this.dataService.getClientPool().getClients()){
-                if(client.getStatus() == ClientStatus.LOST_CONNECTION ) {
+            for (Client client : this.dataService.getClientPool().getClients()) {
+                if (client.getStatus() == ClientStatus.LOST_CONNECTION) {
                     this.dataService.getClientPool().removeClient(client);
                     this.gameEngine.removePlayer(client.getId());
                 }
@@ -266,8 +280,8 @@ public class GameController {
         }
 
         if (gameEngine.getGameStatus() == GameStatus.LOBBY) {
-            for(Client client : this.dataService.getClientPool().getClients()){
-                if(client.getStatus() == ClientStatus.SPECTATOR ) {
+            for (Client client : this.dataService.getClientPool().getClients()) {
+                if (client.getStatus() == ClientStatus.SPECTATOR) {
                     client.setStatus(ClientStatus.SPECTATOR);
                     this.gameEngine.addPlayer(client.getId(), client.getNickname());
                 }
@@ -287,7 +301,7 @@ public class GameController {
         }
 
         PlayerTask currentTask = this.gameEngine.getCurrentTask();
-        TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
+        TaskWrapper task = new TaskWrapper(null, diceRoll, currentTask);
 
         this.communicationService.sendMessageToClient(clientID, task);
     }
@@ -304,7 +318,7 @@ public class GameController {
             return;
         }
 
-        TaskWrapper task =  new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
+        TaskWrapper task = new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
         this.communicationService.sendMessageToClient(clientID, task);
     }
 
@@ -320,7 +334,7 @@ public class GameController {
         this.communicationService.sendMessageToBoard(message);
     }
 
-    public final ArrayList<Question> getQuestions(){
+    public final ArrayList<Question> getQuestions() {
         return dataService.getSettings().getQuestions();
     }
 

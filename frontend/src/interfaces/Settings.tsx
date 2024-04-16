@@ -4,6 +4,5 @@ export interface Settings {
   specialFields: number;
   timeForAnswer: number;
   timeForGame: number;
-  questionsSet: string;
-  boardPattern: number;
+  questionsFile: File;
 }

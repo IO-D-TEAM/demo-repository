@@ -45,4 +45,10 @@ public class LobbyController {
 
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
+
+    @PostMapping("/deletePlayer")
+    public ResponseEntity<String> deletePlayer(@RequestBody Client client) {
+        this.dataService.getClientPool().removeClient(client);
+        return ResponseFactory.simpleResponse(HttpStatus.OK);
+    }
 }
