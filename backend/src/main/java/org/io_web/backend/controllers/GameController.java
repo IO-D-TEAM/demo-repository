@@ -334,9 +334,9 @@ public class GameController {
         this.communicationService.sendMessageToBoard(message);
     }
 
-    public final ArrayList<Question> getQuestions() {
-        return dataService.getSettings().getQuestions();
-    }
+//    public final ArrayList<Question> getQuestions() {
+//        return dataService.getSettings().getQuestions();
+//    }
 
     @GetMapping("/settings")
     public ResponseEntity<Object> getBoardConfiguration() {
