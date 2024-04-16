@@ -62,9 +62,10 @@ export const QuestionServiceProvider: React.FC<
 
   useEffect(() => {
     // display mock question when there is no questions 
-    if (questions.length === 0 && index != -1)
+    if (questions.length === 0 && index != -1){
       setActualQuestionValue(structuredClone(mockQuestion));
-
+      setIndex(-1);
+    }
     notifySubscribers();
   }, [questions, actualQuestion]);
 
@@ -135,8 +136,6 @@ export const QuestionServiceProvider: React.FC<
 
     if (newQuestions.length == 0)
       setActualQuestion(structuredClone(mockQuestion), -1);
-    else 
-      setActualQuestion(newQuestions[0], 0);
 
     notifySubscribers();
   };
