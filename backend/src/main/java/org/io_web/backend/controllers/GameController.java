@@ -342,6 +342,14 @@ public class GameController {
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
+    @PostMapping("/startGame")
+    public ResponseEntity<String> startGame() {
+        gameEngine.setup();
+        gameStatusChanged();
+        gameEngine.start();
+        return ResponseFactory.simpleResponse(HttpStatus.OK);
+    }
+
     @GetMapping("/mock")
     public ResponseEntity<Object> getMockBoardConfiguration() {
         // For now frontend uses this endpoint because configuration form at the moment is outdated
