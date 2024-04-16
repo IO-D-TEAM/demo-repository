@@ -42,7 +42,7 @@ public class NetworkUtils {
                                 HttpResponse<String> response = HttpClient.newHttpClient()
                                         .send(request, HttpResponse.BodyHandlers.ofString());
                                 if (response.statusCode() == 200) {
-                                    return "http://" + ipAddress + ":3000/userView/joinGame?gameCode=" + gameCode;
+                                    return "http://" + ipAddress + ":3000/userView/joinGame/" + gameCode;
                                 }
                             } catch (IOException | InterruptedException e) {
                                 return valid_url;

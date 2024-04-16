@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import Stomp from 'stompjs'
 import SockJS from 'sockjs-client'
+import { useParams } from 'react-router';
 
 interface JoinGameProps {}
 
@@ -9,6 +10,7 @@ const JoinGame: FC<JoinGameProps> = () => {
   const [nickname, setNickname] = useState('');
   const [clientId, setClientId] = useState('');
   const [stompClient, setStompClient] = useState<Stomp.Client>()
+  const { gamecode_id } = useParams();
 
   const WS_URL = "http://localhost:8080/ws"
   useEffect(() => {
@@ -57,6 +59,9 @@ const JoinGame: FC<JoinGameProps> = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div>
+        KOD GRY: {gamecode_id}
+      </div>
       <label>
         Kod gry: 
         <input
