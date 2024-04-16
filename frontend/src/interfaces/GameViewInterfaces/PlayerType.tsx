@@ -1,9 +1,9 @@
-interface Player {
-    id: number;
+interface PlayerType {
+    id: string;
     position: number;
     nickname: string;
     color: string;
 }
 
 
-export type { Player }
+export type { PlayerType }
