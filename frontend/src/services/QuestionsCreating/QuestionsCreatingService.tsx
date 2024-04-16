@@ -36,6 +36,13 @@ const mockQuestion: QuestionInterface = {
   answers: ["Odpowiedź 1", "Odpowiedź 2", "Odpowiedź 3", "Odpowiedź 4"],
 };
 
+const emptyQuestion: QuestionInterface = {
+  question: "Wpisz swoje pytanie",
+  correctAnswer: "",
+  answers: [],
+};
+
+
 const initialState: QuestionInterface[] = [];
 
 // Main service functionality
@@ -96,7 +103,7 @@ export const QuestionServiceProvider: React.FC<
 
   const getActualQuestion = (): QuestionInterface => {
     if (actualQuestion == null || questions.length === 0)
-      return structuredClone(mockQuestion);
+      return structuredClone(emptyQuestion);
 
     return actualQuestion;
   };
@@ -118,12 +125,13 @@ export const QuestionServiceProvider: React.FC<
 
   const addQuestion = (): void => {
     if (index == -1) {
+      setActualQuestionValue(structuredClone(emptyQuestion));
+      setActualQuestionValue(structuredClone(emptyQuestion));
       notifySubscribers();
       return;
     }
 
     setIndex(-1);
-    setActualQuestionValue(structuredClone(mockQuestion));
   };
 
   const updateCorrectAnswer = (correctAnswer: string): void => {
