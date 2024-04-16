@@ -1,11 +1,11 @@
-import { Player } from "./Player";
+import { PlayerType } from "./PlayerType";
 
 
 interface GameConfig {
     gameDuration: number;
     boardSize: number;
-    fieldSpeciality: boolean[];
-    players: Player[];
+    fieldSpeciality: string[];
+    players: PlayerType[];
 }
 
 

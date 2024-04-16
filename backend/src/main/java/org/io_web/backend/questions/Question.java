@@ -1,19 +1,17 @@
 package org.io_web.backend.questions;
 
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Class prepared to keep question, 4 possible answers, and correct answer
  */
 
 public class Question implements Serializable {
-    private String question;
-    private String[] answers;
-    private String correctAnswer;
+    private final String question;
+    private final String[] answers;
+    private final String correctAnswer;
 
     public Question(String question, String[] answers, String correctAnswer) {
         this.question = question;
@@ -40,5 +38,14 @@ public class Question implements Serializable {
         final Question other = (Question) obj;
 
         return this.question.equals(other.question);
+    }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "question='" + question + '\'' +
+                ", answers=" + Arrays.toString(answers) +
+                ", correctAnswer='" + correctAnswer + '\'' +
+                '}';
     }
 }
