@@ -17,7 +17,10 @@ export default class QuestionValidationService {
         if (question.answers.indexOf(question.correctAnswer) === -1)
             throw new Error("Brak poprawnej odpowiedzi!");
 
-        if (question.answers.length < 2 && question.answers.length > 4)
+        if (question.answers.length < 2)
+            throw new Error("Prawidłowa liczba odpowiedzi wynosi 2 - 4!");
+
+        if(question.answers.length > 4)
             throw new Error("Prawidłowa liczba odpowiedzi wynosi 2 - 4!");
 
         if (question.answers.some(answer => !answer.trim()))

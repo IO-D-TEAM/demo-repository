@@ -164,7 +164,6 @@ export const QuestionServiceProvider: React.FC<
   };
 
   const updateQuestionValue = (newQuestion: string): void => {
-    console.log(newQuestion, actualQuestion, index);
 
     if (index != -1) {
       setQuestionsValue((prevQuestions) => {
@@ -184,7 +183,6 @@ export const QuestionServiceProvider: React.FC<
     const updatedQuestions = [...questions];
     const questionIndex = questions.indexOf(question);
     updatedQuestions.splice(questionIndex, 1);
-    console.log("Correct", updatedQuestions);
     setQuestions(updatedQuestions);
 
     if (question == actualQuestion) {

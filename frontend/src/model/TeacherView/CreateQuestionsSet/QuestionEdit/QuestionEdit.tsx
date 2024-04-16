@@ -32,7 +32,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   const [buttonClicked, setButtonClicked] = useState(true);
   const [buttonIndex, setButtonIndex] = useState<number|null>(null);
   const [newAnswerValue, setNewAnswerValue] = useState<string>("Wpisz swoją odpowiedź");
-  const [rerenderKey, setRerenderKey] = useState<string>('a'); 
+  let [rerenderKey, setRerenderKey] = useState<number>(0); // State variable to trigger rerender
   const [error, setError] = useState<string>("");
   const questionService = useQuestionService(); // Access the QuestionService instance
 
@@ -58,7 +58,10 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
           }
         }
 
-        setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
+        setRerenderKey((prevKey) =>
+          prevKey === rerenderKey ? rerenderKey++ : rerenderKey++
+        );
+        rerenderKey %= 100;
       };
 
     questionService.subscribe(handleActualQuestionChange, "question");
@@ -135,12 +138,21 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     } catch(error){
       if(error instanceof Error){
         setError(error.message);
-        setRerenderKey(prevKey => prevKey === 'a' ? 'b' : 'a');
       }
     }
 
-    questionService.saveChanges(); 
+    if(questionService.getQuestions().findIndex(item => item.question == question.question) != -1){
+      console.log("xpp");
+      setError("Pytania nie mogą się powtarzać!");
+      setRerenderKey((prevKey) =>
+        prevKey === rerenderKey ? rerenderKey++ : rerenderKey++
+      );
+      rerenderKey %= 100;
+      return;
+    }
 
+    questionService.saveChanges();    
+    
   });
 
   const handleDeleteAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
