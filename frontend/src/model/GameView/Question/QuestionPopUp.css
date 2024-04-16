@@ -3,43 +3,43 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgb(253, 223, 187, .9);
+    background: rgb(150, 111, 51);
     border-radius: 1.5em;
     padding: 1em;
 }
 
 .answers {
-    display: grid;
     row-gap: .5rem;
     column-gap: .5rem;
     text-align: left;
 }
 
-.question {
+.question-div {
     background-color: #6db922;
     color: rgb(47, 47, 47);
     border-radius: 1.5rem;
     margin-bottom: .5rem;
 }
 
-.question h1 {
-    margin: 0;
-    padding: 1rem;
-    font-size: 5rem;
-}
-
-.answer {
-    background-color: rgb(139, 159, 107);
-    color: rgb(237, 237, 237);
-    border-radius: 1.5rem;
-}
-
-.answer h3 {
+.question-div h1 {
     margin: 0;
     padding: 1rem;
     font-size: 3rem;
 }
 
-.question, .answer {
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+.answer-div {
+    background-color: rgb(139, 159, 107);
+    border-radius: 1.5rem;
+    color: rgb(237, 237, 237);
+    margin: 0;
+}
+
+.answer-div h3 {
+    margin: 0;
+    padding: 1rem;
+    font-size: 2rem;
+}
+
+.question-div, .answer-div {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }

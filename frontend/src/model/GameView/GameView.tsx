@@ -7,7 +7,6 @@ import { GetGameConfig } from "../../services/GameConfig/GameConfigService";
 import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 import Board from "./Board/Board";
 import FinishWindow from "./FinishWindow/FinishWindow";
-import "./GameView.css";
 
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
@@ -49,7 +48,6 @@ const GameView = () => {
             try {
                 const config: GameConfig = await GetGameConfig();
                 const [fieldsRepr, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
-                setFinish(false);
                 setGameDuration(config.gameDuration);
                 setPlayers(config.players);
                 setFields(fieldsRepr);
@@ -70,6 +68,33 @@ const GameView = () => {
         const socket = new SockJS(WS_URL);
         const client = Stomp.over(socket);
 
+        const updateBoard = (update: BoardMessage) => {
+            const changed: boolean = changePlayerPosition(update.clientID, update.positionChange);
+    
+            if (changed && update.question) {
+                // I think we should wait a bit to let the student see his move on the board and after that show the question
+                setTimeout(() => {}, 1000);
+                setCurrentQuestion(update.question);
+                setShowQuestion(true);
+            } else {
+                setShowQuestion(false);
+            }
+        }
+    
+        const changePlayerPosition = (playerId: string, steps: number): boolean => {
+            const playersUpdate: PlayerType[] = [...players];
+            const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
+    
+            if (playerToUpdateIdx > -1) {
+                playersUpdate[playerToUpdateIdx].position += steps;
+                setPlayers(playersUpdate);
+                return true;
+            } else {
+                console.error(`Player with this id: ${playerId} doesn't exist!`);
+                return false;
+            }
+        }
+
         client.connect({}, () => {
             client.subscribe(`/move`, (notification) => {
                 setConnected(true);
@@ -87,34 +112,7 @@ const GameView = () => {
                 });
             }
         }
-    }, []);
-
-    const updateBoard = (update: BoardMessage) => {
-        const changed: boolean = changePlayerPosition(update.clientID, update.positionChange);
-
-        if (changed && update.question) {
-            // I think we should wait a bit to let the student see his move on the board and after that show the question
-            setTimeout(() => {}, 1000);
-            setCurrentQuestion(update.question);
-            setShowQuestion(true);
-        } else {
-            setShowQuestion(false);
-        }
-    }
-
-    const changePlayerPosition = (playerId: string, steps: number): boolean => {
-        const playersUpdate: PlayerType[] = [...players];
-        const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
-
-        if (playerToUpdateIdx > -1) {
-            playersUpdate[playerToUpdateIdx].position += steps;
-            setPlayers(playersUpdate);
-            return true;
-        } else {
-            console.error(`Player with this id: ${playerId} doesn't exist!`);
-            return false;
-        }
-    }
+    }, [connected, players, setPlayers]);
 
     // Ofc it's temporary
     const mockQuestion: Question = {

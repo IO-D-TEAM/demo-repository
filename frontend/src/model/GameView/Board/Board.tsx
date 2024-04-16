@@ -20,7 +20,7 @@ const Board = (props: Props) => {
 
   return (
     <div className="board-wrap">
-      <Timer />
+      <Timer/>
       <div className="board" style={GridStyle}>
         {props.fields.map((field, i) => (
           <Field key={i} players={props.players} field={field} />
