@@ -5,7 +5,6 @@ import org.io_web.backend.board.Board;
 import org.io_web.backend.board.Player;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.controllers.GameController;
-import org.io_web.backend.questions.Answer;
 import org.io_web.backend.questions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

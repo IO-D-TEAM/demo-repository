@@ -22,7 +22,9 @@ public class Client {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Client) return this.id.equals(((Client) o).id);
+        if (o instanceof Client) {
+            return this.id.equals(((Client) o).id);
+        }
         return false;
     }
 
