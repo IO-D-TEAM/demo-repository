@@ -108,10 +108,12 @@ public class GameEngine extends Thread{
 
         questionIterator = questions.iterator();
         System.out.println("[ENGINE] Setting up completed");
+        this.gameStatus = GameStatus.PENDING;
 
         controller.gameStatusChanged();
         // reset turn if ended
         System.out.println("[ENGINE] Start game");
+
         while (this.gameStatus == GameStatus.PENDING) {
 
             try {
@@ -131,7 +133,7 @@ public class GameEngine extends Thread{
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) continue;
                 System.out.println("[ENGINE] dice rolled: " + diceRoll);
-                diceRollOutcome(diceRoll);
+                    diceRollOutcome(diceRoll);
 
             } catch (InterruptedException e) {
                 this.gameStatus = GameStatus.ENDED;

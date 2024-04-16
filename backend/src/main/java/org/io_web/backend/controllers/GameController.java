@@ -227,7 +227,7 @@ public class GameController {
      * @method POST
      */
     @PostMapping("{gameCode}/{clientID}")
-    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody Answer answer) {
+    public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
 
         if (!gameCode.equals(this.dataService.getGameCode()))
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
@@ -240,8 +240,13 @@ public class GameController {
         if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId())))
             return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
 
-        this.gameEngine.playerAnswered(answer);
-        return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        if (communicationService.isConfirmation()) return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        synchronized (this.communicationService) {
+            communicationService.setConfirmation(true);
+            communicationService.notifyAll();
+//            this.gameEngine.playerAnswered(answer);
+            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        }
     }
 
     /**

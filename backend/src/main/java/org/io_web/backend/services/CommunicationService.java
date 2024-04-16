@@ -1,5 +1,7 @@
 package org.io_web.backend.services;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.client.TaskWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,8 @@ import java.io.Serializable;
 public class CommunicationService {
 
     private final SimpMessagingTemplate template;
-
+    @Getter
+    @Setter
     private boolean confirmation = false;
 
     @Autowired
@@ -40,19 +43,11 @@ public class CommunicationService {
             template.convertAndSend("/client/" + clientId, message);
     }
 
-    @MessageMapping("/client/confirmation")
-    public void receiveConfirmFromClient(String message){
-        if (confirmation) return;
-        synchronized (this) {
-            confirmation = true;
-            this.notifyAll();
-        }
-    }
 
 
-    public boolean waitForConfirm() throws InterruptedException{
+     synchronized public boolean waitForConfirm() throws InterruptedException{
         if (confirmation) return true;
-        wait(10000);
+        wait(50000);
         return confirmation;
 
     }
