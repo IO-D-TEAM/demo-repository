@@ -6,11 +6,17 @@ import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.Settings;
 import org.io_web.backend.services.SharedDataService;
+import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -113,6 +119,12 @@ public class LobbyController {
         });
         dataService.setSettings(settings);
         System.out.println(settings.getQuestions().getFirst());
+        return ResponseFactory.simpleResponse(HttpStatus.OK);
+    }
+
+    @PostMapping("/deletePlayer")
+    public ResponseEntity<String> deletePlayer(@RequestBody Client client) {
+        this.dataService.getClientPool().removeClient(client);
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 }

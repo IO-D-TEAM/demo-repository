@@ -16,8 +16,16 @@ public class Client {
     private ClientStatus status;
 
     @JsonCreator
-    public Client(@JsonProperty("nickname") String nickName) {
-        this.nickname = nickName;
+    public Client(@JsonProperty("nickname") String nickname) {
+        this.nickname = nickname;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Client) {
+            return this.id.equals(((Client) o).id);
+        }
+        return false;
     }
 
 }

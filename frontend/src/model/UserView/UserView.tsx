@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import "./UserView.css";
 import JoinGame from "./JoinGame/JoinGame";
 import AnswerQuestion from "./AnswerQuestion/AnswerQuestion";
-import Move from "./Move/Move";
 
 interface UserViewProps {}
 
@@ -12,18 +11,9 @@ const UserView: FC<UserViewProps> = () => (
     <br />
     Opcje:
     <ul className="options">
-      <li>
-        Wpisuje kodzik
-        <JoinGame></JoinGame>
-      </li>
-      <li>
-        Odpowiadam na pytania
-        <AnswerQuestion></AnswerQuestion>
-      </li>
-      <li>
-        Rzuca kością
-        <Move></Move>
-      </li>
+      <li>Wpisuje kodzik</li>
+      <li>Odpowiadam na pytania</li>
+      <li>Rzuca kością</li>
     </ul>
   </div>
 );

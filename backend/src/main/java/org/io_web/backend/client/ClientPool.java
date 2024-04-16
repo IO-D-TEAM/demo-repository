@@ -3,7 +3,6 @@ package org.io_web.backend.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import org.io_web.backend.client.Client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ public class ClientPool implements Serializable {
         return searchedClient.orElse(null);
     }
 
-
     public Client getClientById(String id){
         Optional<Client> searchedClient = clients.stream().filter(client -> client.getId().equals(id)).findFirst();
         return searchedClient.orElse(null);
@@ -32,13 +30,12 @@ public class ClientPool implements Serializable {
     }
 
     public void removeClient(Client client){
-        clients.remove(client);
+       this.clients.remove(client);
     }
 
     public void remove(String id){
         clients.removeIf(client -> !client.getId().equals(id));
     }
-
 
     public boolean isClientPresent(String nickname){
         return getClientByNickname(nickname) != null;

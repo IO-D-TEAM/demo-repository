@@ -7,6 +7,7 @@ interface PopupProps {}
 const Popup = (props: any) => {
   return props.trigger ? (
     <div className="popup">
+      <div className="popup-overlay"></div>
       <div className="popup-inner">
         <button onClick={() => props.setTrigger(false)} className="close-btn">
           <CloseIcon></CloseIcon>

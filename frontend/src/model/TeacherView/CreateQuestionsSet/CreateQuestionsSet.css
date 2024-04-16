@@ -1,0 +1,44 @@
+.mainControler {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    height: auto;
+}
+
+.mainControler > * {
+    margin-top: 100px;
+    width: 30%;
+    max-height: 650px;
+    min-height: 50px;
+    min-width: 500px;
+}
+
+.reactComponent{
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    padding-bottom: 35px;
+}
+
+
+@media only screen and (max-width: 1627px) {
+    .buttonsController{
+        max-height: 100px;
+    }
+
+    .mainControler > * {
+        margin-top: 35px;
+        width: 30%;
+        height: auto;
+        min-height: 15px;
+        min-width: 500px;
+    }
+
+
+
+}

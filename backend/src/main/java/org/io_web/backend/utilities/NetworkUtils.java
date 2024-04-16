@@ -1,9 +1,5 @@
 package org.io_web.backend.utilities;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -43,9 +39,11 @@ public class NetworkUtils {
                                     .build();
 
                             try {
-                                HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-                                if (response.statusCode() == 200)
-                                    return "http://" + ipAddress + ":3000/userView/joinGame?gameCode=" + gameCode;
+                                HttpResponse<String> response = HttpClient.newHttpClient().
+                                        send(request, HttpResponse.BodyHandlers.ofString());
+                                if (response.statusCode() == 200) {
+                                    return "http://" + ipAddress + ":3000/userView/joinGame/" + gameCode;
+                                }
                             } catch (IOException | InterruptedException e) {
                                 return valid_url;
                             }
@@ -64,17 +62,21 @@ public class NetworkUtils {
         String[] parts = ipAddress.split("\\.");
         int[] ipComponents = new int[4];
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) {
             ipComponents[i] = Integer.parseInt(parts[i]);
+        }
 
-        if (ipComponents[0] == 127)
+        if (ipComponents[0] == 127) {
             return false;
+        }
 
-        if (ipComponents[0] == 169 && ipComponents[1] == 254)
+        if (ipComponents[0] == 169 && ipComponents[1] == 254) {
             return false;
+        }
 
-        if (ipComponents[0] >= 224 && ipComponents[0] <= 239)
+        if (ipComponents[0] >= 224 && ipComponents[0] <= 239) {
             return false;
+        }
 
         return ipComponents[0] != 255 || ipComponents[1] != 255 || ipComponents[2] != 255 || ipComponents[3] != 255;
     }
