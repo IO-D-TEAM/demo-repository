@@ -10,6 +10,7 @@ import {
   QuestionService,
   SubscriberCallback,
 } from "../../interfaces/QuestionInterfaces/QuestionService";
+import QuestionValidationService from "./QuestionValidator";
 
 const QuestionServiceContext = createContext<QuestionService | undefined>(
   undefined
@@ -30,18 +31,19 @@ interface QuestionServiceProviderProps {
   children: ReactNode;
 }
 
+// Mock question to display when there is not other questions
 const mockQuestion: QuestionInterface = {
   question: "Przykładowe pytanie",
   correctAnswer: "Odpowiedź 1",
   answers: ["Odpowiedź 1", "Odpowiedź 2", "Odpowiedź 3", "Odpowiedź 4"],
 };
 
+// New Question template
 const emptyQuestion: QuestionInterface = {
   question: "Wpisz swoje pytanie",
   correctAnswer: "",
   answers: [],
 };
-
 
 const initialState: QuestionInterface[] = [];
 
@@ -49,27 +51,31 @@ const initialState: QuestionInterface[] = [];
 export const QuestionServiceProvider: React.FC<
   QuestionServiceProviderProps
 > = ({ children }) => {
-  const [questions, setQuestionsValue] =
-    useState<QuestionInterface[]>(initialState); // Your initial questions data
-  const [actualQuestion, setActualQuestionValue] = useState<QuestionInterface>(
-    structuredClone(mockQuestion)
-  ); // Your initial questions data
-  const [index, setIndex] = useState<number>(-1);
+  const [questions, setQuestionsValue] = useState<QuestionInterface[]>(initialState); // Your initial questions data
+  const [actualQuestion, setActualQuestionValue] = useState<QuestionInterface>(structuredClone(mockQuestion)); // Your initial questions data
 
-  let subscribers: { callback: SubscriberCallback; dataIdentifier: string }[] =
-    [];
+  // index stands for actual edited question 
+  // index == -1 means there is new question edited  
+  const [index, setIndex] = useState<number>(-1); 
+
+  let subscribers: { callback: SubscriberCallback; dataIdentifier: string }[] = [];
 
   useEffect(() => {
+    // display mock question when there is no questions 
     if (questions.length === 0 && index != -1)
       setActualQuestionValue(structuredClone(mockQuestion));
+
     notifySubscribers();
   }, [questions, actualQuestion]);
 
+  // handle callbacks 
   const notifySubscribers = () => {
     subscribers.forEach((subscriber) => {
+      // "Question" - subscriber needs only information about actual question
       if (subscriber.dataIdentifier === "question")
         if (actualQuestion) subscriber.callback(actualQuestion, index);
 
+      // "Questions" - subscriber needs to know all questions
       if (subscriber.dataIdentifier === "questions")
         if (questions) subscriber.callback(questions, index);
     });
@@ -94,11 +100,11 @@ export const QuestionServiceProvider: React.FC<
   };
 
   const setActualQuestion = (
-    question: QuestionInterface,
+    newQuestion: QuestionInterface,
     newIndex: number
   ): void => {
     setIndex(newIndex);
-    setActualQuestionValue(question);
+    setActualQuestionValue(newQuestion);
   };
 
   const getActualQuestion = (): QuestionInterface => {
@@ -108,9 +114,13 @@ export const QuestionServiceProvider: React.FC<
     return actualQuestion;
   };
 
+  // Save changes execute when client want to save/add his question
+  // If there is no similar question, then just add it 
   const saveChanges = (): void => {
-    if (!checkIfQuestionExists(actualQuestion)){
-      // If question exist, ignore it
+
+    // If question is not in set then add new and allow user to enter 
+    // new question from emptyQuestion Template
+    if (!QuestionValidationService.isQuestionInSet(questions,actualQuestion)){
       questions.push(structuredClone(actualQuestion));
       setActualQuestion(structuredClone(emptyQuestion), -1);
     }
@@ -118,16 +128,23 @@ export const QuestionServiceProvider: React.FC<
     notifySubscribers();
   };
 
+  // Set questions from Import component.
+  // After import focus on fist question from set or on mock.
   const setQuestions = (newQuestions: QuestionInterface[]): void => {
     setQuestionsValue(newQuestions);
 
     if (newQuestions.length == 0)
       setActualQuestion(structuredClone(mockQuestion), -1);
+    else 
+      setActualQuestion(newQuestions[0], 0);
+
+    notifySubscribers();
   };
 
+  // When clients wants to add new question 
+  // set index to -1 
   const addQuestion = (): void => {
     if (index == -1) {
-      setActualQuestionValue(structuredClone(emptyQuestion));
       setActualQuestionValue(structuredClone(emptyQuestion));
       notifySubscribers();
       return;
@@ -136,11 +153,14 @@ export const QuestionServiceProvider: React.FC<
     setIndex(-1);
   };
 
+  // Update edited question
   const updateCorrectAnswer = (correctAnswer: string): void => {
     setActualQuestionValue((prevQuestion) => ({
       ...prevQuestion!,
       correctAnswer: correctAnswer,
     }));
+
+    // Update question in question list.
     if (index !== -1 && questions.length > index) {
       setQuestionsValue((prevQuestions) => {
         const updatedQuestions = [...prevQuestions];
@@ -150,20 +170,13 @@ export const QuestionServiceProvider: React.FC<
     }
   };
 
-  const checkIfQuestionExists = (question: QuestionInterface): boolean => {
-    if (questions.length == 0) return false;
-
-    let copiedQuestions = [...questions]; // Create a copy of the original array
-    return (
-      copiedQuestions.findIndex((q) => q.question === question.question) !== -1
-    );
-  };
-
   const updateQuestionAnswers = (newAnswers: string[]): void => {
     setActualQuestionValue((prevQuestion) => ({
       ...prevQuestion!,
       answers: newAnswers,
     }));
+
+    // Update question in question list.
     if (index !== -1 && questions.length > index) {
       setQuestionsValue((prevQuestions) => {
         const updatedQuestions = [...prevQuestions];
@@ -174,7 +187,6 @@ export const QuestionServiceProvider: React.FC<
   };
 
   const updateQuestionValue = (newQuestion: string): void => {
-
     if (index != -1) {
       setQuestionsValue((prevQuestions) => {
         const updatedQuestions = [...prevQuestions];

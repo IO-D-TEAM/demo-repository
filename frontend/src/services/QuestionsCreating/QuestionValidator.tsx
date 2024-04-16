@@ -3,7 +3,6 @@ import { QuestionInterface } from "../../interfaces/QuestionInterfaces/Question"
 
 export default class QuestionValidationService {
     static validateQuestion(question: QuestionInterface, questions: QuestionInterface[]): boolean {
-
         const uniqueAnswers = new Set(question.answers.map(answer => answer.trim().toLowerCase()));
         if (uniqueAnswers.size !== question.answers.length)
             throw new Error("Odpowiedzi nie mogą się powtarzać!");
@@ -48,5 +47,13 @@ export default class QuestionValidationService {
             this.validateQuestion(item, questions);
         }
         return true;
+    }
+
+    static isQuestionInSet(questions: QuestionInterface[], question: QuestionInterface): boolean {
+        if (questions.length == 0) 
+            return false;
+
+        let copiedQuestions = [...questions]; // Create a copy of the original array
+            return copiedQuestions.findIndex((q) => q.question === question.question) !== -1;
     }
 }

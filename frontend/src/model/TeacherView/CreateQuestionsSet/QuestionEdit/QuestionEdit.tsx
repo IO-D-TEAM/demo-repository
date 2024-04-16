@@ -28,11 +28,11 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     answers: ["Odpowiedź 1", "Odpowiedź 2", "Odpowiedź 3", "Odpowiedź 4"]
   });
 
-  const [checked, setChecked] =  useState<number | null>(null);
-  const [buttonClicked, setButtonClicked] = useState(true);
-  const [buttonIndex, setButtonIndex] = useState<number|null>(null);
+  const [checked, setChecked] =  useState<number | null>(null);  // Edited Answer
+  const [buttonClicked, setButtonClicked] = useState(true);      // Editon Answer Guard
+  const [buttonIndex, setButtonIndex] = useState<number|null>(null);  // Index of Answer Guard
   const [newAnswerValue, setNewAnswerValue] = useState<string>("Wpisz swoją odpowiedź");
-  let [rerenderKey, setRerenderKey] = useState<number>(0); // State variable to trigger rerender
+  let [rerenderKey, setRerenderKey] = useState<number>(0); // Force re-render key
   const [error, setError] = useState<string>("");
   const questionService = useQuestionService(); // Access the QuestionService instance
 
@@ -41,7 +41,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (
-      newQuestion: QuestionInterface, index: number ) => {
+      newQuestion: QuestionInterface, index?: number ) => {
 
         if(question.question !== newQuestion.question)
           setButtonClicked(false);
@@ -58,9 +58,8 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
           }
         }
 
-        setRerenderKey((prevKey) =>
-          prevKey === rerenderKey ? rerenderKey++ : rerenderKey++
-        );
+        // This is to force re-render react components on change 
+        setRerenderKey((prevKey) => prevKey === rerenderKey ? rerenderKey++ : rerenderKey++);
         rerenderKey %= 100;
       };
 
@@ -129,6 +128,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   });
 
   const handleButtonClick = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) : void => {
+    // xpp działa bo działa, dlaczego? idk (inaczej nie chce się zmieniać)
     if(buttonClicked && buttonIndex === index)
       setButtonClicked(false)
     else if(buttonClicked)
