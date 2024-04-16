@@ -109,9 +109,11 @@ export const QuestionServiceProvider: React.FC<
   };
 
   const saveChanges = (): void => {
-    if (!checkIfQuestionExists(actualQuestion))
+    if (!checkIfQuestionExists(actualQuestion)){
       // If question exist, ignore it
       questions.push(structuredClone(actualQuestion));
+      setActualQuestion(structuredClone(emptyQuestion), -1);
+    }
 
     notifySubscribers();
   };
