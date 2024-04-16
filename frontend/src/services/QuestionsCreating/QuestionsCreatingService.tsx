@@ -68,10 +68,10 @@ export const QuestionServiceProvider: React.FC<
   const notifySubscribers = () => {
     subscribers.forEach((subscriber) => {
       if (subscriber.dataIdentifier === "question")
-        if (actualQuestion) subscriber.callback(actualQuestion);
+        if (actualQuestion) subscriber.callback(actualQuestion, index);
 
       if (subscriber.dataIdentifier === "questions")
-        if (questions) subscriber.callback(questions);
+        if (questions) subscriber.callback(questions, index);
     });
   };
 

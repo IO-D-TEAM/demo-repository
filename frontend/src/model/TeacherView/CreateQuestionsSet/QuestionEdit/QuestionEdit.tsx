@@ -41,7 +41,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     to subscribe service to know when edited question is changed.   */
   useEffect(()  => {
     const handleActualQuestionChange = (
-      newQuestion: QuestionInterface ) => {
+      newQuestion: QuestionInterface, index: number ) => {
 
         if(question.question !== newQuestion.question)
           setButtonClicked(false);
@@ -105,8 +105,16 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
   });
 
   const handleNewAnswer = ((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) :void => {
+
+    if(question.answers.length >= 4){
+      setError("Maksymalna liczba odpowiedzi wynosi 4!");
+      setNewAnswerValue("Wpisz swoją odpowiedź!")
+      return;
+    }
+
     if(questionService.getActualQuestion().answers.length >= 4){
       setError("Maksymalna liczba odpowiedzi wynosi 4!");
+      setNewAnswerValue("Wpisz swoją odpowiedź!")
       return;
     }
 
@@ -138,11 +146,11 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
     } catch(error){
       if(error instanceof Error){
         setError(error.message);
+        return;
       }
     }
 
     if(questionService.getQuestions().findIndex(item => item.question == question.question) != -1){
-      console.log("xpp");
       setError("Pytania nie mogą się powtarzać!");
       setRerenderKey((prevKey) =>
         prevKey === rerenderKey ? rerenderKey++ : rerenderKey++
@@ -227,7 +235,7 @@ export const QuestionEdit: FC<QuestionEditProps> = ()  => {
           <OutlinedInput sx ={{marginTop: '10px'}}
             key={rerenderKey}
             fullWidth
-            placeholder='Wpisz swoją odpowiedź'
+            placeholder={newAnswerValue}
             id="outlined-adornment-weight"
             onChange={handleNewAnswerChange}
             inputProps={{

@@ -19,7 +19,7 @@ interface QuestionBoardProps {}
 }
 export const QuestionBoard: FC<QuestionBoardProps> = () => {
   const [questions, setQuestions] = useState<QuestionInterface[]>([]);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   let [rerenderKey, setRerenderKey] = useState<number>(0); // State variable to trigger rerender
   const questionService = useQuestionService(); // Access the QuestionService instance
 
@@ -29,12 +29,11 @@ export const QuestionBoard: FC<QuestionBoardProps> = () => {
     to subscribe service to know when edited question is changed.   */
   }
   useEffect(() => {
-    const handleQuestionChanges = (questions: QuestionInterface[]) => {
-      // if(questions == questions && selectedIndex == questionService.getActualIndex())
-      //   return;
-      
+    const handleQuestionChanges = (questions: QuestionInterface[], index: number) => {
+
       setQuestions(questions);
-      setSelectedIndex(questionService.getActualIndex());
+      setSelectedIndex(index);
+
       setRerenderKey((prevKey) =>
         prevKey === rerenderKey ? rerenderKey++ : rerenderKey++
       );

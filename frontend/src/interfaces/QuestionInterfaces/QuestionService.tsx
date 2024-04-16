@@ -1,6 +1,6 @@
 import { QuestionInterface } from "../../interfaces/QuestionInterfaces/Question";
 
-export type SubscriberCallback = (data: any) => void;
+export type SubscriberCallback = (data: any, index: number) => void;
 
 export interface QuestionService {
     subscribe: (callback: SubscriberCallback, dataIdentifier: string) => void;
