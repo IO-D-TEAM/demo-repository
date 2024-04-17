@@ -1,3 +1,6 @@
+# Architecture
+![architecture diagram](doc/flow.png)
+
 # Jak odpalić
 * wejdź do folderu frontend 
 * wpisz 'npm install'
