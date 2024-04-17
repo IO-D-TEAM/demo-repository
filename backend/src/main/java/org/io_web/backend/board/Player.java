@@ -25,6 +25,10 @@ public class Player {
         this.color = color;
     }
 
+    public void addPoints(int points) {
+        correctAnswers += points;
+    }
+
     public void move(int steps) {
         position += steps;
     }

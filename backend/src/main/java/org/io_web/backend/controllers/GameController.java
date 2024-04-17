@@ -1,5 +1,6 @@
 package org.io_web.backend.controllers;
 
+import lombok.Getter;
 import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.board.Field;
 import org.io_web.backend.board.Player;
@@ -37,6 +38,7 @@ import java.util.Random;
 @RestController
 @RequestMapping("/game")
 public class GameController {
+    @Getter
     private final SharedDataService dataService;
     private final CommunicationService communicationService;
 
@@ -339,6 +341,12 @@ public class GameController {
 
     @GetMapping("/settings")
     public ResponseEntity<Object> getBoardConfiguration() {
+        gameEngine.loadSettings(dataService.getSettings());
+//        for (Client client : dataService.getClientPool().getClients()) {
+//            gameEngine.addPlayer(client.getId(), client.getNickname());
+//        }
+        gameEngine.start();
+
         BoardConfigurationResponse configResponse = new BoardConfigurationResponse(
                 dataService.getSettings().getTimeForGame(),
                 gameEngine.getBoard().getPath().size(),
