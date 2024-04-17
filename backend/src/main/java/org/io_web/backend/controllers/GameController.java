@@ -67,17 +67,17 @@ public class GameController {
     public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
         System.out.println("[GAME CONTROLLER] Answer Question");
 
-        if (!gameCode.equals(this.dataService.getGameCode()))
+        if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
-
+        }
         Client client = this.dataService.getClientPool().getClientById(clientID);
 
-        if (client == null)
+        if (client == null) {
             return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-
-        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId())))
+        }
+        if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId()))) {
             return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
-
+        }
         if (communicationService.isConfirmation()) return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
         synchronized (this.communicationService) {
             communicationService.setConfirmation(true);
@@ -117,7 +117,9 @@ public class GameController {
      */
     public boolean informClientOfHisTurn(int diceRoll) throws InterruptedException {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) return false;
+        if (clientID == null){
+            return false;
+        }
 
         PlayerTask currentTask = this.gameEngine.getCurrentTask();
         TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
@@ -144,7 +146,9 @@ public class GameController {
 
     public void updateTeachersView(int playerMove, boolean endingMove) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) return;
+        if (clientID == null) {
+            return;
+        }
 
         Question currentQuestion = gameEngine.getCurrentQuestion();
 

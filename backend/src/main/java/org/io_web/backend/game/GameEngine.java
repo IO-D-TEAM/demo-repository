@@ -146,10 +146,14 @@ public class GameEngine extends Thread {
                 diceRoll = random.nextInt(6) + 1;
 
                 boolean received = controller.informClientOfHisTurn(diceRoll);
-                if (!received) continue;
+                if (!received) {
+                    continue;
+                }
                 System.out.println("[ENGINE] dice rolled: " + diceRoll);
-                if (diceRollOutcome(diceRoll))
+
+                if (diceRollOutcome(diceRoll)) {
                     break;
+                }
 
             } catch (InterruptedException e) {
                 System.out.println("[ENGINE] ending game");

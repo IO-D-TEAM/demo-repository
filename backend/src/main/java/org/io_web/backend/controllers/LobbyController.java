@@ -52,9 +52,9 @@ public class LobbyController {
      */
     @GetMapping("{gameCode}/join_game")
     public ResponseEntity<String> mainPage(@PathVariable String gameCode) {
-        if (!gameCode.equals(this.dataService.getGameCode()))
+        if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
-
+        }
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
@@ -69,14 +69,14 @@ public class LobbyController {
     @GetMapping("{gameCode}/client/{clientID}")
     public ResponseEntity<Object> attendGame(@PathVariable String gameCode, @PathVariable String clientID) {
 
-        if (!gameCode.equals(this.dataService.getGameCode()))
+        if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
-
+        }
         Client client = this.dataService.getClientPool().getClientById(clientID);
 
-        if (client == null)
+        if (client == null) {
             return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-
+        }
         return ResponseFactory.createResponse(HttpStatus.OK, client);
     }
 
@@ -108,8 +108,9 @@ public class LobbyController {
 
         switch (gameEngine.getGameStatus()) {
             case LOBBY, ENDED:
-                if (this.dataService.getClientPool().isClientPresent(newClient.getNickname()))
+                if (this.dataService.getClientPool().isClientPresent(newClient.getNickname())) {
                     return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Nickname already in use");
+                }
                 break;
             case PENDING:
                 Client prevClient = this.dataService.getClientPool().getClientByNickname(newClient.getNickname());

@@ -59,8 +59,9 @@ public class SettingsController {
     public ResponseEntity<String> getGameUrl(){
         String joinGameUrl = NetworkUtils.createUrl(this.dataService.getGameCode());
 
-        if(joinGameUrl != null)
+        if(joinGameUrl != null) {
             return ResponseFactory.createResponse(HttpStatus.OK, joinGameUrl);
+        }
 
         return ResponseFactory.createResponse(HttpStatus.SERVICE_UNAVAILABLE, "Message unavailable!");
     }
