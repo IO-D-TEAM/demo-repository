@@ -37,9 +37,9 @@ public class LobbyController {
 
     @PostMapping("/settings")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings) {
-        System.out.println("normalnych " + settings.getNormalFields());
         dataService.setSettings(settings);
-        System.out.println(dataService.getSettings());
+        System.out.println(dataService.getSettings().toString());
+
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
