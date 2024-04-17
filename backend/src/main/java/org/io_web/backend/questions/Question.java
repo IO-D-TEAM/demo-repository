@@ -52,10 +52,25 @@ public class Question implements Serializable {
 
     @Override
     public String toString() {
-        return "Question{" +
-                "question='" + question + '\'' +
-                ", answers=" + Arrays.toString(answers) +
-                ", correctAnswer='" + correctAnswer + '\'' +
-                '}';
+        StringBuilder str = new StringBuilder();
+        str.append("{");
+        str.append("\"question\": \"" + question + "\", ");
+        str.append("\"answers\": [");
+
+        // Append each answer
+        for (int i = 0; i < answers.length; i++) {
+            str.append("\"" + answers[i] + "\"");
+            if (i < answers.length - 1) {
+                str.append(", ");
+            }
+        }
+
+        str.append("], ");
+        str.append("\"correctAnswer\": \"" + correctAnswer + "\"");
+        str.append("}");
+
+        return str.toString();
     }
+
+
 }

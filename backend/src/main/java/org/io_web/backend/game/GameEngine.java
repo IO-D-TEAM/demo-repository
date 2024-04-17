@@ -155,16 +155,10 @@ public class GameEngine extends Thread {
                     break;
                 }
 
-                switch(board.getPlayerPosition().get(currentMovingPlayer)){
-                    case Field.QUESTION, Field.SPECIAL:{
-                        this.controller.sendQuestion();
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-
+                this.currentTask = PlayerTask.ANSWERING_QUESTION;
+                this.currentQuestion = questionIterator.next();
+                this.controller.sendQuestion();
+                this.currentTask = PlayerTask.IDLE;
 
             } catch (InterruptedException e) {
                 System.out.println("[ENGINE] ending game");

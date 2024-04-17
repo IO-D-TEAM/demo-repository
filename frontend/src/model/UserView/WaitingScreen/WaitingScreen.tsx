@@ -54,9 +54,14 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     client.connect({}, () => {
       console.log(id);
       client.subscribe(`/client/${id}`, (notification: any) => {
+        console.log(notification);
+
+        if(notification.body as string == "")
+          return;
+
         let data = JSON.parse(notification.body as string);
         setConnected(true);
-        console.log(data.task);
+        console.log(data);
         if (data.task === "THROWING_DICE") {
           console.log("rzucam koscią " + data.diceRoll);
           setRollingDice(true);
@@ -161,7 +166,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
                     {showQuestion ? (
                       <div className="form" style={replaceAlpha(colorRGBA, 0.6)}>
                         <AnswerQuestion
-                          question={questionMock}
+                          question={question}
                           gameCode={gameCode}
                           id={id}
                         ></AnswerQuestion>

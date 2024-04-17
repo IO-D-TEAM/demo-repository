@@ -146,11 +146,12 @@ public class GameController {
     public boolean sendQuestion() throws InterruptedException {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         Question currentQuestion = gameEngine.getCurrentQuestion();
-        if (clientID == null || currentQuestion == null) {
-            return false;
-        }
+//        if (clientID == null || currentQuestion == null) {
+//            return false;
+//        }
 
-        TaskWrapper task =  new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
+        TaskWrapper task =  new TaskWrapper(currentQuestion, 0, this.gameEngine.getCurrentTask());
+        System.out.println("[SENDING QUESTION]" + task + " to" + clientID) ;
         this.communicationService.sendMessageToClient(clientID, task);
         return communicationService.waitForConfirm();
     }
