@@ -71,20 +71,20 @@ public class GameEngine extends Thread{
 
     // communication with server
 
-    public void diceRollOutcome(int dice) {
+    public boolean diceRollOutcome(int dice) {
         int oldPos = currentMovingPlayer.getPosition();
         boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
         int newPos = currentMovingPlayer.getPosition();
 
         if (gameFinished) {
             setGameStatus(GameStatus.ENDED);
+            return true;
         }
-        String[] answers = { "a", "b" };
-        currentQuestion = new Question("xd?", answers, answers[0]);
-        currentTask = PlayerTask.ANSWERING_QUESTION;
+        currentQuestion = questionIterator.next();
         this.controller.sendQuestion();
 
         this.controller.updateTeachersView(newPos - oldPos, gameFinished);
+        return false;
     }
 
     public void playerAnswered(String answer){
@@ -133,9 +133,11 @@ public class GameEngine extends Thread{
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) continue;
                 System.out.println("[ENGINE] dice rolled: " + diceRoll);
-                    diceRollOutcome(diceRoll);
+                if (diceRollOutcome(diceRoll))
+                    break;
 
             } catch (InterruptedException e) {
+                System.out.println("[ENGINE] ending game");
                 this.gameStatus = GameStatus.ENDED;
                 currentMovingPlayer = null;
                 currentTask = PlayerTask.IDLE;
