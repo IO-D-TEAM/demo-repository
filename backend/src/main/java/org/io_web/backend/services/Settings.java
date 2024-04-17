@@ -13,6 +13,7 @@ public class Settings {
     private int specialFields;
     private int timeForAnswer;
     private int timeForGame;
+
     private ArrayList<Question> questions;
 
     public Settings() {}

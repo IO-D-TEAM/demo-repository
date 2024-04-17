@@ -6,6 +6,7 @@ import org.io_web.backend.board.Player;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.controllers.GameController;
 import org.io_web.backend.questions.Question;
+import org.io_web.backend.services.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,13 +41,26 @@ public class GameEngine {
 
     private int diceRoll = 0;
     private Iterator<Player> playerIterator;
-    private final GameController controller;
+    private GameController controller;
 
     @Autowired
     public GameEngine(GameController controller) {
         this.controller = controller;
-        this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
+    }
+
+    public void loadSettings(Settings settings) {
+        gameStatus = GameStatus.PENDING;
+
+        this.board = new Board(settings.getNormalFields(), settings.getSpecialFields(), playersList);
+
+//        questions = controller.getDataService().getSettings().chujWie()
+        String[] q = {"a", "b", "odp1"};
+        questions = new ArrayList<>();
+        questions.add(new Question("pytanie1", q, "odp1"));
+        questions.add(new Question("pytanie2", q, "odp1"));
+        questions.add(new Question("pytanie3", q, "odp1"));
+
     }
 
     private void setGameStatus(GameStatus newStatus){
@@ -78,8 +92,6 @@ public class GameEngine {
             setGameStatus(GameStatus.ENDED);
         }
 
-
-
         String[] answers = { "a", "b" };
         currentQuestion = new Question("xd?", answers, answers[0]);
         currentTask = PlayerTask.ANSWERING_QUESTION;
@@ -88,9 +100,15 @@ public class GameEngine {
     }
 
     public void playerAnswered(String answer){
-        //TODO: handle the answer
+        if (currentQuestion.isCorrect(answer)) {
+            controller.updateTeachersView(1);
+            currentMovingPlayer.addPoints(1);
+            if (board.movePlayer(currentMovingPlayer, 1) ) {
+                setGameStatus(GameStatus.ENDED);
+            }
+        }
 
-        currentMovingPlayer = null;
+        nextTurn();
         currentTask = PlayerTask.IDLE;
     }
 
@@ -105,7 +123,6 @@ public class GameEngine {
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
-
         nextTurn();
     }
 
