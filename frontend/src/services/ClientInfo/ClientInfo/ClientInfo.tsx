@@ -4,7 +4,7 @@ export const connectToTheGame = async (
   gamecode: string | undefined,
   player: Player
 ): Promise<Player> => {
-  return await fetch(`/game/${gamecode}/join_game`, {
+  return await fetch(`/lobby/${gamecode}/join_game`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json", // Poprawiono typ danych na application/json
@@ -23,7 +23,7 @@ export const getPlayerById = async (
   gmaeCode: string | undefined,
   id: string | undefined
 ): Promise<Player> => {
-  return await fetch(`/game/${gmaeCode}/client/${id}`)
+  return await fetch(`/players/${gmaeCode}/client/${id}`)
     .then((response) => response.json())
     .then((response: Player) => {
       console.log(response);
@@ -40,7 +40,7 @@ export const sendAnswer = async (
   gameCode: string | undefined,
   id: string | undefined
 ) => {
-  return await fetch(`/game/${gameCode}/${id}`, {
+  return await fetch(`/game/${gameCode}/client/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json", // Poprawiono typ danych na application/json

@@ -30,7 +30,7 @@ public class NetworkUtils {
 
                         if (classifyIP(ipAddress)) {
 
-                            String url = "http://" + ipAddress + ":8080/game/" + gameCode + "/join_game";
+                            String url = "http://" + ipAddress + ":8080/lobby/" + gameCode + "/join_game";
                             valid_url = url;
 
                             HttpRequest request = HttpRequest.newBuilder()

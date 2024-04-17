@@ -3,7 +3,7 @@ import { Player } from "../../interfaces/Player";
 import { Settings } from "../../interfaces/Settings";
 
 export const getGameUrl = async (): Promise<string> => {
-  return await fetch("http://localhost:8080/game/get_url")
+  return await fetch("http://localhost:8080/settings/get_url")
     .then((response) => response.json())
     .then((data: any) => {
       console.log(data);
