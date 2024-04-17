@@ -87,10 +87,4 @@ public class SettingsController {
     public String showGeneratedCode() {
         return this.dataService.getGameCode();
     }
-
-    @PostMapping("/mockTest")
-    public ResponseEntity<String> setSettings(){
-//        dataService.setSettings(MockSettings.getMockSettings()); // For settings test
-        return ResponseFactory.simpleResponse(HttpStatus.OK);
-    }
 }

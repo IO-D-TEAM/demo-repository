@@ -47,16 +47,17 @@ public class CommunicationService {
 
      synchronized public boolean waitForConfirm() throws InterruptedException{
         if (confirmation) return true;
-        wait(50000);
+        wait(5000);
         return confirmation;
 
     }
 
     public void sendMessageToLobby(Object message){
-        if(message instanceof ClientPool clientPool)
+        if(message instanceof ClientPool clientPool) {
             template.convertAndSend("/lobby/players", clientPool.serialize());
-        else if(message instanceof Serializable)
+        } else if(message instanceof Serializable) {
             template.convertAndSend("/lobby/players", message);
+        }
     }
 
     public void sendMessageToBoard(Object message) {

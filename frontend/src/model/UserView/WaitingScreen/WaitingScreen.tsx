@@ -10,6 +10,7 @@ import Button from "@mui/material/Button";
 import rolling from "../../../assets/dice.gif";
 import AnswerQuestion from "../AnswerQuestion/AnswerQuestion";
 import { Question } from "../../../interfaces/Question";
+import { NoteOutlined } from "@mui/icons-material";
 
 interface WaitingScreenProps {}
 
@@ -45,7 +46,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
 
   const WS_URL = "http://localhost:8080/ws";
   useEffect(() => {
-    if (id === "" || stompClient !== null) return;
+    // if (id === "" || stompClient !== null) return;
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
@@ -60,11 +61,13 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     client.connect({}, () => {
       client.subscribe(`/client/${id}`, (notification: any) => {
         setConnected(true);
-        if (notification.task === "THROWING_DICE") {
+        console.log(notification);
+        if (notification.body.task === "THROWING_DICE") {
+          console.log(notification);
           setRollingDice(true);
-          setDice(Number(notification.diceRoll));
-        } else if (notification.task === "ANSWERING_QUESTION") {
-          setQuestion(notification.question);
+          setDice(Number(notification.body.diceRoll));
+        } else if (notification.body.task === "ANSWERING_QUESTION") {
+          setQuestion(notification.body.question);
           setShowQuestion(true);
           setShowDiceResult(true);
         } else {
@@ -119,7 +122,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     //     JSON.stringify({ confirm: true })
     //   );
     // }
-    return await fetch(`/game/${gameCode}/client/${plyaer?.id}`, {
+    return await fetch(`/game/${gameCode}/client/${player?.id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Poprawiono typ danych na application/json
