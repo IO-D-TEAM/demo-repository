@@ -5,6 +5,7 @@ import { Question } from "../../../interfaces/GameViewInterfaces/Question";
 
 interface Props {
     question: Question;
+    showCorrectAnswer: boolean;
 }
 
 interface GridPos {
@@ -36,7 +37,11 @@ const QuestionPopUp = (props: Props) => {
                     props.question.answers.map((answer, i) => (
                         <div className="answer-div" style={{
                             gridRow: gridPositions[i].row,
-                            gridColumn: gridPositions[i].column
+                            gridColumn: gridPositions[i].column,
+                            backgroundColor: (props.showCorrectAnswer && answer === props.question.correctAnswer 
+                                ? "green"
+                                : "rgb(171, 163, 81)"
+                            )
                         }}>
                             <h3>{`${gridPositions[i].answer}: ${answer}`}</h3>
                         </div>

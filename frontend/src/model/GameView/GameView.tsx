@@ -1,23 +1,20 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
-import { calculateFields } from "./utils/GameViewUtils";
-import { useGameStore } from "./GameStore/GameStore";
-import { GetGameConfig } from "../../services/Game/GameService";
-import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
-import Board from "./Board/Board";
-import FinishWindow from "./FinishWindow/FinishWindow";
-
+import React, { useState, useEffect } from "react";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
+import { calculateFields } from "./utils/GameViewUtils";
+import { getGameConfig } from "../../services/Game/GameService";
+import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
+import { useGameStore } from "./GameStore/GameStore";
+import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 import { BoardMessage } from "../../interfaces/GameViewInterfaces/BoardMessage";
 import { PlayerType } from "../../interfaces/GameViewInterfaces/PlayerType";
 import { Question } from "../../interfaces/GameViewInterfaces/Question";
+import Board from "./Board/Board";
+import FinishWindow from "./FinishWindow/FinishWindow";
 import QuestionPopUp from "./Question/QuestionPopUp";
 
 
 const GameView = () => {
-    // It is awful but unfortunately it has to be like that for now
     const {
         fields,
         players,
@@ -38,11 +35,20 @@ const GameView = () => {
     const [connected, setConnected] = useState(false);
 
     const [showQuestion, setShowQuestion] = useState(false);
+    const [showAnswer, setShowAnswer] = useState(false);
+    // const [currentQuestion, setCurrentQuestion] = useState<Question>(
+    //     {
+    //         question: "Jaki jest najwyższy szczyt na świecie?",
+    //         answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
+    //         correctAnswer: "Mount Everest"
+    //     }
+    // );
+
     const [currentQuestion, setCurrentQuestion] = useState<Question>(
         {
-            question: "Jaki jest najwyższy szczyt na świecie?",
-            answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
-            correctAnswer: "Tak"
+            question: "",
+            answers: [],
+            correctAnswer: ""
         }
     );
 
@@ -50,7 +56,7 @@ const GameView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const config: GameConfig = await GetGameConfig();
+                const config: GameConfig = await getGameConfig();
                 const [fieldsRepr, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
                 setGameDuration(config.gameDuration);
                 setPlayers(config.players);
@@ -72,16 +78,33 @@ const GameView = () => {
         const client = Stomp.over(socket);
 
         const updateBoard = (update: BoardMessage) => {
+            // jeśli było wyświetlone pytanie w poprzednim ruchu to pokazujemy na chwilę poprawną odpowiedź zanim wykonaym ruch który właśnie przyszedł
+            if (showQuestion) {
+                setShowAnswer(true);
+                setTimeout(() => {}, 3000);
+            }
+            
+            // czyścimy plansze z ewentualnego pytania
             setShowQuestion(false);
+            setShowAnswer(false);
+
+            // zwykły ruch wykonujemy tak czy siak
             const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);
-    
-            // na ten moment nie pokazuje dobrej/złej odpowiedzi
+
+            // ruch kończący grę 
             if (positionChanged && update.endingMove) {
                 setFinish(true);
-            } else if (positionChanged && update.question) {
-                setTimeout(() => {}, 1000);
+                return
+            }
+
+            // ruch ale trafiamy na pytani - w teorii będzie się wyświetlać po 2 sekundach odkąd przyszedł ruch z pytaniem, żeby zobaczyć przejście gracza
+            if (positionChanged && update.question) {
                 setCurrentQuestion(update.question);
-                setShowQuestion(true);
+                setTimeout(() => {
+                    setShowQuestion(true);
+                }, 2000);
+
+                return
             }
         }
     
@@ -116,13 +139,13 @@ const GameView = () => {
                 });
             }
         }
-    }, [connected, players, setPlayers, setFinish]);
+    }, [connected, players, setPlayers, setFinish, showQuestion]);
 
     return (
         <div className="game-view">
             <Board fields={fields} players={players} rows={rows} columns={columns}/>
             {gameFinished && <FinishWindow/>}
-            {showQuestion && <QuestionPopUp question={currentQuestion}/>}
+            {showQuestion && <QuestionPopUp question={currentQuestion} showCorrectAnswer={showAnswer}/>}
         </div>
     );
 }

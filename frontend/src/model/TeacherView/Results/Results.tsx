@@ -39,13 +39,21 @@ const Results = () => {
         {
           finalStandings.map((standing, i) => (
             <li className="standing-wrap" key={i}>
-              <div>
+              <div className="place">
                 <h3>{i+1}.</h3>
               </div>
               <div className="players-group">
                 {
                   standing.map((player, i) => (
-                    <h3 key={i}>{player.nickname}</h3>
+                    <div key={i}>
+                      <h3>{player.nickname}</h3>
+                      <div className="pawn" style={{
+                        borderRadius: "50%",
+                        backgroundColor: player.color,
+                        width: "1rem",
+                        height: "1rem"
+                      }}></div>
+                    </div>
                   ))
                 }
               </div>
@@ -59,7 +67,7 @@ const Results = () => {
           variant="contained"
           color="success"
           component={Link}
-          to="/">
+          to="/teacherView">
           Powrót
         </Button>
       </Box>

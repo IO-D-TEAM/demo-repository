@@ -391,10 +391,4 @@ public class GameController {
 
         return ResponseFactory.createResponse(HttpStatus.OK, mockConfig);
     }
-
-    @PostMapping("/endGame")
-    public ResponseEntity<String> endGame() {
-        System.out.println("OK");
-        return ResponseFactory.simpleResponse(HttpStatus.OK);
-    }
 }
