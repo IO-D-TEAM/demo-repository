@@ -9,7 +9,11 @@ import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +41,8 @@ public class LobbyController {
 
     @PostMapping("/settings")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings) {
-        System.out.println("normalnych " + settings.getNormalFields());
         dataService.setSettings(settings);
-        System.out.println(dataService.getSettings());
+        System.out.println(dataService.getSettings().toString());
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
