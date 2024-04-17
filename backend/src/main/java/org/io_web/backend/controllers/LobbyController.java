@@ -40,9 +40,9 @@ public class LobbyController {
     }
 
     @PostMapping("/settings")
-    public ResponseEntity<String> setSettings(@RequestBody Settings settings){
+    public ResponseEntity<String> setSettings(@RequestBody Settings settings) {
         dataService.setSettings(settings);
-
+        System.out.println(dataService.getSettings().toString());
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 

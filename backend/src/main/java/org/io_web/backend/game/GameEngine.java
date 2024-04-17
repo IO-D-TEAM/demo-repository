@@ -101,7 +101,7 @@ public class GameEngine {
         }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
 
-        questions = new ArrayList<>(controller.getQuestions());
+//        questions = new ArrayList<>(controller.getQuestions());
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
