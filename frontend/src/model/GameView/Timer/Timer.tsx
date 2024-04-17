@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import "./Timer.css";
 import { useGameStore } from "../GameStore/GameStore";
+import { Button } from "@mui/material";
 
 
 const Timer = () => {
@@ -35,9 +36,16 @@ const Timer = () => {
     return (
         <div className="timer">
             <span className="time-left timer-comps">{gameDuration < 10 ? `0${gameDuration}` : gameDuration}:{seconds < 10 ? `0${seconds}` : seconds}</span>
-            <button className="finish-btn timer-comps" onClick={onClick}>
+            {/* <button className="finish-btn timer-comps" onClick={onClick}>
                 ZAKOŃCZ
-            </button>
+            </button> */}
+            <Button
+                variant="contained"
+                color="success"
+                onClick={() => onClick()}
+            >
+                Zakończ
+            </Button>
         </div>
     );
 }

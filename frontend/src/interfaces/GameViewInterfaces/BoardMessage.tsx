@@ -4,6 +4,7 @@ interface BoardMessage {
     clientID: string;
     positionChange: number;
     question: Question;
+    endingMove: boolean;
 }
 
 

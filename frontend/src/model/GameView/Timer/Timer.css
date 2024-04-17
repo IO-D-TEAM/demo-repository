@@ -18,18 +18,22 @@
     border-radius: .3em;
     font-size: 2rem;
     font-weight: bold;
-    color: rgb(66, 53, 21);
+    color: rgb(47, 47, 47);
     line-height: 3rem;
 }
 
 .finish-btn {
-    cursor: pointer;
+    /* cursor: pointer;
     border: none;
     background-color: rgb(238, 208, 166, .2);
     transition: .5s;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+    color: rgb(47, 47, 47);
+    text-decoration: none;
+
 }
 
 .finish-btn:hover {
-    color: white;
+    background-color: #6db922b0;
     transition: .5s;
 }

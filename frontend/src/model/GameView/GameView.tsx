@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
 import { calculateFields } from "./utils/GameViewUtils";
 import { useGameStore } from "./GameStore/GameStore";
-import { GetGameConfig } from "../../services/GameConfig/GameConfigService";
+import { GetGameConfig } from "../../services/Game/GameService";
 import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 import Board from "./Board/Board";
 import FinishWindow from "./FinishWindow/FinishWindow";
@@ -39,7 +39,11 @@ const GameView = () => {
 
     const [showQuestion, setShowQuestion] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState<Question>(
-        {question: "", answers: [], correctAnswer: ""}
+        {
+            question: "Jaki jest najwyższy szczyt na świecie?",
+            answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
+            correctAnswer: "Tak"
+        }
     );
 
     // Reading configuration
@@ -62,22 +66,22 @@ const GameView = () => {
         fetchData();
     }, [setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows]);
 
-    // Board realtime update
-    // Well, I'm not 100% sure if that works but the problem is I don't know if I can test it at the moment (just like the server side from what I)
+    // Board realtime update a niech chociaż to zadziała za pierwszym razem XDDD
     useEffect(() => {
         const socket = new SockJS(WS_URL);
         const client = Stomp.over(socket);
 
         const updateBoard = (update: BoardMessage) => {
-            const changed: boolean = changePlayerPosition(update.clientID, update.positionChange);
+            setShowQuestion(false);
+            const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);
     
-            if (changed && update.question) {
-                // I think we should wait a bit to let the student see his move on the board and after that show the question
+            // na ten moment nie pokazuje dobrej/złej odpowiedzi
+            if (positionChanged && update.endingMove) {
+                setFinish(true);
+            } else if (positionChanged && update.question) {
                 setTimeout(() => {}, 1000);
                 setCurrentQuestion(update.question);
                 setShowQuestion(true);
-            } else {
-                setShowQuestion(false);
             }
         }
     
@@ -112,20 +116,13 @@ const GameView = () => {
                 });
             }
         }
-    }, [connected, players, setPlayers]);
-
-    // Ofc it's temporary
-    const mockQuestion: Question = {
-        question: "Jaki jest najwyższy szczyt na świecie?",
-        answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
-        correctAnswer: "Tak"
-    };
+    }, [connected, players, setPlayers, setFinish]);
 
     return (
         <div className="game-view">
             <Board fields={fields} players={players} rows={rows} columns={columns}/>
             {gameFinished && <FinishWindow/>}
-            {true && <QuestionPopUp question={mockQuestion}/>}
+            {showQuestion && <QuestionPopUp question={currentQuestion}/>}
         </div>
     );
 }
