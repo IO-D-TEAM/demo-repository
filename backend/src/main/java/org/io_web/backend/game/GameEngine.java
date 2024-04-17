@@ -2,6 +2,7 @@ package org.io_web.backend.game;
 
 import lombok.Getter;
 import org.io_web.backend.board.Board;
+import org.io_web.backend.board.Field;
 import org.io_web.backend.board.Player;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.controllers.GameController;
@@ -80,7 +81,7 @@ public class GameEngine extends Thread {
 
     // communication with server
 
-    public boolean diceRollOutcome(int dice) {
+    public boolean diceRollOutcome(int dice) throws InterruptedException {
         int oldPos = currentMovingPlayer.getPosition();
         boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
         int newPos = currentMovingPlayer.getPosition();
@@ -91,7 +92,6 @@ public class GameEngine extends Thread {
         }
         currentQuestion = questionIterator.next();
         this.controller.sendQuestion();
-
         this.controller.updateTeachersView(newPos - oldPos, gameFinished);
         return false;
     }
@@ -155,6 +155,17 @@ public class GameEngine extends Thread {
                     break;
                 }
 
+                switch(board.getPlayerPosition().get(currentMovingPlayer)){
+                    case Field.QUESTION, Field.SPECIAL:{
+                        this.controller.sendQuestion();
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+
+
             } catch (InterruptedException e) {
                 System.out.println("[ENGINE] ending game");
                 this.gameStatus = GameStatus.ENDED;
@@ -165,6 +176,8 @@ public class GameEngine extends Thread {
         }
 
     }
+
+
 
     public String getCurrentMovingPlayerId() {
         return (currentMovingPlayer != null) ? currentMovingPlayer.getId() : null;
