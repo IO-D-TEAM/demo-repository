@@ -1,21 +1,30 @@
 package org.io_web.backend.services;
 
 import lombok.Getter;
-import lombok.experimental.FieldDefaults;
-
-import java.io.IOException;
+import org.io_web.backend.questions.Question;
+import java.util.ArrayList;
 
 
 @Getter
-@FieldDefaults(makeFinal = true)
 public class Settings {
-    private int numberOfPlayers = 0;
-    private int normalFields = 0;
-    private int specialFields = 0;
-    private int timeForAnswer = 0;
-    private int timeForGame = 0;
-//    private ArrayList<Question> questions = new ArrayList<>();
+    private int numberOfPlayers;
+    private int normalFields;
+    private int specialFields;
+    private int timeForAnswer;
+    private int timeForGame;
+    private ArrayList<Question> questions;
 
-    public Settings() throws IOException {
+    public Settings() {}
+
+    @Override
+    public String toString() {
+        return "Settings{" +
+                "numberOfPlayers=" + numberOfPlayers +
+                ", normalFields=" + normalFields +
+                ", specialFields=" + specialFields +
+                ", timeForAnswer=" + timeForAnswer +
+                ", timeForGame=" + timeForGame +
+                ", questions=" + questions +
+                '}';
     }
 }
