@@ -14,6 +14,6 @@ public class ColorPool {
         ++i;
         Color color = new Color(rgb);
 
-        return String.format("rgb(%d, %d, %d)", color.getRed(), color.getGreen(), color.getBlue());
+        return String.format("rgba(%d, %d, %d, %f)", color.getRed(), color.getGreen(), color.getBlue(), 1.0);
     }
 }
