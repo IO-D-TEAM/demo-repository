@@ -19,6 +19,9 @@ public class Board {
     private Map<Player, Field> playerPosition;
 
     public Board(int sizeOfBoard, int specialFields, List<Player> players) {
+        if (sizeOfBoard == 0) {
+            sizeOfBoard = 1;
+        }
         this.sizeOfBoard = sizeOfBoard;
         this.specialFields = specialFields;
         this.path = new ArrayList<>(Collections.nCopies(sizeOfBoard, Field.NORMAL));

@@ -11,6 +11,8 @@ import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientStatus;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.client.TaskWrapper;
+import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
+import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.game.GameStatus;
 import org.io_web.backend.questions.Answer;

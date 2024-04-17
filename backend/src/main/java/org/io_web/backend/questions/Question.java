@@ -23,6 +23,10 @@ public class Question implements Serializable {
         this.correctAnswer = correctAnswer;
     }
 
+    public boolean isCorrect(String answer) {
+        return answer.equals(correctAnswer);
+    }
+
     @Override
     public int hashCode() {
         return question.hashCode();

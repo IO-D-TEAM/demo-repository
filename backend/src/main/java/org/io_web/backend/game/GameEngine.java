@@ -6,6 +6,7 @@ import org.io_web.backend.board.Player;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.controllers.GameController;
 import org.io_web.backend.questions.Question;
+import org.io_web.backend.services.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -88,9 +89,15 @@ public class GameEngine extends Thread{
     }
 
     public void playerAnswered(String answer){
-        //TODO: handle the answer
+        if (currentQuestion.isCorrect(answer)) {
+            controller.updateTeachersView(1);
+            currentMovingPlayer.addPoints(1);
+            if (board.movePlayer(currentMovingPlayer, 1) ) {
+                setGameStatus(GameStatus.ENDED);
+            }
+        }
 
-        currentMovingPlayer = null;
+        nextTurn();
         currentTask = PlayerTask.IDLE;
     }
 
