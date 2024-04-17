@@ -1,5 +1,7 @@
 package org.io_web.backend.controllers;
 
+import lombok.Getter;
+import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.board.Field;
 import org.io_web.backend.board.Player;
 import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
@@ -31,7 +33,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.Color;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

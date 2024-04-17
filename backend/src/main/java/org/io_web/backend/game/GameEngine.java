@@ -20,7 +20,7 @@ import java.util.Random;
  */
 
 @Component
-public class GameEngine extends Thread{
+public class GameEngine {
     @Getter
     private Board board;
 
@@ -50,6 +50,14 @@ public class GameEngine extends Thread{
         this.controller = controller;
         this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
+    }
+
+    public void loadSettings(Settings settings) {
+        gameStatus = GameStatus.PENDING;
+        questions = settings.getQuestions();
+
+        this.board = new Board(settings.getNormalFields(), settings.getSpecialFields(), playersList);
+
     }
 
     private void setGameStatus(GameStatus newStatus){
