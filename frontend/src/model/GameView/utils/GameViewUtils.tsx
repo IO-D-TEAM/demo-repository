@@ -2,11 +2,11 @@ import { FieldType } from "../../../interfaces/GameViewInterfaces/FieldType";
 
 
 const calculateRowsAndCols = (size: number): [number, number] => {
-    let rows: number = Math.ceil(Math.sqrt(size / 2));
-    let columns: number = 2 * rows;
+    let rows: number = Math.ceil(Math.sqrt(size / 3));
+    let columns: number = 3 * rows;
 
-    if (size % 2 !== 0) {
-        columns = 2 * rows;
+    if (size % 3 !== 0) {
+        columns = 3 * rows;
     }
 
     rows += (rows - 1);
