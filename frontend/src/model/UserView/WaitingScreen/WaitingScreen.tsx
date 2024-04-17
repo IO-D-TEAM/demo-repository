@@ -107,7 +107,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     //     JSON.stringify({ confirm: true })
     //   );
     // }
-    return await fetch(`/game/${gameCode}/${plyaer?.id}/dice`, {
+    return await fetch(`/game/${gameCode}/client/${plyaer?.id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Poprawiono typ danych na application/json

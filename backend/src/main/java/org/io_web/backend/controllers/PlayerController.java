@@ -19,16 +19,11 @@ import java.util.List;
 public class PlayerController {
 
     private final SharedDataService dataService;
-    private final CommunicationService communicationService;
-    private final GameEngine gameEngine;
 
     @Autowired
-    public PlayerController(SharedDataService dataService, CommunicationService communicationService, GameEngine gameEngine){
+    public PlayerController(SharedDataService dataService){
         this.dataService = dataService;
-        this.gameEngine = gameEngine;
-        this.communicationService = communicationService;
     }
-
 
     /**
      * Handles situation when client is observing the game. Provide user with information

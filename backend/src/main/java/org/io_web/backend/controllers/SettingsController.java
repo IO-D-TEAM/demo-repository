@@ -25,13 +25,11 @@ import java.util.List;
 public class SettingsController {
 
     private final SharedDataService dataService;
-    private final CommunicationService communicationService;
     private final GameEngine gameEngine;
 
     @Autowired
-    public SettingsController(SharedDataService dataService, CommunicationService communicationService, GameEngine gameEngine){
+    public SettingsController(SharedDataService dataService, GameEngine gameEngine){
         this.gameEngine = gameEngine;
-        this.communicationService = communicationService;
         this.dataService = dataService;
     }
 
