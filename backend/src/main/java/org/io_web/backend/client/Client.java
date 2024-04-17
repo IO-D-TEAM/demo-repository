@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.io_web.backend.utilities.ColorPool;
 
+import java.awt.*;
 import java.util.UUID;
 
 @Getter
@@ -12,7 +14,8 @@ import java.util.UUID;
 public class Client {
 
     private final String id = UUID.randomUUID().toString();
-    private String nickname;
+    private final String nickname;
+    private final String color = ColorPool.generateColor();
     private ClientStatus status;
 
     @JsonCreator

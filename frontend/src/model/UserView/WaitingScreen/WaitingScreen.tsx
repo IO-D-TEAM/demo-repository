@@ -13,9 +13,21 @@ import { Question } from "../../../interfaces/Question";
 
 interface WaitingScreenProps {}
 
+// niezła funkcja bez walidacji pzdr
+function replaceAlpha(rgba: string, alpha: number): React.CSSProperties {
+  const rgbaValues = rgba.split(',');
+  rgbaValues[3] = String(alpha);
+
+  const FieldStyle: React.CSSProperties = {
+    background: rgbaValues.join(',')
+  };
+
+  return FieldStyle;
+}
+
 const WaitingScreen: FC<WaitingScreenProps> = () => {
   const [stompClient, setStompClient] = useState<Stomp.Client>();
-  const [plyaer, setPlayer] = useState<Player>();
+  const [player, setPlayer] = useState<Player>();
   const [connected, setConnected] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -108,16 +120,18 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
       );
     }
   };
+  
+  const colorRGBA = player?.color ?? "rgb(212, 17, 17, 1.0)";
 
   return (
-    <div className="main">
+    <div className="main" style={replaceAlpha(colorRGBA, 0.4)}>
       {/* tutaj będzie dodawany kolor do stylizacji jak nie będzie on nullem w playerze */}
       <div className="inner">
         {rollingDice ? (
           <div className="rollingDice">
             {!showRollDice ? (
               <>
-                <div className="msg">Twoja tura, rzuć kostką!</div>
+                <div className="msg" style={replaceAlpha(colorRGBA, 0.6)}>Twoja tura, rzuć kostką!</div>
                 <Button
                   variant="contained"
                   onClick={() => handleRollDiceClick()}
@@ -132,7 +146,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
                 ) : (
                   <div>
                     {showQuestion ? (
-                      <div className="form">
+                      <div className="form" style={replaceAlpha(colorRGBA, 0.6)}>
                         <AnswerQuestion
                           question={questionMock}
                           gameCode={gameCode}
@@ -140,7 +154,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
                         ></AnswerQuestion>
                       </div>
                     ) : (
-                      <div className="dice">{dice}</div>
+                      <div className="dice" style={replaceAlpha(colorRGBA, 0.4)}>{dice}</div>
                     )}
                   </div>
                 )}

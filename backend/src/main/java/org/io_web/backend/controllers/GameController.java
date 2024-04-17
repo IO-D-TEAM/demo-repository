@@ -9,12 +9,12 @@ import org.io_web.backend.client.ClientStatus;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.client.TaskWrapper;
 import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
-import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.game.GameStatus;
 import org.io_web.backend.questions.Question;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
+import org.io_web.backend.utilities.ColorPool;
 import org.io_web.backend.utilities.NetworkUtils;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -170,7 +169,7 @@ public class GameController {
 
         if (!reconnected) {
             this.dataService.getClientPool().addNewClient(newClient);
-            gameEngine.addPlayer(newClient.getId(), newClient.getNickname());
+            gameEngine.addPlayer(newClient.getId(), newClient.getNickname(), newClient.getColor());
             response = ResponseFactory.createResponse(HttpStatus.OK, newClient);
         }
 
@@ -285,7 +284,7 @@ public class GameController {
             for (Client client : this.dataService.getClientPool().getClients()) {
                 if (client.getStatus() == ClientStatus.SPECTATOR) {
                     client.setStatus(ClientStatus.SPECTATOR);
-                    this.gameEngine.addPlayer(client.getId(), client.getNickname());
+                    this.gameEngine.addPlayer(client.getId(), client.getNickname(), client.getColor());
                 }
             }
         }
@@ -342,50 +341,33 @@ public class GameController {
 
     @GetMapping("/settings")
     public ResponseEntity<Object> getBoardConfiguration() {
-        List<PlayerResponse> playersResponse = new ArrayList<>();
-
         gameEngine.loadSettings(dataService.getSettings());
 //        for (Client client : dataService.getClientPool().getClients()) {
 //            gameEngine.addPlayer(client.getId(), client.getNickname());
 //        }
         gameEngine.start();
 
-        // Colors for players are generated only here at the moment
-        // Need changes if we want to have client app use different colors
-        for (Player player : gameEngine.getPlayersList()) {
-            playersResponse.add(new PlayerResponse(
-                    player.getId(),
-                    player.getNickname(),
-                    generateRandomColor(),
-                    player.getPosition()
-            ));
-        }
-
         BoardConfigurationResponse configResponse = new BoardConfigurationResponse(
                 dataService.getSettings().getTimeForGame(),
                 gameEngine.getBoard().getPath().size(),
                 gameEngine.getBoard().getPath(),
-                playersResponse
+                gameEngine.getPlayersList()
         );
 
         return ResponseFactory.createResponse(HttpStatus.OK, configResponse);
-    }
-
-    private String generateRandomColor() {
-        Color playerColor = new Color((int) (Math.random() * 0x1000000));
-        return String.format("rgb(%d, %d, %d)", playerColor.getRed(), playerColor.getGreen(), playerColor.getBlue());
     }
 
     @GetMapping("/mock")
     public ResponseEntity<Object> getMockBoardConfiguration() {
         // For now frontend uses this endpoint because configuration form at the moment is outdated
 
-        List<PlayerResponse> mockPlayers = List.of(
-                new PlayerResponse("12345", "P1", generateRandomColor(), 0),
-                new PlayerResponse("12346", "P2", generateRandomColor(), 0),
-                new PlayerResponse("12347", "P3", generateRandomColor(), 0),
-                new PlayerResponse("12348", "P4", generateRandomColor(), 17),
-                new PlayerResponse("12349", "P5", generateRandomColor(), 17)
+        List<Player> mockPlayers = List.of(
+                new Player(0, 0, "12345", "P1", ColorPool.generateColor()),
+                new Player(0, 0, "12346", "P2", ColorPool.generateColor()),
+                new Player(0, 0, "12347", "P3", ColorPool.generateColor()),
+                new Player(1, 0, "12348", "P4", ColorPool.generateColor()),
+                new Player(1, 0, "12350", "P6", ColorPool.generateColor()),
+                new Player(1, 0, "12349", "P5", ColorPool.generateColor())
         );
         List<Field> mockFields = List.of(
                 Field.NORMAL, Field.QUESTION, Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
