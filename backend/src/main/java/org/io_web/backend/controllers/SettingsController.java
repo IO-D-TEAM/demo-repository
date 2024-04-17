@@ -3,7 +3,6 @@ package org.io_web.backend.controllers;
 import org.io_web.backend.board.Field;
 import org.io_web.backend.board.Player;
 import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
-import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.services.Settings;
 import org.io_web.backend.services.SharedDataService;
@@ -38,24 +37,14 @@ public class SettingsController {
 
     @GetMapping("/board")
     public ResponseEntity<Object> getBoardConfiguration() {
-        List<PlayerResponse> playersResponse = new ArrayList<>();
 
-        // Colors for players are generated only here at the moment
-        // Need changes if we want to have client app use different colors
-        for (Player player : gameEngine.getPlayersList()) {
-            playersResponse.add(new PlayerResponse(
-                    player.getId(),
-                    player.getNickname(),
-                    generateRandomColor(),
-                    player.getPosition()
-            ));
-        }
-
+        gameEngine.loadSettings(dataService.getSettings());
+//        gameEngine.start();
         BoardConfigurationResponse configResponse = new BoardConfigurationResponse(
                 dataService.getSettings().getTimeForGame(),
                 gameEngine.getBoard().getPath().size(),
                 gameEngine.getBoard().getPath(),
-                playersResponse
+                gameEngine.getPlayersList()
         );
 
         return ResponseFactory.createResponse(HttpStatus.OK, configResponse);
@@ -103,29 +92,5 @@ public class SettingsController {
     public ResponseEntity<String> setSettings(){
 //        dataService.setSettings(MockSettings.getMockSettings()); // For settings test
         return ResponseFactory.simpleResponse(HttpStatus.OK);
-    }
-
-    @GetMapping("/mock")
-    public ResponseEntity<Object> getMockBoardConfiguration() {
-        // For now frontend uses this endpoint because configuration form at the moment is outdated
-
-        List<PlayerResponse> mockPlayers = List.of(
-                new PlayerResponse("12345", "P1", generateRandomColor(), 0),
-                new PlayerResponse("12346", "P2", generateRandomColor(), 0),
-                new PlayerResponse("12347", "P3", generateRandomColor(), 0),
-                new PlayerResponse("12348", "P4", generateRandomColor(), 17),
-                new PlayerResponse("12349", "P5", generateRandomColor(), 17)
-        );
-        List<Field> mockFields = List.of(
-                Field.NORMAL, Field.QUESTION, Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
-                Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
-                Field.NORMAL, Field.QUESTION, Field.SPECIAL, Field.QUESTION, Field.NORMAL, Field.QUESTION,
-                Field.NORMAL, Field.NORMAL
-        );
-        BoardConfigurationResponse mockConfig = new BoardConfigurationResponse(
-                15, 20, mockFields, mockPlayers
-        );
-
-        return ResponseFactory.createResponse(HttpStatus.OK, mockConfig);
     }
 }

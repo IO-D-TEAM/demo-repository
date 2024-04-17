@@ -20,7 +20,7 @@ import java.util.Random;
  */
 
 @Component
-public class GameEngine {
+public class GameEngine extends Thread {
     @Getter
     private Board board;
 
@@ -70,7 +70,7 @@ public class GameEngine {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id, nickname);
+        Player newPlayer = new Player(0, 0, id, nickname, "red");
         playersList.add(newPlayer);
     }
 
