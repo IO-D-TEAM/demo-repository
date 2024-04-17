@@ -1,6 +1,7 @@
 import { error } from "console";
 import { Player } from "../../interfaces/Player";
 import { Settings } from "../../interfaces/Settings";
+import { json } from "stream/consumers";
 
 export const getGameUrl = async (): Promise<string> => {
   return await fetch("http://localhost:8080/game/get_url")
@@ -17,12 +18,13 @@ export const getGameUrl = async (): Promise<string> => {
 };
 
 export const sendSettingsForm = async (form: Settings) => {
+  console.log(form);
   const response = await fetch(`/lobby/settings`, {
     method: "POST",
+    body: JSON.stringify(form),
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(form),
   });
 
   if (!response.ok) {

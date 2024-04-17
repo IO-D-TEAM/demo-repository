@@ -7,18 +7,52 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useForm } from "react-hook-form";
 import { sendSettingsForm } from "../../services/LobbyData/LobbyDataService";
 import "./SettingForm.css";
+import { Question } from "../../interfaces/GameViewInterfaces/Question";
 
 interface SettingFormProps {}
 
 const SettingForm: FC<SettingFormProps> = () => {
   const [buttonPopup, setButtonPopup] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>();
   const form = useForm<Settings>({});
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
   const onSubmit = (data: Settings) => {
     console.log(data);
-    sendSettingsForm(data);
+    // chujowo ale działa, i wiesz co sie liczy? szacunek ludzi ulicy
+    if (questions) {
+      const response: Settings = {
+        numberOfPlayers: data.numberOfPlayers,
+        normalFields: data.normalFields,
+        specialFields: data.specialFields,
+        timeForAnswer: data.timeForAnswer,
+        timeForGame: data.timeForGame,
+        questions: questions,
+      };
+      sendSettingsForm(response);
+    } else {
+      console.log("Plik z pytaniami jest pusty!!!");
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsedQuestions = JSON.parse(
+            reader.result as string
+          ) as Question[];
+          setQuestions(parsedQuestions);
+          console.log(parsedQuestions);
+        } catch (error) {
+          console.error("Error parsing JSON file:", error);
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
   return (
@@ -101,13 +135,13 @@ const SettingForm: FC<SettingFormProps> = () => {
             <TextField
               type="file"
               label="Wybierz plik"
-              InputLabelProps={{ shrink: true }} // Potrzebne, aby etykieta TextField nie zachowywała się dziwnie w przypadku input typu file
-              {...register("questionsFile", {
+              InputLabelProps={{ shrink: true }}
+              {...register("questions", {
                 required: "Plik z pytaniami jest wymagany.",
               })}
-              error={!!errors.questionsFile}
-              helperText={errors.questionsFile?.message}
+              helperText={errors.questions?.message}
               inputProps={{ multiple: false, accept: ".json" }}
+              onChange={handleFileChange}
             ></TextField>
             <Button type="submit" variant="contained" color="primary">
               zapisz

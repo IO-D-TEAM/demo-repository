@@ -11,15 +11,22 @@ public class Player {
     private int correctAnswers;
 
     @Getter
-    private String id;
+    private final String id;
     @Getter
-    private String nickname;
+    private final String nickname;
+    @Getter
+    private final String color;
 
-    public Player(int position, int correctAnswers, String id, String nickname) {
+    public Player(int position, int correctAnswers, String id, String nickname, String color) {
         this.position = position;
         this.correctAnswers = correctAnswers;
         this.id = id;
         this.nickname = nickname;
+        this.color = color;
+    }
+
+    public void addPoints(int points) {
+        correctAnswers += points;
     }
 
     public void move(int steps) {
