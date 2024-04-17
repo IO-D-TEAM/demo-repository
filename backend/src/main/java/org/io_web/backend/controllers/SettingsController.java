@@ -5,8 +5,6 @@ import org.io_web.backend.board.Player;
 import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
 import org.io_web.backend.controllers.payload.PlayerResponse;
 import org.io_web.backend.game.GameEngine;
-import org.io_web.backend.mock_data.MockSettings;
-import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.Settings;
 import org.io_web.backend.services.SharedDataService;
 import org.io_web.backend.utilities.NetworkUtils;
@@ -86,6 +84,7 @@ public class SettingsController {
     @PostMapping("/update")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings){
         dataService.setSettings(settings);
+        System.out.println(settings.getQuestions());
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
@@ -102,8 +101,7 @@ public class SettingsController {
 
     @PostMapping("/mockTest")
     public ResponseEntity<String> setSettings(){
-        dataService.setSettings(MockSettings.getMockSettings());
-        System.out.println(MockSettings.getMockSettings().getQuestions().getFirst());
+//        dataService.setSettings(MockSettings.getMockSettings()); // For settings test
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 

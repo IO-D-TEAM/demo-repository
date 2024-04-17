@@ -90,14 +90,13 @@ public class GameEngine extends Thread{
 
     public void playerAnswered(String answer){
         if (currentQuestion.isCorrect(answer)) {
-            controller.updateTeachersView(1);
             currentMovingPlayer.addPoints(1);
             if (board.movePlayer(currentMovingPlayer, 1) ) {
                 setGameStatus(GameStatus.ENDED);
             }
+            controller.updateTeachersView(1,  gameStatus == GameStatus.ENDED);
         }
 
-        nextTurn();
         currentTask = PlayerTask.IDLE;
     }
 
@@ -105,6 +104,7 @@ public class GameEngine extends Thread{
 
     // method to change players, inform server
     public void run() {
+        System.out.println("[GAME ENGINE] Starting new game");
         if (playersList.size() < 2) {
             return;
         }// informacja o niepowodzeniu

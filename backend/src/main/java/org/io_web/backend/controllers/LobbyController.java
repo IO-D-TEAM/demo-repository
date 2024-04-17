@@ -2,30 +2,21 @@ package org.io_web.backend.controllers;
 
 import org.io_web.backend.client.ClientStatus;
 import org.io_web.backend.game.GameEngine;
-import org.io_web.backend.mock_data.MockSettings;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.io_web.backend.client.Client;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.services.CommunicationService;
-import org.io_web.backend.services.Settings;
 import org.io_web.backend.services.SharedDataService;
-import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
