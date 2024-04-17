@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.io_web.backend.utilities.ColorPool;
 
-import java.awt.*;
 import java.util.UUID;
 
 @Getter

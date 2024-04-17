@@ -20,7 +20,7 @@ import java.util.Random;
  */
 
 @Component
-public class GameEngine {
+public class GameEngine extends Thread {
     @Getter
     private Board board;
 
@@ -41,11 +41,14 @@ public class GameEngine {
 
     private int diceRoll = 0;
     private Iterator<Player> playerIterator;
-    private GameController controller;
+    private final GameController controller;
+
+
 
     @Autowired
     public GameEngine(GameController controller) {
         this.controller = controller;
+        this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
     }
 
@@ -63,11 +66,11 @@ public class GameEngine {
     }
 
 
-    public void addPlayer(String id, String nickname, String color) {
+    public void addPlayer(String id, String nickname) {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id, nickname, color);
+        Player newPlayer = new Player(0, 0, id, nickname, "red");
         playersList.add(newPlayer);
     }
 
@@ -77,66 +80,90 @@ public class GameEngine {
 
     // communication with server
 
-    public void diceRollOutcome(int dice) {
+    public boolean diceRollOutcome(int dice) {
         int oldPos = currentMovingPlayer.getPosition();
         boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
         int newPos = currentMovingPlayer.getPosition();
 
         if (gameFinished) {
             setGameStatus(GameStatus.ENDED);
+            return true;
         }
-
-        String[] answers = { "a", "b" };
-        currentQuestion = new Question("xd?", answers, answers[0]);
-        currentTask = PlayerTask.ANSWERING_QUESTION;
+        currentQuestion = questionIterator.next();
         this.controller.sendQuestion();
-        this.controller.updateTeachersView(newPos - oldPos);
+
+        this.controller.updateTeachersView(newPos - oldPos, gameFinished);
+        return false;
     }
 
     public void playerAnswered(String answer){
         if (currentQuestion.isCorrect(answer)) {
-            controller.updateTeachersView(1);
             currentMovingPlayer.addPoints(1);
             if (board.movePlayer(currentMovingPlayer, 1) ) {
                 setGameStatus(GameStatus.ENDED);
             }
+            controller.updateTeachersView(1,  gameStatus == GameStatus.ENDED);
         }
 
-        nextTurn();
         currentTask = PlayerTask.IDLE;
     }
 
     // game stages
-    public void start() {
+
+    // method to change players, inform server
+    public void run() {
+        System.out.println("[GAME ENGINE] Starting new game");
         if (playersList.size() < 2) {
             return;
         }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
 
-//        questions = new ArrayList<>(controller.getQuestions());
+        questions = new ArrayList<>(controller.getQuestions());
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
-        nextTurn();
-    }
+        System.out.println("[ENGINE] Setting up completed");
+        this.gameStatus = GameStatus.PENDING;
 
-    // method to change players, inform server
-    public void nextTurn() {
+        controller.gameStatusChanged();
         // reset turn if ended
-        if (!playerIterator.hasNext()) {
-            playerIterator = playersList.iterator();
+        System.out.println("[ENGINE] Start game");
+
+        while (this.gameStatus == GameStatus.PENDING) {
+
+            try {
+                if (!playerIterator.hasNext()) {
+                    playerIterator = playersList.iterator();
+                }
+                if (!questionIterator.hasNext()) {
+                    questionIterator = questions.iterator();
+                }
+
+                currentMovingPlayer = playerIterator.next();
+                currentTask = PlayerTask.THROWING_DICE;
+                System.out.println("[ENGINE] New Turn player id: " + currentMovingPlayer.getId());
+                Random random = new Random();
+                diceRoll = random.nextInt(6) + 1;
+
+                boolean received = controller.informClientOfHisTurn(diceRoll);
+                if (!received) {
+                    continue;
+                }
+                System.out.println("[ENGINE] dice rolled: " + diceRoll);
+
+                if (diceRollOutcome(diceRoll)) {
+                    break;
+                }
+
+            } catch (InterruptedException e) {
+                System.out.println("[ENGINE] ending game");
+                this.gameStatus = GameStatus.ENDED;
+                currentMovingPlayer = null;
+                currentTask = PlayerTask.IDLE;
+                currentQuestion = null;
+            }
         }
-        if (!questionIterator.hasNext()) {
-            questionIterator = questions.iterator();
-        }
 
-        currentMovingPlayer = playerIterator.next();
-        currentTask = PlayerTask.THROWING_DICE;
-
-        Random random = new Random();
-        diceRoll = random.nextInt(6) + 1;
-
-        this.controller.informClientOfHisTurn(diceRoll);
     }
 
     public String getCurrentMovingPlayerId() {

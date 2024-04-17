@@ -4,7 +4,7 @@ import { Settings } from "../../interfaces/Settings";
 import { json } from "stream/consumers";
 
 export const getGameUrl = async (): Promise<string> => {
-  return await fetch("http://localhost:8080/game/get_url")
+  return await fetch("http://localhost:8080/settings/get_url")
     .then((response) => response.json())
     .then((data: any) => {
       console.log(data);
@@ -19,7 +19,7 @@ export const getGameUrl = async (): Promise<string> => {
 
 export const sendSettingsForm = async (form: Settings) => {
   console.log(form);
-  const response = await fetch(`/lobby/settings`, {
+  const response = await fetch(`/settings/update`, {
     method: "POST",
     body: JSON.stringify(form),
     headers: {

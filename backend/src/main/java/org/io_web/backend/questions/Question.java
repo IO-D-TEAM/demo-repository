@@ -1,6 +1,7 @@
 package org.io_web.backend.questions;
 
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -13,7 +14,12 @@ public class Question implements Serializable {
     private final String[] answers;
     private final String correctAnswer;
 
-    public Question(String question, String[] answers, String correctAnswer) {
+    @JsonCreator
+    public Question(
+            @JsonProperty("question") String question,
+            @JsonProperty("answers") String[] answers,
+            @JsonProperty("correctAnswer") String correctAnswer
+    ) {
         this.question = question;
         this.answers = answers;
         this.correctAnswer = correctAnswer;

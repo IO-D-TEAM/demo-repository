@@ -1,5 +1,7 @@
 package org.io_web.backend.services;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.client.TaskWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 
-
 /**
  * This is to provide centralized place to handle
  * socket communication logic
@@ -18,6 +19,9 @@ import java.io.Serializable;
 public class CommunicationService {
 
     private final SimpMessagingTemplate template;
+    @Getter
+    @Setter
+    private boolean confirmation = false;
 
     @Autowired
     public CommunicationService(@Qualifier("mySimpMessagingTemplate") SimpMessagingTemplate template) {
@@ -29,7 +33,8 @@ public class CommunicationService {
      * it on our own.
      */
     public void sendMessageToClient(String clientId, Object message) {
-        if(message instanceof TaskWrapper taskWrapper) {
+        confirmation = false;
+        if (message instanceof TaskWrapper taskWrapper) {
             template.convertAndSend("/client/" + clientId, taskWrapper.serialize());
         }
         else if(message instanceof Serializable) {
@@ -37,11 +42,18 @@ public class CommunicationService {
         }
     }
 
-    public void sendMessageToLobby(Object message){
-        if(message instanceof ClientPool clientPool) {
-            template.convertAndSend("/lobby/players", clientPool.serialize());
+     synchronized public boolean waitForConfirm() throws InterruptedException{
+        if (confirmation) {
+            return true;
         }
-        else if(message instanceof Serializable) {
+        wait(5000);
+        return confirmation;
+    }
+
+    public void sendMessageToLobby(Object message) {
+        if (message instanceof ClientPool clientPool) {
+            template.convertAndSend("/lobby/players", clientPool.serialize());
+        } else if (message instanceof Serializable) {
             template.convertAndSend("/lobby/players", message);
         }
     }
