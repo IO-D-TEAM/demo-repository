@@ -36,14 +36,6 @@ const GameView = () => {
 
     const [showQuestion, setShowQuestion] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
-    // const [currentQuestion, setCurrentQuestion] = useState<Question>(
-    //     {
-    //         question: "Jaki jest najwyższy szczyt na świecie?",
-    //         answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
-    //         correctAnswer: "Mount Everest"
-    //     }
-    // );
-
     const [currentQuestion, setCurrentQuestion] = useState<Question>(
         {
             question: "",
