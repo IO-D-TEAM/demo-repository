@@ -19,7 +19,7 @@ export const getGameUrl = async (): Promise<string> => {
 
 export const sendSettingsForm = async (form: Settings) => {
   console.log(form);
-  const response = await fetch(`/lobby/settings`, {
+  const response = await fetch(`/settings/update`, {
     method: "POST",
     body: JSON.stringify(form),
     headers: {

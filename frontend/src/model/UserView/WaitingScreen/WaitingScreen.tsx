@@ -72,22 +72,22 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     }
   }, []);
 
-  // japierdolectojest -> rellllll, nie ma co się interesować za dużo bo kociej mordy można dostać
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRollingDice(true);
-    }, 1000);
+  // // japierdolectojest -> rellllll, nie ma co się interesować za dużo bo kociej mordy można dostać
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setRollingDice(true);
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
+  //   return () => clearTimeout(timer);
+  // }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowQuestion(true);
-    }, 4000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setShowQuestion(true);
+  //   }, 4000);
 
-    return () => clearTimeout(timer);
-  }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
+  //   return () => clearTimeout(timer);
+  // }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
 
   const handleRollDiceClick = () => {
     setShowRollDice(true);
