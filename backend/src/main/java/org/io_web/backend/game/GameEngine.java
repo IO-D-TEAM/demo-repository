@@ -51,15 +51,9 @@ public class GameEngine {
 
     public void loadSettings(Settings settings) {
         gameStatus = GameStatus.PENDING;
+        questions = settings.getQuestions();
 
         this.board = new Board(settings.getNormalFields(), settings.getSpecialFields(), playersList);
-
-//        questions = controller.getDataService().getSettings().chujWie()
-        String[] q = {"a", "b", "odp1"};
-        questions = new ArrayList<>();
-        questions.add(new Question("pytanie1", q, "odp1"));
-        questions.add(new Question("pytanie2", q, "odp1"));
-        questions.add(new Question("pytanie3", q, "odp1"));
 
     }
 
