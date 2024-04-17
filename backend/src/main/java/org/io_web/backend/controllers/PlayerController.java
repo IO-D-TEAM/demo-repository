@@ -1,8 +1,6 @@
 package org.io_web.backend.controllers;
 
 import org.io_web.backend.client.Client;
-import org.io_web.backend.game.GameEngine;
-import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/players")

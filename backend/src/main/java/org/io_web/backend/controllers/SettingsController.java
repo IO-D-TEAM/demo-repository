@@ -1,7 +1,4 @@
 package org.io_web.backend.controllers;
-
-import org.io_web.backend.board.Field;
-import org.io_web.backend.board.Player;
 import org.io_web.backend.controllers.payload.BoardConfigurationResponse;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.services.Settings;
@@ -14,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/settings")
