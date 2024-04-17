@@ -2,6 +2,7 @@ package org.io_web.backend.game;
 
 import lombok.Getter;
 import org.io_web.backend.board.Board;
+import org.io_web.backend.board.Field;
 import org.io_web.backend.board.Player;
 import org.io_web.backend.client.PlayerTask;
 import org.io_web.backend.controllers.GameController;
@@ -86,9 +87,10 @@ public class GameEngine {
             setGameStatus(GameStatus.ENDED);
         }
 
-        String[] answers = { "a", "b" };
-        currentQuestion = new Question("xd?", answers, answers[0]);
-        currentTask = PlayerTask.ANSWERING_QUESTION;
+        //if (board.getField(newPos) == Field.QUESTION) {
+        //    this.controller.sendQuestion();
+        //}
+
         this.controller.sendQuestion();
         this.controller.updateTeachersView(newPos - oldPos);
     }
@@ -112,8 +114,6 @@ public class GameEngine {
             return;
         }// informacja o niepowodzeniu
         playerIterator = playersList.iterator();
-
-//        questions = new ArrayList<>(controller.getQuestions());
         Collections.shuffle(questions);
 
         questionIterator = questions.iterator();
@@ -131,12 +131,14 @@ public class GameEngine {
         }
 
         currentMovingPlayer = playerIterator.next();
+        currentQuestion = questionIterator.next();
         currentTask = PlayerTask.THROWING_DICE;
 
         Random random = new Random();
         diceRoll = random.nextInt(6) + 1;
 
         this.controller.informClientOfHisTurn(diceRoll);
+        diceRollOutcome(diceRoll);
     }
 
     public String getCurrentMovingPlayerId() {

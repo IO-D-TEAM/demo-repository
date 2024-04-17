@@ -53,6 +53,9 @@ public class Board {
         players.forEach(obj -> playerPosition.put(obj, path.getFirst()));
     }
 
+    public Field getField(int position) {
+        return this.path.get(position);
+    }
     /**
      * Move player on the board, with bound checking
      * @param player which player to move
