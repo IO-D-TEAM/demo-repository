@@ -2,7 +2,7 @@ import React from "react";
 import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
 
 export const getGameConfig = async (): Promise<GameConfig> => {
-  return await fetch("/game/mock")
+  return await fetch("/game/settings")
     .then((response) => response.json())
     .then((data: GameConfig) => {
       return data;
