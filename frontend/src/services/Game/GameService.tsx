@@ -1,9 +1,7 @@
 import React from "react";
 import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
 
-export const GetGameConfig = async (): Promise<GameConfig> => {
-  // Getting mock data for now
-  // To get real data just swap mock with settings
+export const getGameConfig = async (): Promise<GameConfig> => {
   return await fetch("/game/settings")
     .then((response) => response.json())
     .then((data: GameConfig) => {
@@ -14,4 +12,20 @@ export const GetGameConfig = async (): Promise<GameConfig> => {
         `HTTP GET error while getting game configuration! Status: ${error}`
       );
     });
+};
+
+
+export const endGame = async() => {
+  const response = await fetch(`/game/endGame`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `HTTP POST error while ending the game! Status: ${response.status}`
+    );
+  }
 };

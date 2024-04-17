@@ -1,24 +1,20 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
-import { calculateFields } from "./utils/GameViewUtils";
-import { useGameStore } from "./GameStore/GameStore";
-import { GetGameConfig } from "../../services/GameConfig/GameConfigService";
-import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
-import Board from "./Board/Board";
-import FinishWindow from "./FinishWindow/FinishWindow";
-import "./GameView.css";
-
+import React, { useState, useEffect } from "react";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
+import { calculateFields } from "./utils/GameViewUtils";
+import { getGameConfig } from "../../services/Game/GameService";
+import { GameConfig } from "../../interfaces/GameViewInterfaces/GameConfig";
+import { useGameStore } from "./GameStore/GameStore";
+import { GameState } from "../../interfaces/GameViewInterfaces/GameState";
 import { BoardMessage } from "../../interfaces/GameViewInterfaces/BoardMessage";
 import { PlayerType } from "../../interfaces/GameViewInterfaces/PlayerType";
 import { Question } from "../../interfaces/GameViewInterfaces/Question";
+import Board from "./Board/Board";
+import FinishWindow from "./FinishWindow/FinishWindow";
 import QuestionPopUp from "./Question/QuestionPopUp";
 
 
 const GameView = () => {
-    // It is awful but unfortunately it has to be like that for now
     const {
         fields,
         players,
@@ -39,17 +35,21 @@ const GameView = () => {
     const [connected, setConnected] = useState(false);
 
     const [showQuestion, setShowQuestion] = useState(false);
+    const [showAnswer, setShowAnswer] = useState(false);
     const [currentQuestion, setCurrentQuestion] = useState<Question>(
-        {question: "", answers: [], correctAnswer: ""}
+        {
+            question: "",
+            answers: [],
+            correctAnswer: ""
+        }
     );
 
     // Reading configuration
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const config: GameConfig = await GetGameConfig();
+                const config: GameConfig = await getGameConfig();
                 const [fieldsRepr, r, c] = calculateFields(config.boardSize, config.fieldSpeciality);
-                setFinish(false);
                 setGameDuration(config.gameDuration);
                 setPlayers(config.players);
                 setFields(fieldsRepr);
@@ -64,11 +64,55 @@ const GameView = () => {
         fetchData();
     }, [setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows]);
 
-    // Board realtime update
-    // Well, I'm not 100% sure if that works but the problem is I don't know if I can test it at the moment (just like the server side from what I)
+    // Board realtime update a niech chociaż to zadziała za pierwszym razem XDDD
     useEffect(() => {
         const socket = new SockJS(WS_URL);
         const client = Stomp.over(socket);
+
+        const updateBoard = (update: BoardMessage) => {
+            // jeśli było wyświetlone pytanie w poprzednim ruchu to pokazujemy na chwilę poprawną odpowiedź zanim wykonaym ruch który właśnie przyszedł
+            if (showQuestion) {
+                setShowAnswer(true);
+                setTimeout(() => {}, 3000);
+            }
+            
+            // czyścimy plansze z ewentualnego pytania
+            setShowQuestion(false);
+            setShowAnswer(false);
+
+            // zwykły ruch wykonujemy tak czy siak
+            const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);
+
+            // ruch kończący grę 
+            if (positionChanged && update.endingMove) {
+                setFinish(true);
+                return
+            }
+
+            // ruch ale trafiamy na pytani - w teorii będzie się wyświetlać po 2 sekundach odkąd przyszedł ruch z pytaniem, żeby zobaczyć przejście gracza
+            if (positionChanged && update.question) {
+                setCurrentQuestion(update.question);
+                setTimeout(() => {
+                    setShowQuestion(true);
+                }, 2000);
+
+                return
+            }
+        }
+    
+        const changePlayerPosition = (playerId: string, steps: number): boolean => {
+            const playersUpdate: PlayerType[] = [...players];
+            const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
+    
+            if (playerToUpdateIdx > -1) {
+                playersUpdate[playerToUpdateIdx].position += steps;
+                setPlayers(playersUpdate);
+                return true;
+            } else {
+                console.error(`Player with this id: ${playerId} doesn't exist!`);
+                return false;
+            }
+        }
 
         client.connect({}, () => {
             client.subscribe(`/move`, (notification) => {
@@ -87,47 +131,13 @@ const GameView = () => {
                 });
             }
         }
-    }, []);
-
-    const updateBoard = (update: BoardMessage) => {
-        const changed: boolean = changePlayerPosition(update.clientID, update.positionChange);
-
-        if (changed && update.question) {
-            // I think we should wait a bit to let the student see his move on the board and after that show the question
-            setTimeout(() => {}, 1000);
-            setCurrentQuestion(update.question);
-            setShowQuestion(true);
-        } else {
-            setShowQuestion(false);
-        }
-    }
-
-    const changePlayerPosition = (playerId: string, steps: number): boolean => {
-        const playersUpdate: PlayerType[] = [...players];
-        const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
-
-        if (playerToUpdateIdx > -1) {
-            playersUpdate[playerToUpdateIdx].position += steps;
-            setPlayers(playersUpdate);
-            return true;
-        } else {
-            console.error(`Player with this id: ${playerId} doesn't exist!`);
-            return false;
-        }
-    }
-
-    // Ofc it's temporary
-    const mockQuestion: Question = {
-        question: "Jaki jest najwyższy szczyt na świecie?",
-        answers: ["Mount Everest", "K2", "Annapurna", "Mont Blanc"],
-        correctAnswer: "Tak"
-    };
+    }, [connected, players, setPlayers, setFinish, showQuestion]);
 
     return (
         <div className="game-view">
             <Board fields={fields} players={players} rows={rows} columns={columns}/>
             {gameFinished && <FinishWindow/>}
-            {true && <QuestionPopUp question={mockQuestion}/>}
+            {showQuestion && <QuestionPopUp question={currentQuestion} showCorrectAnswer={showAnswer}/>}
         </div>
     );
 }
