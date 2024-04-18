@@ -145,6 +145,7 @@ public class GameEngine extends Thread {
 
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) {
+                    controller.revertClientToWait();
                     continue;
                 }
                 System.out.println("[ENGINE] dice rolled: " + diceRoll);
@@ -161,6 +162,7 @@ public class GameEngine extends Thread {
                     playerAnswered(controller.getPlayerAnswer());
                 } else {
                     currentQuestion = null;
+                    controller.revertClientToWait();
                     this.controller.updateTeachersView(0, false);
                 }
                 this.currentTask = PlayerTask.IDLE;

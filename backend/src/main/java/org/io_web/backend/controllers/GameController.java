@@ -166,6 +166,12 @@ public class GameController {
         return communicationService.waitForConfirm(dataService.getSettings().getTimeForAnswer() * 3);
     }
 
+    public void revertClientToWait(){
+        String clientID = gameEngine.getCurrentMovingPlayerId();
+        TaskWrapper task =  new TaskWrapper(null, null, PlayerTask.IDLE);
+        this.communicationService.sendMessageToClient(clientID, task);
+    }
+
     public void updateTeachersView(int playerMove, boolean endingMove) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         if (clientID == null) {

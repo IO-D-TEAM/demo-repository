@@ -74,13 +74,15 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setShowDiceResult(true);
         } else if (data.task === "DELETED") {
           setRollingDice(false);
-          setRollingDice(false);
           setShowQuestion(false);
           setShowDiceResult(false);
           setShowRollDice(false);
           setDeleted(true);
         } else {
           setRollingDice(false);
+          setShowQuestion(false);
+          setShowDiceResult(false);
+          setShowRollDice(false);
         }
       });
     });
