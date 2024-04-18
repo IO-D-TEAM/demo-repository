@@ -10,6 +10,10 @@ const Timer = () => {
     const [seconds, setSeconds] = useState(0);
     const secondsRestart: number = 59;
 
+    useEffect(()=>{
+        setSeconds(0);
+    })
+
     useEffect(() => {
         const timerId = setInterval(() => {
             if (gameDuration === 0 && seconds === 0) {
@@ -17,17 +21,17 @@ const Timer = () => {
                 return () => clearInterval(timerId);
             }
             
-            setSeconds(seconds - 1);
+            // setSeconds(seconds - 1);
             if (seconds === 0) {
                 setGameDuration(gameDuration - 1);
-                setSeconds(secondsRestart)
+                setSeconds(59)
             }
 
         }, 1000);
     
         return () => clearInterval(timerId);
 
-    }, [gameDuration, setGameDuration, setFinish, seconds, ]);
+    }, [gameDuration, setGameDuration, setFinish ]);
 
     const onClick = () => {
         setFinish(true);
