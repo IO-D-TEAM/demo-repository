@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,13 +79,22 @@ public class GameController {
         if (!client.getId().equals((gameEngine.getCurrentMovingPlayerId()))) {
             return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
         }
-        if (communicationService.isConfirmation()) return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+
+        if (communicationService.isConfirmation()) {
+            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        }
+
         synchronized (this.communicationService) {
             communicationService.setConfirmation(true);
             communicationService.notifyAll();
-//            this.gameEngine.playerAnswered(answer);
-            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+//            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
         }
+
+        if(gameEngine.getCurrentTask() == PlayerTask.ANSWERING_QUESTION){
+            this.gameEngine.playerAnswered(answer);
+        }
+
+        return ResponseFactory.createResponse(HttpStatus.OK, "Success");
     }
 
     /**
@@ -133,15 +143,17 @@ public class GameController {
      * In order to receive it, client will need to be subscribed to a websocket,
      * that is bound to their id - /client/{clientID}
      */
-    public void sendQuestion() {
+    public boolean sendQuestion() throws InterruptedException {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         Question currentQuestion = gameEngine.getCurrentQuestion();
-        if (clientID == null || currentQuestion == null) {
-            return;
-        }
+//        if (clientID == null || currentQuestion == null) {
+//            return false;
+//        }
 
-        TaskWrapper task =  new TaskWrapper(currentQuestion, 0, PlayerTask.ANSWERING_QUESTION);
+        TaskWrapper task =  new TaskWrapper(currentQuestion, 0, this.gameEngine.getCurrentTask());
+        System.out.println("[SENDING QUESTION]" + task + " to" + clientID) ;
         this.communicationService.sendMessageToClient(clientID, task);
+        return communicationService.waitForConfirm();
     }
 
     public void updateTeachersView(int playerMove, boolean endingMove) {

@@ -16,6 +16,7 @@ public class Board {
     private final int specialFields;
     @Getter
     private ArrayList<Field> path;
+    @Getter
     private Map<Player, Field> playerPosition;
 
     public Board(int sizeOfBoard, int specialFields, List<Player> players) {

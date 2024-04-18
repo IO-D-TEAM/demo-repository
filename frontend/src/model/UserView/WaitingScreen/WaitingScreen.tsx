@@ -5,16 +5,17 @@ import SockJS from "sockjs-client";
 import { Player } from "../../../interfaces/Player";
 import { useParams } from "react-router-dom";
 import loading from "../../../assets/loading.gif";
-import { getPlayerById } from "../../../services/ClientInfo/ClientInfo/ClientInfo";
+import {
+  confirmRoll,
+  getPlayerById,
+} from "../../../services/ClientInfo/ClientInfo/ClientInfo";
 import Button from "@mui/material/Button";
 import rolling from "../../../assets/dice.gif";
 import AnswerQuestion from "../AnswerQuestion/AnswerQuestion";
 import { Question } from "../../../interfaces/Question";
-import { NoteOutlined } from "@mui/icons-material";
 
 interface WaitingScreenProps {}
 
-// niezła funkcja bez walidacji pzdr
 function replaceAlpha(rgba: string, alpha: number): React.CSSProperties {
   const rgbaValues = rgba.split(',');
   rgbaValues[3] = String(alpha);
@@ -28,7 +29,7 @@ function replaceAlpha(rgba: string, alpha: number): React.CSSProperties {
 
 const WaitingScreen: FC<WaitingScreenProps> = () => {
   const [stompClient, setStompClient] = useState<Stomp.Client>();
-  const [player, setPlayer] = useState<Player>();
+  const [plyaer, setPlayer] = useState<Player>();
   const [connected, setConnected] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -50,24 +51,24 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
-    getPlayerById(gameCode, id)
-      .then((response: Player) => {
-        setPlayer(response);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-
     client.connect({}, () => {
+      console.log(id);
       client.subscribe(`/client/${id}`, (notification: any) => {
-        setConnected(true);
         console.log(notification);
-        if (notification.body.task === "THROWING_DICE") {
-          console.log(notification);
+
+        if(notification.body as string == "")
+          return;
+
+        let data = JSON.parse(notification.body as string);
+        setConnected(true);
+        console.log(data);
+        if (data.task === "THROWING_DICE") {
+          console.log("rzucam koscią " + data.diceRoll);
           setRollingDice(true);
-          setDice(Number(notification.body.diceRoll));
-        } else if (notification.body.task === "ANSWERING_QUESTION") {
-          setQuestion(notification.body.question);
+
+          setDice(data.diceRoll);
+        } else if (data.task === "ANSWERING_QUESTION") {
+          setQuestion(data.question);
           setShowQuestion(true);
           setShowDiceResult(true);
         } else {
@@ -87,7 +88,18 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     }
   }, []);
 
-  // // japierdolectojest -> rellllll, nie ma co się interesować za dużo bo kociej mordy można dostać
+  useEffect(() => {
+    console.log(id);
+    getPlayerById(gameCode, id)
+      .then((response: Player) => {
+        setPlayer(response);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }, []);
+
+  // japierdolectojest -> rellllll, nie ma co się interesować za dużo bo kociej mordy można dostać
   // useEffect(() => {
   //   const timer = setTimeout(() => {
   //     setRollingDice(true);
@@ -114,7 +126,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   };
 
   //szczerze to nie mam pojęcia czy to działa, ale jakby coś się jebało na backu to pewnie przez to ;3 pozdro
-  const sendConfirmation = async ()  => {
+  const sendConfirmation = async () => {
     // if (stompClient !== null) {
     //   stompClient?.send(
     //     "client/confirmation",
@@ -122,22 +134,12 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     //     JSON.stringify({ confirm: true })
     //   );
     // }
-    return await fetch(`/game/${gameCode}/client/${player?.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Poprawiono typ danych na application/json
-      },
-      body: JSON.stringify({}),
-    })
-      .then((response: any) => {
-        return response.json();
-      })
-      .catch((error: any) => {
-        console.log(`Couldn't proccess player. Status: ${error}`);
-      });
+    if (gameCode !== undefined && plyaer !== undefined) {
+      await confirmRoll(true, gameCode, plyaer);
+    }
   };
-  
-  const colorRGBA = player?.color ?? "rgb(212, 17, 17, 1.0)";
+
+  const colorRGBA = plyaer?.color ?? "rgb(212, 17, 17, 1.0)";
 
   return (
     <div className="main" style={replaceAlpha(colorRGBA, 0.4)}>
@@ -164,7 +166,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
                     {showQuestion ? (
                       <div className="form" style={replaceAlpha(colorRGBA, 0.6)}>
                         <AnswerQuestion
-                          question={questionMock}
+                          question={question}
                           gameCode={gameCode}
                           id={id}
                         ></AnswerQuestion>

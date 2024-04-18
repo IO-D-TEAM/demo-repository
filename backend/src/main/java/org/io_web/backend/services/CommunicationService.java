@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.io.Serializable;
 
@@ -46,7 +47,7 @@ public class CommunicationService {
         if (confirmation) {
             return true;
         }
-        wait(5000);
+        wait(10000);
         return confirmation;
     }
 
