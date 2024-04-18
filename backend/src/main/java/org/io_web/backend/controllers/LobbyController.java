@@ -126,12 +126,11 @@ public class LobbyController {
                     return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Lobby full");
                 }
                 newClient.setStatus(ClientStatus.SPECTATOR);
-
         }
 
         if (!reconnected) {
             this.dataService.getClientPool().addNewClient(newClient);
-            gameEngine.addPlayer(newClient.getId(), newClient.getNickname());
+            gameEngine.addPlayer(newClient.getId(), newClient.getNickname(), newClient.getColor());
             response = ResponseFactory.createResponse(HttpStatus.OK, newClient);
         }
 
