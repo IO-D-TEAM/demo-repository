@@ -10,5 +10,6 @@ import java.io.Serializable;
 public enum PlayerTask implements Serializable {
     THROWING_DICE,
     ANSWERING_QUESTION,
-    IDLE;
+    IDLE,
+    DELETED,
 }

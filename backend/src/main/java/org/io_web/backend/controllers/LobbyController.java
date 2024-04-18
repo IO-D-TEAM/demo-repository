@@ -1,10 +1,8 @@
 package org.io_web.backend.controllers;
 
-import org.io_web.backend.client.ClientStatus;
+import org.io_web.backend.client.*;
 import org.io_web.backend.game.GameEngine;
 import org.io_web.backend.utilities.ResponseFactory;
-import org.io_web.backend.client.Client;
-import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.services.CommunicationService;
 import org.io_web.backend.services.SharedDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +144,9 @@ public class LobbyController {
     @PostMapping("/deletePlayer")
     public ResponseEntity<String> deletePlayer(@RequestBody Client client) {
         this.dataService.getClientPool().removeClient(client);
+        TaskWrapper task = new TaskWrapper(null, null, PlayerTask.DELETED);
+        System.out.println("[LOG] Post-Mapping deletePlayer");
+        this.communicationService.sendMessageToClient(client.getId(), task);
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 }

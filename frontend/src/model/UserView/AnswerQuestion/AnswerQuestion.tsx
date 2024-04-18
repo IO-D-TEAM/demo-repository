@@ -13,21 +13,25 @@ interface AnswerQuestionProps {
   question: Question | null;
   gameCode: string | undefined;
   id: string | undefined;
+  parentCallback: (msg: boolean) => void;
 }
 
 const AnswerQuestion: FC<AnswerQuestionProps> = ({
   question,
   gameCode,
   id,
+  parentCallback,
 }) => {
   const [selectedValue, setSelectedValue] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitted(true);
     // tutaj wysyłam na backend odpowiedź
     console.log(selectedValue);
     sendAnswer(selectedValue, gameCode, id);
+    parentCallback(true);
   };
 
   const handleChange = (event: any) => {

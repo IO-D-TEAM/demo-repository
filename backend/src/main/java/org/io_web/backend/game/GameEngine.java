@@ -172,6 +172,8 @@ public class GameEngine extends Thread {
 
 
 
+
+
     public String getCurrentMovingPlayerId() {
         return (currentMovingPlayer != null) ? currentMovingPlayer.getId() : null;
     }
