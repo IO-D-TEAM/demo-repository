@@ -4,6 +4,7 @@ import {
   deletePlayer,
   getGameUrl,
   getPlayers,
+  startGame
 } from "../../services/LobbyData/LobbyDataService";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
@@ -104,6 +105,7 @@ export const Lobby: FC<LobbyProps> = () => {
             variant="contained"
             color="success"
             component={Link}
+            onClick={startGame}
             to="/gameView"
           >
             Start

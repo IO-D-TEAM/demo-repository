@@ -2,6 +2,7 @@ package org.io_web.backend.services;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.client.ClientPool;
 import org.io_web.backend.client.TaskWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,7 @@ public class CommunicationService {
         confirmation = false;
         if (message instanceof TaskWrapper taskWrapper) {
             template.convertAndSend("/client/" + clientId, taskWrapper.serialize());
-        }
-        else if(message instanceof Serializable) {
+        } else if(message instanceof Serializable) {
             template.convertAndSend("/client/" + clientId, message);
         }
     }
@@ -60,6 +60,8 @@ public class CommunicationService {
     }
 
     public void sendMessageToBoard(Object message) {
-        template.convertAndSend("/move", message);
+        if (message instanceof BoardMessage boardMessage) {
+            template.convertAndSend("/move" , boardMessage.serialize());
+        }
     }
 }
