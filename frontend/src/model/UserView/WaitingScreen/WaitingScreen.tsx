@@ -80,6 +80,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setShowRollDice(false);
           setDeleted(true);
         } else {
+          setDeleted(false);
           setRollingDice(false);
           setShowQuestion(false);
           setShowDiceResult(false);
