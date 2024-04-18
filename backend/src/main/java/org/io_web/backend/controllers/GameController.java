@@ -166,9 +166,9 @@ public class GameController {
         return communicationService.waitForConfirm(dataService.getSettings().getTimeForAnswer() * 3);
     }
 
-    public void revertClientToWait(){
+    public void revertClientToWait(PlayerTask playerTask){
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        TaskWrapper task =  new TaskWrapper(null, null, PlayerTask.IDLE);
+        TaskWrapper task =  new TaskWrapper(null, null, playerTask);
         this.communicationService.sendMessageToClient(clientID, task);
     }
 

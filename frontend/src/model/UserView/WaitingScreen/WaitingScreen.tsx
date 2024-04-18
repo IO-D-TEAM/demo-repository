@@ -73,6 +73,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setShowQuestion(true);
           setShowDiceResult(true);
         } else if (data.task === "DELETED") {
+          console.log('wyrzucony')
           setRollingDice(false);
           setShowQuestion(false);
           setShowDiceResult(false);

@@ -64,9 +64,10 @@ public class Board {
         boolean gameEnded = false;
         int currPos = player.getPosition();
 
-        if (currPos + steps >= sizeOfBoard) {
+        if (currPos + steps >= sizeOfBoard - 1) {
             // calculate steps needed to achieve finish field
-            steps = currPos + steps - (sizeOfBoard + 1);
+            currPos = sizeOfBoard - 1;
+            steps = currPos - player.getPosition();
             gameEnded = true;
         }
         player.move(steps);

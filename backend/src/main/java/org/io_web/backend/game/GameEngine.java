@@ -145,7 +145,7 @@ public class GameEngine extends Thread {
 
                 boolean received = controller.informClientOfHisTurn(diceRoll);
                 if (!received) {
-                    controller.revertClientToWait();
+                    controller.revertClientToWait(PlayerTask.IDLE);
                     continue;
                 }
                 System.out.println("[ENGINE] dice rolled: " + diceRoll);
@@ -153,26 +153,45 @@ public class GameEngine extends Thread {
                 if (diceRollOutcome(diceRoll)) {
                     break;
                 }
+                switch (board.getPlayerPosition().get(currentMovingPlayer)){
+                    case QUESTION:
+                        this.currentTask = PlayerTask.ANSWERING_QUESTION;
+                        this.currentQuestion = questionIterator.next();
+                        this.controller.updateTeachersView(0, false);
+                        if (this.controller.sendQuestion()) {
+                            System.out.println("[ENGINE] processing answer");
+                            playerAnswered(controller.getPlayerAnswer());
+                            sleep(2000);
+                        } else {
+                            currentQuestion = null;
+                            controller.revertClientToWait(PlayerTask.IDLE);
+                            this.controller.updateTeachersView(0, false);
+                        }
+                        break;
+                    case SPECIAL:
+                        int randomNumber = random.nextInt(2);
+                        int result = (randomNumber == 0) ? -2 : 2;
+                        movePlayerOnBoard(result);
+                        sleep(1000);
+                    default:
+                        sleep(1000);
+                        controller.revertClientToWait(PlayerTask.IDLE);
 
-                this.currentTask = PlayerTask.ANSWERING_QUESTION;
-                this.currentQuestion = questionIterator.next();
-                this.controller.updateTeachersView(0, false);
-                if (this.controller.sendQuestion()) {
-                    System.out.println("[ENGINE] processing answer");
-                    playerAnswered(controller.getPlayerAnswer());
-                } else {
-                    currentQuestion = null;
-                    controller.revertClientToWait();
-                    this.controller.updateTeachersView(0, false);
                 }
+
                 this.currentTask = PlayerTask.IDLE;
 
             } catch (InterruptedException e) {
                 System.out.println("[ENGINE] ending game");
                 setGameStatus(GameStatus.ENDED);
                 currentMovingPlayer = null;
-                currentTask = PlayerTask.IDLE;
                 currentQuestion = null;
+            }
+            currentTask = PlayerTask.DELETED;
+            playerIterator = playersList.iterator();
+            while (playerIterator.hasNext()){
+                currentMovingPlayer = playerIterator.next();
+                controller.revertClientToWait(PlayerTask.DELETED);
             }
         }
 
