@@ -76,7 +76,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setShowQuestion(true);
           setShowDiceResult(true);
         } else if (data.task === "DELETED") {
-          setRollingDice(false);
+          console.log('wyrzucony')
           setRollingDice(false);
           setShowQuestion(false);
           setShowDiceResult(false);
@@ -87,8 +87,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
             navigate(`/userView/joinGame/${gameCode}`);
           }, 1000);
         } else {
-          setRollingDice(false);
-          setRollingDice(false);
+          setDeleted(false);
           setRollingDice(false);
           setShowQuestion(false);
           setShowDiceResult(false);
