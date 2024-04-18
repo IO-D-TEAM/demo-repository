@@ -126,7 +126,6 @@ public class LobbyController {
                     return ResponseFactory.createResponse(HttpStatus.CONFLICT, "Lobby full");
                 }
                 newClient.setStatus(ClientStatus.SPECTATOR);
-
         }
 
         if (!reconnected) {

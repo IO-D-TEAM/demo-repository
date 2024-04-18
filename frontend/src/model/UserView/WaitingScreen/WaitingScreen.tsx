@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import rolling from "../../../assets/dice.gif";
 import AnswerQuestion from "../AnswerQuestion/AnswerQuestion";
 import { Question } from "../../../interfaces/Question";
+import { useNavigate } from "react-router-dom";
 
 interface WaitingScreenProps {}
 
@@ -40,6 +41,8 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   const [question, setQuestion] = useState<Question | null>(null);
   const [showDiceResult, setShowDiceResult] = useState(false);
   const [deleted, setDeleted] = useState(false);
+
+  const navigate = useNavigate();
 
   //const WS_URL = "http://localhost:8080/ws";
   useEffect(() => {
@@ -79,8 +82,17 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setShowDiceResult(false);
           setShowRollDice(false);
           setDeleted(true);
+          // tutaj redirect
+          setTimeout(() => {
+            navigate(`/userView/joinGame/${gameCode}`);
+          }, 1000);
         } else {
           setRollingDice(false);
+          setRollingDice(false);
+          setRollingDice(false);
+          setShowQuestion(false);
+          setShowDiceResult(false);
+          setShowRollDice(false);
         }
       });
     });
@@ -112,8 +124,10 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
     setTimeout(() => {
       setShowQuestion(false);
       setShowDiceResult(true);
-      sendConfirmation();
     }, 1000);
+    setTimeout(() => {
+      sendConfirmation();
+    }, 2000);
   };
 
   const sendConfirmation = async () => {
@@ -190,13 +204,13 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           <div>
             {!deleted ? (
               <div className="waiting">
-                <div className="msg">Poczekaj sekundkę . . . </div>
+                <div className="msg">Poczekaj sekundkę ...</div>
                 <div className="waiting-gif">
                   <img src={loading} alt="loading gif"></img>
                 </div>
               </div>
             ) : (
-              <div className="msg">Zostałeś wyrzucony . . .</div>
+              <div className="msg">Zostałeś wyrzucony ...</div>
             )}
           </div>
         )}
