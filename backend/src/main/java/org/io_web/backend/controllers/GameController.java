@@ -80,17 +80,17 @@ public class GameController {
             return ResponseFactory.createResponse(HttpStatus.FORBIDDEN, "Not your turn");
         }
 
-        if(gameEngine.getCurrentTask() == PlayerTask.THROWING_DICE){
-            if (communicationService.isConfirmation()) {
-                return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
-            }
+        if (communicationService.isConfirmation()) {
+            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        }
 
-            synchronized (this.communicationService) {
-                communicationService.setConfirmation(true);
-                communicationService.notifyAll();
-                return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
-            }
-        } else {
+        synchronized (this.communicationService) {
+            communicationService.setConfirmation(true);
+            communicationService.notifyAll();
+//            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
+        }
+
+        if(gameEngine.getCurrentTask() == PlayerTask.ANSWERING_QUESTION){
             this.gameEngine.playerAnswered(answer);
         }
 
