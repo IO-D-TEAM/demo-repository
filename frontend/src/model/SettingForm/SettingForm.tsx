@@ -31,6 +31,7 @@ const SettingForm: FC<SettingFormProps> = () => {
         questions: questions,
       };
       sendSettingsForm(response);
+      setButtonPopup(false);
     } else {
       console.log("Plik z pytaniami jest pusty!!!");
     }

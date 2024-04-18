@@ -21,7 +21,6 @@ public class BoardMessage {
                 + "\"positionChange\":" + positionChange + ","
                 + "\"question\":" + (question != null ? question : "null") + ","
                 + "\"endingMove\":" + endingMove + "}";
-        System.out.println(json);
         return json.getBytes();
     }
 

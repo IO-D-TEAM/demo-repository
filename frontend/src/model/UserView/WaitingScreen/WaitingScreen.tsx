@@ -46,8 +46,15 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   };
 
   const WS_URL = "http://localhost:8080/ws";
+
   useEffect(() => {
-    // if (id === "" || stompClient !== null) return;
+    let currentUrl = window.location.href;
+    console.log(currentUrl);
+    const startIndex = currentUrl.indexOf("http://") + "http://".length;
+    const endIndex = currentUrl.indexOf(":3000");
+    const ip = currentUrl.slice(startIndex, endIndex);
+    console.log(ip); // Wyświetli "10.42.0.1"
+    let WS_URL = "http://" + ip + ":8080/ws";
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
@@ -56,8 +63,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
       client.subscribe(`/client/${id}`, (notification: any) => {
         console.log(notification);
 
-        if(notification.body as string == "")
-          return;
+        if ((notification.body as string) === "") return;
 
         let data = JSON.parse(notification.body as string);
         setConnected(true);
@@ -71,6 +77,12 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setQuestion(data.question);
           setShowQuestion(true);
           setShowDiceResult(true);
+        } else if (data.task === "DELETED") {
+          setRollingDice(false);
+          setRollingDice(false);
+          setShowQuestion(false);
+          setShowDiceResult(false);
+          setShowRollDice(false);
         } else {
           setRollingDice(false);
         }
@@ -89,7 +101,6 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   }, []);
 
   useEffect(() => {
-    console.log(id);
     getPlayerById(gameCode, id)
       .then((response: Player) => {
         setPlayer(response);

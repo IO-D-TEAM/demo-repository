@@ -11,7 +11,7 @@ import org.io_web.backend.questions.Question;
 import java.io.Serializable;
 
 @Getter @Setter
-public class TaskWrapper implements Serializable {
+public class TaskWrapper{
     private static final long serialVersionUID = 1L; // Ensure version compatibility
 
     private Question question;
@@ -27,18 +27,10 @@ public class TaskWrapper implements Serializable {
         this.task = task;
     }
 
-    public byte[] serialize(){
-        StringBuilder str = new StringBuilder();
-        str.append("{\"question\":");
-
-        if(this.question != null)
-            str.append( question);
-        else
-            str.append("\"" + null + "\"");
-
-        str.append(",\"diceRoll\":"+diceRoll.toString() + ",\"task\":"+"\""+this.task.toString()+"\"}");
-        System.out.println(str.toString());
-        return str.toString().getBytes();
+    public byte[] serialize() {
+        String json = "{\"question\":" + (question != null ? question : "null")
+                + ",\"diceRoll\":" + diceRoll
+                + ",\"task\":\"" + (task != null ? task.toString() : "null") + "\"}";
+        return json.getBytes();
     }
-
 }
