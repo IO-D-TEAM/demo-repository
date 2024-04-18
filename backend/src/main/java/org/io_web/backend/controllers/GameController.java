@@ -145,7 +145,7 @@ public class GameController {
         TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
         playerAnswer = "";
         this.communicationService.sendMessageToClient(clientID, task);
-        return communicationService.waitForConfirm();
+        return communicationService.waitForConfirm(dataService.getSettings().getTimeForAnswer());
     }
 
     /**
@@ -163,7 +163,7 @@ public class GameController {
         TaskWrapper task =  new TaskWrapper(currentQuestion, 0, this.gameEngine.getCurrentTask());
         System.out.println("[SENDING QUESTION]" + task + " to" + clientID) ;
         this.communicationService.sendMessageToClient(clientID, task);
-        return communicationService.waitForConfirm();
+        return communicationService.waitForConfirm(dataService.getSettings().getTimeForAnswer() * 3);
     }
 
     public void updateTeachersView(int playerMove, boolean endingMove) {
