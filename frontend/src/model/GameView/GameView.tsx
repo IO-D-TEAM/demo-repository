@@ -100,6 +100,10 @@ const GameView = () => {
 
     const updateBoard = (update: BoardMessage) => {
         // jeśli było wyświetlone pytanie w poprzednim ruchu to pokazujemy na chwilę poprawną odpowiedź zanim wykonaym ruch który właśnie przyszedł
+        if (update.question === null){
+            setShowAnswer(false);
+        }
+        
         if (showQuestion) {
             setShowAnswer(true);
             setTimeout(() => {}, 3000);
@@ -126,9 +130,7 @@ const GameView = () => {
         // ruch ale trafiamy na pytani - w teorii będzie się wyświetlać po 2 sekundach odkąd przyszedł ruch z pytaniem, żeby zobaczyć przejście gracza
         if (positionChanged && update.question) {
             setCurrentQuestion(update.question);
-            setTimeout(() => {
-                setShowQuestion(true);
-            }, 2000);
+            setShowQuestion(true);
             return
         }
     }

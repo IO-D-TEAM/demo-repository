@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.w3c.dom.CDATASection;
 
 import java.io.Serializable;
 
@@ -43,11 +44,11 @@ public class CommunicationService {
         }
     }
 
-     synchronized public boolean waitForConfirm() throws InterruptedException{
+     synchronized public boolean waitForConfirm(int seconds) throws InterruptedException{
         if (confirmation) {
             return true;
         }
-        wait(10000);
+        wait(seconds * 1000L);
         return confirmation;
     }
 
