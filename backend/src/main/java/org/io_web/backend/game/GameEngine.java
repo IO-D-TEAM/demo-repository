@@ -58,6 +58,7 @@ public class GameEngine extends Thread {
 
     private void setGameStatus(GameStatus newStatus){
         gameStatus = newStatus;
+        System.out.println("[ENGINE] Change game status for " + this.gameStatus);
         this.controller.gameStatusChanged();
     }
 
@@ -76,31 +77,30 @@ public class GameEngine extends Thread {
 
     // communication with server
 
-    public boolean diceRollOutcome(int dice) throws InterruptedException {
+    private boolean movePlayerOnBoard(int move){
+        System.out.println("[ENGINE] Moving player " + currentMovingPlayer.getNickname() + " for " + move);
         int oldPos = currentMovingPlayer.getPosition();
-        boolean gameFinished = board.movePlayer(currentMovingPlayer, dice);
+        boolean gameFinished = board.movePlayer(currentMovingPlayer, move);
         int newPos = currentMovingPlayer.getPosition();
-
         if (gameFinished) {
             setGameStatus(GameStatus.ENDED);
-            return true;
         }
-        currentQuestion = questionIterator.next();
         this.controller.updateTeachersView(newPos - oldPos, gameFinished);
-        return false;
+        return gameFinished;
+    }
+
+    public boolean diceRollOutcome(int dice) throws InterruptedException {
+        return movePlayerOnBoard(dice);
     }
 
     public void playerAnswered(String answer){
+        int playerMove = 0;
         if (currentQuestion.isCorrect(answer)) {
             currentMovingPlayer.addPoints(1);
-            if (board.movePlayer(currentMovingPlayer, 1) ) {
-                setGameStatus(GameStatus.ENDED);
-            }
-
-            currentQuestion = null;
-            controller.updateTeachersView(1,  gameStatus == GameStatus.ENDED);
+            playerMove = 1;
         }
-
+        currentQuestion = null;
+        movePlayerOnBoard(playerMove);
         currentTask = PlayerTask.IDLE;
     }
 
@@ -121,7 +121,7 @@ public class GameEngine extends Thread {
 
         questionIterator = questions.iterator();
         System.out.println("[ENGINE] Setting up completed");
-        this.gameStatus = GameStatus.PENDING;
+        setGameStatus(GameStatus.PENDING);
 
         controller.gameStatusChanged();
         // reset turn if ended
@@ -155,13 +155,19 @@ public class GameEngine extends Thread {
 
                 this.currentTask = PlayerTask.ANSWERING_QUESTION;
                 this.currentQuestion = questionIterator.next();
-                this.controller.updateTeachersView(0, gameStatus == GameStatus.ENDED);
-                this.controller.sendQuestion();
+                this.controller.updateTeachersView(0, false);
+                if (this.controller.sendQuestion()) {
+                    System.out.println("[ENGINE] processing answer");
+                    playerAnswered(controller.getPlayerAnswer());
+                } else {
+                    currentQuestion = null;
+                    this.controller.updateTeachersView(0, false);
+                }
                 this.currentTask = PlayerTask.IDLE;
 
             } catch (InterruptedException e) {
                 System.out.println("[ENGINE] ending game");
-                this.gameStatus = GameStatus.ENDED;
+                setGameStatus(GameStatus.ENDED);
                 currentMovingPlayer = null;
                 currentTask = PlayerTask.IDLE;
                 currentQuestion = null;

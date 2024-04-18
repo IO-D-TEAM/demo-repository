@@ -1,5 +1,6 @@
 package org.io_web.backend.controllers;
 
+import lombok.Getter;
 import org.io_web.backend.board.BoardMessage;
 import org.io_web.backend.utilities.GameCodeGenerator;
 import org.io_web.backend.utilities.ResponseFactory;
@@ -37,6 +38,9 @@ public class GameController {
 
     private final GameEngine gameEngine;
 
+    @Getter
+    private String playerAnswer = "";
+
     /**
      * Launches controller with Spring's dependency injection mechanism,
      * and generate & set new Game Code
@@ -66,7 +70,7 @@ public class GameController {
      */
     @PostMapping("{gameCode}/client/{clientID}")
     public ResponseEntity<Object> giveAnswer(@PathVariable String gameCode, @PathVariable String clientID, @RequestBody String answer) {
-        System.out.println("[GAME CONTROLLER] Answer Question");
+
 
         if (!gameCode.equals(this.dataService.getGameCode())) {
             return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
@@ -84,14 +88,20 @@ public class GameController {
             return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
         }
 
+
+
+        if(gameEngine.getCurrentTask() == PlayerTask.ANSWERING_QUESTION){
+            System.out.println("[GAME CONTROLLER] Got answer from client");
+            playerAnswer = answer;
+        }
+        else {
+            System.out.println("[GAME CONTROLLER] Got dice rolled from client");
+        }
+
         synchronized (this.communicationService) {
             communicationService.setConfirmation(true);
             communicationService.notifyAll();
 //            return ResponseFactory.createResponse(HttpStatus.ACCEPTED, true);
-        }
-
-        if(gameEngine.getCurrentTask() == PlayerTask.ANSWERING_QUESTION){
-            this.gameEngine.playerAnswered(answer);
         }
 
         return ResponseFactory.createResponse(HttpStatus.OK, "Success");
@@ -133,7 +143,7 @@ public class GameController {
 
         PlayerTask currentTask = this.gameEngine.getCurrentTask();
         TaskWrapper task =  new TaskWrapper(null, diceRoll, currentTask);
-
+        playerAnswer = "";
         this.communicationService.sendMessageToClient(clientID, task);
         return communicationService.waitForConfirm();
     }
@@ -149,7 +159,7 @@ public class GameController {
 //        if (clientID == null || currentQuestion == null) {
 //            return false;
 //        }
-
+        playerAnswer = "";
         TaskWrapper task =  new TaskWrapper(currentQuestion, 0, this.gameEngine.getCurrentTask());
         System.out.println("[SENDING QUESTION]" + task + " to" + clientID) ;
         this.communicationService.sendMessageToClient(clientID, task);
