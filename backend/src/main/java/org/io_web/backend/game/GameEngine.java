@@ -63,11 +63,11 @@ public class GameEngine extends Thread {
     }
 
 
-    public void addPlayer(String id, String nickname) {
+    public void addPlayer(String id, String nickname, String color) {
         if (gameStatus != GameStatus.LOBBY) {
             return;
         }
-        Player newPlayer = new Player(0, 0, id, nickname, "red");
+        Player newPlayer = new Player(0, 0, id, nickname, color);
         playersList.add(newPlayer);
     }
 

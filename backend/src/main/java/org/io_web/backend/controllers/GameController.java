@@ -124,7 +124,7 @@ public class GameController {
             for (Client client : this.dataService.getClientPool().getClients()) {
                 if (client.getStatus() == ClientStatus.SPECTATOR) {
                     client.setStatus(ClientStatus.SPECTATOR);
-                    this.gameEngine.addPlayer(client.getId(), client.getNickname());
+                    this.gameEngine.addPlayer(client.getId(), client.getNickname(), client.getColor());
                 }
             }
         }
