@@ -41,8 +41,15 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   const [showDiceResult, setShowDiceResult] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
-  const WS_URL = "http://localhost:8080/ws";
+  // const WS_URL = "http://10.42.0.1:8080/ws";
   useEffect(() => {
+    let currentUrl = window.location.href;
+    console.log(currentUrl);
+    const startIndex = currentUrl.indexOf("http://") + "http://".length;
+    const endIndex = currentUrl.indexOf(":3000");
+    const ip = currentUrl.slice(startIndex, endIndex);
+    console.log(ip); // Wyświetli "10.42.0.1"
+    let WS_URL = "http://" + ip + ":8080/ws";
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
@@ -51,7 +58,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
       client.subscribe(`/client/${id}`, (notification: any) => {
         console.log(notification);
 
-        if ((notification.body as string) == "") return;
+        if ((notification.body as string) === "") return;
 
         let data = JSON.parse(notification.body as string);
         setConnected(true);

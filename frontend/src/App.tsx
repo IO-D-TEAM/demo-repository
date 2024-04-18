@@ -16,8 +16,7 @@ function App() {
     <div className="background-img">
       <Router>
         <Routes>
-
-          <Route path="/" element={<BoardView />} />
+          <Route path="/" element={<TeacherView />} />
           <Route path="/teacherView" element={<TeacherView />} />
           <Route path="/teacherView/createGame" element={<CreateGame />} />
           <Route
