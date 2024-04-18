@@ -130,7 +130,7 @@ public class LobbyController {
 
         if (!reconnected) {
             this.dataService.getClientPool().addNewClient(newClient);
-            gameEngine.addPlayer(newClient.getId(), newClient.getNickname());
+            gameEngine.addPlayer(newClient.getId(), newClient.getNickname(), newClient.getColor());
             response = ResponseFactory.createResponse(HttpStatus.OK, newClient);
         }
 
