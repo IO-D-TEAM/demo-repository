@@ -187,14 +187,13 @@ public class GameEngine extends Thread {
                 currentMovingPlayer = null;
                 currentQuestion = null;
             }
-            currentTask = PlayerTask.DELETED;
-            playerIterator = playersList.iterator();
-            while (playerIterator.hasNext()){
-                currentMovingPlayer = playerIterator.next();
-                controller.revertClientToWait(PlayerTask.DELETED);
-            }
-        }
 
+        }
+        playerIterator = playersList.iterator();
+        while (playerIterator.hasNext()){
+            currentMovingPlayer = playerIterator.next();
+            controller.revertClientToWait(PlayerTask.DELETED);
+        }
     }
 
 
