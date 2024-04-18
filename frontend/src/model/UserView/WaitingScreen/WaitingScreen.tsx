@@ -17,11 +17,11 @@ import { Question } from "../../../interfaces/Question";
 interface WaitingScreenProps {}
 
 function replaceAlpha(rgba: string, alpha: number): React.CSSProperties {
-  const rgbaValues = rgba.split(',');
+  const rgbaValues = rgba.split(",");
   rgbaValues[3] = String(alpha);
 
   const FieldStyle: React.CSSProperties = {
-    background: rgbaValues.join(',')
+    background: rgbaValues.join(","),
   };
 
   return FieldStyle;
@@ -39,15 +39,17 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
   const [showQuestion, setShowQuestion] = useState(false);
   const [question, setQuestion] = useState<Question | null>(null);
   const [showDiceResult, setShowDiceResult] = useState(false);
-  const questionMock: Question = {
-    question: "Czy masz chuja w dupie?",
-    correctAnswer: "Tak",
-    answers: ["Tak", "Nie", "Może ;3", "Śmieć"],
-  };
+  const [deleted, setDeleted] = useState(false);
 
-  const WS_URL = "http://localhost:8080/ws";
+  //const WS_URL = "http://localhost:8080/ws";
   useEffect(() => {
-    // if (id === "" || stompClient !== null) return;
+    let currentUrl = window.location.href;
+    console.log(currentUrl);
+    const startIndex = currentUrl.indexOf("http://") + "http://".length;
+    const endIndex = currentUrl.indexOf(":3000");
+    const ip = currentUrl.slice(startIndex, endIndex);
+    console.log(ip); // Wyświetli "10.42.0.1"
+    let WS_URL = "http://" + ip + ":8080/ws";
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);
 
@@ -56,8 +58,7 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
       client.subscribe(`/client/${id}`, (notification: any) => {
         console.log(notification);
 
-        if(notification.body as string == "")
-          return;
+        if ((notification.body as string) === "") return;
 
         let data = JSON.parse(notification.body as string);
         setConnected(true);
@@ -71,6 +72,13 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           setQuestion(data.question);
           setShowQuestion(true);
           setShowDiceResult(true);
+        } else if (data.task === "DELETED") {
+          setRollingDice(false);
+          setRollingDice(false);
+          setShowQuestion(false);
+          setShowDiceResult(false);
+          setShowRollDice(false);
+          setDeleted(true);
         } else {
           setRollingDice(false);
         }
@@ -99,47 +107,35 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
       });
   }, []);
 
-  // japierdolectojest -> rellllll, nie ma co się interesować za dużo bo kociej mordy można dostać
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setRollingDice(true);
-  //   }, 1000);
-
-  //   return () => clearTimeout(timer);
-  // }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setShowQuestion(true);
-  //   }, 4000);
-
-  //   return () => clearTimeout(timer);
-  // }, []); // efekt będzie wywoływany tylko raz po pierwszym renderowaniu
-
   const handleRollDiceClick = () => {
     setShowRollDice(true);
     setTimeout(() => {
-      // setShowQuestion(false);
+      setShowQuestion(false);
       setShowDiceResult(true);
       sendConfirmation();
     }, 1000);
   };
 
-  //szczerze to nie mam pojęcia czy to działa, ale jakby coś się jebało na backu to pewnie przez to ;3 pozdro
   const sendConfirmation = async () => {
-    // if (stompClient !== null) {
-    //   stompClient?.send(
-    //     "client/confirmation",
-    //     {},
-    //     JSON.stringify({ confirm: true })
-    //   );
-    // }
     if (gameCode !== undefined && plyaer !== undefined) {
       await confirmRoll(true, gameCode, plyaer);
     }
   };
 
   const colorRGBA = plyaer?.color ?? "rgb(212, 17, 17, 1.0)";
+
+  const handleAnswerFeedback = (answerResponse: boolean) => {
+    if (answerResponse) {
+      const timer = setTimeout(() => {
+        console.log("mam turbo esse");
+        setRollingDice(false);
+        setShowQuestion(false);
+        setShowDiceResult(false);
+        setShowRollDice(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  };
 
   return (
     <div className="main" style={replaceAlpha(colorRGBA, 0.4)}>
@@ -149,7 +145,9 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
           <div className="rollingDice">
             {!showRollDice ? (
               <>
-                <div className="msg" style={replaceAlpha(colorRGBA, 0.6)}>Twoja tura, rzuć kostką!</div>
+                <div className="msg" style={replaceAlpha(colorRGBA, 0.6)}>
+                  Twoja tura, rzuć kostką!
+                </div>
                 <Button
                   variant="contained"
                   onClick={() => handleRollDiceClick()}
@@ -164,15 +162,24 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
                 ) : (
                   <div>
                     {showQuestion ? (
-                      <div className="form" style={replaceAlpha(colorRGBA, 0.6)}>
+                      <div
+                        className="form"
+                        style={replaceAlpha(colorRGBA, 0.6)}
+                      >
                         <AnswerQuestion
                           question={question}
                           gameCode={gameCode}
                           id={id}
+                          parentCallback={handleAnswerFeedback}
                         ></AnswerQuestion>
                       </div>
                     ) : (
-                      <div className="dice" style={replaceAlpha(colorRGBA, 0.4)}>{dice}</div>
+                      <div
+                        className="dice"
+                        style={replaceAlpha(colorRGBA, 0.4)}
+                      >
+                        {dice}
+                      </div>
                     )}
                   </div>
                 )}
@@ -180,11 +187,17 @@ const WaitingScreen: FC<WaitingScreenProps> = () => {
             )}
           </div>
         ) : (
-          <div className="waiting">
-            <div className="msg">Poczekaj sekundkę . . . </div>
-            <div className="waiting-gif">
-              <img src={loading} alt="loading gif"></img>
-            </div>
+          <div>
+            {!deleted ? (
+              <div className="waiting">
+                <div className="msg">Poczekaj sekundkę . . . </div>
+                <div className="waiting-gif">
+                  <img src={loading} alt="loading gif"></img>
+                </div>
+              </div>
+            ) : (
+              <div className="msg">Zostałeś wyrzucony . . .</div>
+            )}
           </div>
         )}
       </div>

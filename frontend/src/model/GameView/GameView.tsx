@@ -56,7 +56,6 @@ const GameView = () => {
                 setConnected(true);
                 const message: BoardMessage = JSON.parse(notification.body);
                 setBoardMessage(message);
-                console.log(message);
             });
         });
 
@@ -113,6 +112,11 @@ const GameView = () => {
         // czyścimy plansze z ewentualnego pytania
         setShowQuestion(false);
         setShowAnswer(false);
+
+        if(update.endingMove){
+            setFinish(true);
+            return
+        }
 
         // zwykły ruch wykonujemy tak czy siak
         const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);

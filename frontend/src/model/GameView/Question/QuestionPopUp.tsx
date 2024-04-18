@@ -28,7 +28,7 @@ const QuestionPopUp = (props: Props) => {
     };
     
     return (
-        <div className="question-wrap">
+        <div key={null} className="question-wrap">
             <div className="question-div">
                 <h1>{props.question.question}</h1>
             </div>

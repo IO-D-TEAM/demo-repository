@@ -156,10 +156,10 @@ public class GameController {
     public boolean sendQuestion() throws InterruptedException {
         String clientID = gameEngine.getCurrentMovingPlayerId();
         Question currentQuestion = gameEngine.getCurrentQuestion();
-//        if (clientID == null || currentQuestion == null) {
-//            return false;
-//        }
         playerAnswer = "";
+        if (clientID == null || currentQuestion == null) {
+            return false;
+        }
         TaskWrapper task =  new TaskWrapper(currentQuestion, 0, this.gameEngine.getCurrentTask());
         System.out.println("[SENDING QUESTION]" + task + " to" + clientID) ;
         this.communicationService.sendMessageToClient(clientID, task);
@@ -168,9 +168,9 @@ public class GameController {
 
     public void updateTeachersView(int playerMove, boolean endingMove) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-//        if (clientID == null) {
-//            return;
-//        }
+        if (clientID == null) {
+            return;
+        }
 
         Question currentQuestion = gameEngine.getCurrentQuestion();
 
@@ -186,6 +186,8 @@ public class GameController {
     public ResponseEntity<String> endGame(){
         gameEngine.interrupt();
         gameStatusChanged();
+        BoardMessage message = new BoardMessage("", 0, null, true);
+        this.communicationService.sendMessageToBoard(message);
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }
 
