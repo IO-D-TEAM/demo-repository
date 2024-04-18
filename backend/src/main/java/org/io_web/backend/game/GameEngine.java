@@ -96,6 +96,8 @@ public class GameEngine extends Thread {
             if (board.movePlayer(currentMovingPlayer, 1) ) {
                 setGameStatus(GameStatus.ENDED);
             }
+
+            currentQuestion = null;
             controller.updateTeachersView(1,  gameStatus == GameStatus.ENDED);
         }
 
@@ -153,6 +155,7 @@ public class GameEngine extends Thread {
 
                 this.currentTask = PlayerTask.ANSWERING_QUESTION;
                 this.currentQuestion = questionIterator.next();
+                this.controller.updateTeachersView(0, gameStatus == GameStatus.ENDED);
                 this.controller.sendQuestion();
                 this.currentTask = PlayerTask.IDLE;
 

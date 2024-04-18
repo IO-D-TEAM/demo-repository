@@ -158,9 +158,9 @@ public class GameController {
 
     public void updateTeachersView(int playerMove, boolean endingMove) {
         String clientID = gameEngine.getCurrentMovingPlayerId();
-        if (clientID == null) {
-            return;
-        }
+//        if (clientID == null) {
+//            return;
+//        }
 
         Question currentQuestion = gameEngine.getCurrentQuestion();
 
