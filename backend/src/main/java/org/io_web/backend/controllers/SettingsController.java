@@ -33,8 +33,6 @@ public class SettingsController {
     @GetMapping("/board")
     public ResponseEntity<Object> getBoardConfiguration() {
 
-        gameEngine.loadSettings(dataService.getSettings());
-//        gameEngine.start();
         BoardConfigurationResponse configResponse = new BoardConfigurationResponse(
                 dataService.getSettings().getTimeForGame(),
                 gameEngine.getBoard().getPath().size(),
@@ -69,6 +67,7 @@ public class SettingsController {
     @PostMapping("/update")
     public ResponseEntity<String> setSettings(@RequestBody Settings settings){
         dataService.setSettings(settings);
+        gameEngine.loadSettings(settings);
         System.out.println(settings.getQuestions());
         return ResponseFactory.simpleResponse(HttpStatus.OK);
     }

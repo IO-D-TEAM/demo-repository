@@ -15,4 +15,14 @@ public class BoardMessage {
         this.question = question;
         this.endingMove = endingMove;
     }
+
+    public byte[] serialize() {
+        String json = "{\"clientID\":\"" + clientID + "\","
+                + "\"positionChange\":" + positionChange + ","
+                + "\"question\":" + (question != null ? question : "null") + ","
+                + "\"endingMove\":" + endingMove + "}";
+        System.out.println(json);
+        return json.getBytes();
+    }
+
 }

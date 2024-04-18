@@ -11,10 +11,7 @@ import org.io_web.backend.services.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 
 /**
  * In this class we should do all the logic relates to managing questions, moving players, updating board state etc.
@@ -44,21 +41,19 @@ public class GameEngine extends Thread {
     private Iterator<Player> playerIterator;
     private final GameController controller;
 
+    private Settings settings;
 
 
     @Autowired
     public GameEngine(GameController controller) {
         this.controller = controller;
-        this.board = new Board(12, 4, playersList); // placeholder
         gameStatus = GameStatus.LOBBY;
     }
 
     public void loadSettings(Settings settings) {
-        gameStatus = GameStatus.PENDING;
         questions = settings.getQuestions();
-
-        this.board = new Board(settings.getNormalFields(), settings.getSpecialFields(), playersList);
-
+        this.settings = settings;
+//        System.out.println(playersList);
     }
 
     private void setGameStatus(GameStatus newStatus){
@@ -111,7 +106,9 @@ public class GameEngine extends Thread {
 
     // method to change players, inform server
     public void run() {
-        System.out.println("[GAME ENGINE] Starting new game");
+        this.board = new Board(settings.getNormalFields(), settings.getSpecialFields(), playersList);
+
+        System.out.println("[GAME ENGINE] Starting new game " +  playersList.size());
         if (playersList.size() < 2) {
             return;
         }// informacja o niepowodzeniu
@@ -126,7 +123,7 @@ public class GameEngine extends Thread {
 
         controller.gameStatusChanged();
         // reset turn if ended
-        System.out.println("[ENGINE] Start game");
+        System.out.println("[ENGINE] Start game " +  this.gameStatus);
 
         while (this.gameStatus == GameStatus.PENDING) {
 

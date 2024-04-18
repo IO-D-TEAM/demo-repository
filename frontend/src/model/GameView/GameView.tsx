@@ -33,6 +33,8 @@ const GameView = () => {
     const WS_URL = "http://localhost:8080/ws";
     const [stompClient, setStompClient] = useState<Stomp.Client>();
     const [connected, setConnected] = useState(false);
+    let [rerenderKey, setRerenderKey] = useState<number>(0); // Force re-render key
+    const [boardMessage, setBoardMessage] = useState<BoardMessage>();
 
     const [showQuestion, setShowQuestion] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
@@ -43,6 +45,38 @@ const GameView = () => {
             correctAnswer: ""
         }
     );
+
+    // Board realtime update a niech chociaż to zadziała za pierwszym razem XDDD
+    useEffect(() => {
+        const socket = new SockJS(WS_URL);
+        const client = Stomp.over(socket);
+
+        client.connect({}, () => {
+            client.subscribe(`/move`, (notification) => {
+                setConnected(true);
+                const message: BoardMessage = JSON.parse(notification.body);
+                setBoardMessage(message);
+                console.log(message);
+            });
+        });
+
+        setStompClient(client);
+        if (connected) {
+            return () => {
+                client.disconnect(() => {
+                    console.log("Board websocket connection closed...");
+                    return null;
+                });
+            }
+        }
+
+    }, []);
+
+    useEffect(() => {
+        if(boardMessage)
+            updateBoard(boardMessage);
+        setRerenderKey((prevKey) => prevKey === rerenderKey ? rerenderKey++ : rerenderKey++);
+    }, [boardMessage])
 
     // Reading configuration
     useEffect(() => {
@@ -64,77 +98,57 @@ const GameView = () => {
         fetchData();
     }, [setBoardSize, setColumns, setFields, setFinish, setGameDuration, setPlayers, setRows]);
 
-    // Board realtime update a niech chociaż to zadziała za pierwszym razem XDDD
-    useEffect(() => {
-        const socket = new SockJS(WS_URL);
-        const client = Stomp.over(socket);
 
-        const updateBoard = (update: BoardMessage) => {
-            // jeśli było wyświetlone pytanie w poprzednim ruchu to pokazujemy na chwilę poprawną odpowiedź zanim wykonaym ruch który właśnie przyszedł
-            if (showQuestion) {
-                setShowAnswer(true);
-                setTimeout(() => {}, 3000);
-            }
-            
-            // czyścimy plansze z ewentualnego pytania
-            setShowQuestion(false);
-            setShowAnswer(false);
-
-            // zwykły ruch wykonujemy tak czy siak
-            const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);
-
-            // ruch kończący grę 
-            if (positionChanged && update.endingMove) {
-                setFinish(true);
-                return
-            }
-
-            // ruch ale trafiamy na pytani - w teorii będzie się wyświetlać po 2 sekundach odkąd przyszedł ruch z pytaniem, żeby zobaczyć przejście gracza
-            if (positionChanged && update.question) {
-                setCurrentQuestion(update.question);
-                setTimeout(() => {
-                    setShowQuestion(true);
-                }, 2000);
-
-                return
-            }
+    const updateBoard = (update: BoardMessage) => {
+        // jeśli było wyświetlone pytanie w poprzednim ruchu to pokazujemy na chwilę poprawną odpowiedź zanim wykonaym ruch który właśnie przyszedł
+        if (showQuestion) {
+            setShowAnswer(true);
+            setTimeout(() => {}, 3000);
         }
+        
+        // czyścimy plansze z ewentualnego pytania
+        setShowQuestion(false);
+        setShowAnswer(false);
+
+        // zwykły ruch wykonujemy tak czy siak
+        const positionChanged: boolean = changePlayerPosition(update.clientID, update.positionChange);
+
+        // ruch kończący grę 
+        if (positionChanged && update.endingMove) {
+            setFinish(true);
+            return
+        }
+
+        // ruch ale trafiamy na pytani - w teorii będzie się wyświetlać po 2 sekundach odkąd przyszedł ruch z pytaniem, żeby zobaczyć przejście gracza
+        if (positionChanged && update.question) {
+            setCurrentQuestion(update.question);
+            setTimeout(() => {
+                setShowQuestion(true);
+            }, 2000);
+            return
+        }
+    }
     
-        const changePlayerPosition = (playerId: string, steps: number): boolean => {
-            const playersUpdate: PlayerType[] = [...players];
-            const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
-    
-            if (playerToUpdateIdx > -1) {
-                playersUpdate[playerToUpdateIdx].position += steps;
-                setPlayers(playersUpdate);
-                return true;
-            } else {
-                console.error(`Player with this id: ${playerId} doesn't exist!`);
-                return false;
-            }
-        }
+    // useEffect(() => {
+    //     updateBoard();
+    // }, [connected, players, setPlayers, setFinish, showQuestion])
 
-        client.connect({}, () => {
-            client.subscribe(`/move`, (notification) => {
-                setConnected(true);
-                const message: BoardMessage = JSON.parse(notification.body);
-                updateBoard(message);
-            });
-        });
+    const changePlayerPosition = (playerId: string, steps: number): boolean => {
+        const playersUpdate: PlayerType[] = [...players];
+        const playerToUpdateIdx: number = playersUpdate.findIndex(player => player.id === playerId);
 
-        setStompClient(client);
-        if (connected) {
-            return () => {
-                client.disconnect(() => {
-                    console.log("Board websocket connection closed...");
-                    return null;
-                });
-            }
+        if (playerToUpdateIdx > -1) {
+            playersUpdate[playerToUpdateIdx].position += steps;
+            setPlayers(playersUpdate);
+            return true;
+        } else {
+            console.error(`Player with this id: ${playerId} doesn't exist!`);
+            return false;
         }
-    }, [connected, players, setPlayers, setFinish, showQuestion]);
+    }
 
     return (
-        <div className="game-view">
+        <div key={rerenderKey} className="game-view">
             <Board fields={fields} players={players} rows={rows} columns={columns}/>
             {gameFinished && <FinishWindow/>}
             {showQuestion && <QuestionPopUp question={currentQuestion} showCorrectAnswer={showAnswer}/>}

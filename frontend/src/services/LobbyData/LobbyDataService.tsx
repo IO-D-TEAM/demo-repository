@@ -34,6 +34,22 @@ export const sendSettingsForm = async (form: Settings) => {
   }
 };
 
+export const startGame = async () => {
+  const response = await fetch(`/game/startGame`, {
+    method: "POST",
+    body: JSON.stringify(null),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `HTTP POST error while sending a form! Status: ${response.status}`
+    );
+  }
+};
+
 export const getPlayers = async (): Promise<Player[]> => {
   return await fetch("http://localhost:3000/lobby/players")
     .then((response) => response.json())
