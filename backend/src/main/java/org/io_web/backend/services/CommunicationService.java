@@ -47,7 +47,7 @@ public class CommunicationService {
         if (confirmation) {
             return true;
         }
-        wait(10000);
+        wait(5000);
         return confirmation;
     }
 

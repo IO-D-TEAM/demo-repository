@@ -10,7 +10,8 @@ import org.io_web.backend.questions.Question;
 
 import java.io.Serializable;
 
-@Getter @Setter
+@Getter
+@Setter
 public class TaskWrapper implements Serializable {
     private static final long serialVersionUID = 1L; // Ensure version compatibility
 
@@ -27,17 +28,15 @@ public class TaskWrapper implements Serializable {
         this.task = task;
     }
 
-    public byte[] serialize(){
+    public byte[] serialize() {
         StringBuilder str = new StringBuilder();
         str.append("{\"question\":");
 
-        if(this.question != null)
-            str.append( question);
+        if (this.question != null)
+            str.append(question);
         else
             str.append("\"" + null + "\"");
-
-        str.append(",\"diceRoll\":"+diceRoll.toString() + ",\"task\":"+"\""+this.task.toString()+"\"}");
-        System.out.println(str.toString());
+        str.append(",\"diceRoll\":" + diceRoll + ",\"task\":" + "\"" + this.task.toString() + "\"}");
         return str.toString().getBytes();
     }
 

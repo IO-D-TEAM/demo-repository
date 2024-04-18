@@ -91,7 +91,6 @@ public class GameEngine extends Thread {
             return true;
         }
         currentQuestion = questionIterator.next();
-        this.controller.sendQuestion();
         this.controller.updateTeachersView(newPos - oldPos, gameFinished);
         return false;
     }
