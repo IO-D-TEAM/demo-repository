@@ -26,6 +26,7 @@ export const Lobby: FC<LobbyProps> = () => {
 
   const WS_URL = "http://localhost:8080/ws";
 
+  
   useEffect(() => {
     const socket = new SockJS(WS_URL);
     const client = Stomp.over(socket);

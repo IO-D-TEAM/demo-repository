@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./Timer.css";
 import { useGameStore } from "../GameStore/GameStore";
 import { Button } from "@mui/material";
-
+import {endGame} from "../../../services/Game/GameService"
 
 const Timer = () => {
     const { gameDuration, setGameDuration, setFinish } = useGameStore((state) => state);
@@ -31,6 +31,7 @@ const Timer = () => {
 
     const onClick = () => {
         setFinish(true);
+        endGame();
     }
 
     return (

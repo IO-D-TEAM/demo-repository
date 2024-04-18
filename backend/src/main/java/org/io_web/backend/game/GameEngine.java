@@ -85,7 +85,7 @@ public class GameEngine extends Thread {
             setGameStatus(GameStatus.ENDED);
             return true;
         }
-        currentQuestion = questionIterator.next();
+//        currentQuestion = questionIterator.next();
         this.controller.updateTeachersView(newPos - oldPos, gameFinished);
         return false;
     }
@@ -169,6 +169,8 @@ public class GameEngine extends Thread {
         }
 
     }
+
+
 
 
 
