@@ -1,38 +1,55 @@
 package org.io_web.backend.client;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.Serializable;
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.io_web.backend.questions.Question;
+import org.io_web.backend.models.Question;
 
-import java.io.Serializable;
-
-@Getter @Setter
-public class TaskWrapper{
-    private static final long serialVersionUID = 1L; // Ensure version compatibility
-
+@Getter
+@Setter
+public class TaskWrapper implements Serializable {
     private Question question;
     private Integer diceRoll;
     private PlayerTask task;
 
-    @JsonCreator
-    public TaskWrapper(@JsonProperty("question") Question question,
-                       @JsonProperty("diceRoll") Integer diceRoll,
-                       @JsonProperty("task") PlayerTask task) {
+    public TaskWrapper(Question question, Integer diceRoll, PlayerTask task) {
         this.question = question;
         this.diceRoll = diceRoll;
         this.task = task;
     }
 
-    public byte[] serialize() {
-        String json = "{\"question\":" + (question != null ? question : "null")
-                + ",\"diceRoll\":" + diceRoll
-                + ",\"task\":\"" + (task != null ? task.toString() : "null") + "\"}";
-        return json.getBytes();
+    @Override
+    public String toString() {
+        return "TaskWrapper{" +
+                "question=" + question +
+                ", diceRoll=" + diceRoll +
+                ", task=" + task +
+                '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TaskWrapper that = (TaskWrapper) o;
+        return Objects.equals(getQuestion(), that.getQuestion()) && Objects.equals(getDiceRoll(), that.getDiceRoll()) &&
+                getTask() == that.getTask();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(getQuestion());
+        result = 31 * result + Objects.hashCode(getDiceRoll());
+        result = 31 * result + Objects.hashCode(getTask());
+        return result;
+    }
+
+
 }

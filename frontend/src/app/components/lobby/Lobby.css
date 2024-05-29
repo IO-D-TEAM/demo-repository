@@ -1,0 +1,128 @@
+p {
+  margin: 0.5rem;
+}
+
+.join {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.joinMethods {
+  padding: 15px;
+  margin: 1px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  background-color: rgba(255, 255, 255, 0.90);
+  align-items: center;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#joinMsg {
+  width: 50%;
+  margin: auto auto;
+  font-size: xxx-large;
+  width: fit-content;
+}
+
+#link {
+  font-size: xx-large;
+  margin:  auto  auto;
+}
+
+.qrCode{
+  margin: 1px;
+}
+
+.middle-coint {
+  max-width:  95%;
+  margin: auto;
+  margin-bottom: 2rem;
+
+}
+
+.start {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  margin: auto;
+  background-color: rgba(255, 255, 255,  0.95);
+}
+
+.show-players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly; /* Rozłożenie elementów wzdłuż głównej osi */
+  padding: 1rem 1rem 0 1rem;
+  margin: 1rem auto 2rem auto;
+}
+
+.show-players > * {
+  flex: 0 1 calc(25% - 1rem);
+  margin-bottom: 1rem;
+  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  max-width: calc(25% - 1rem);
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  position: relative;
+  border: 1px solid #333; /* Dodanie prostego obramowania */
+  border-radius: 5px; /* Zaokrąglenie rogów */
+}
+
+#icon {
+  position: absolute; /* Ustawienie pozycji absolutnej dla ikonki */
+  top: 3px; /* Ustawienie górnego brzegu ikonki na 0 */
+  right: 5px; /* Ustawienie prawego brzegu ikonki na 0 */
+}
+
+.settings-cmp {
+  z-index: 5;
+}
+
+.lobby-img {
+  margin: 25px;
+  border-radius: 5px;
+  padding: auto;
+}
+
+
+.player{
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+  width: 100px;
+  height: auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  border-style: none;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.player-circle {
+  margin-top: 2px;
+  width: 35px; /* Adjust the size of the circle */
+  height: 35px; /* Adjust the size of the circle */
+  border-radius: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  margin-right: 5px; /* Adjust the spacing between the circle and the player's name */
+  opacity: 0.85;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.buttons{
+  height: 105px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  justify-content: space-between;
+
+}
+
+.buttons > * {
+  width: 200px;
+  height: 50px;
+}

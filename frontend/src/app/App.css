@@ -1,0 +1,26 @@
+.background-img {
+  position: relative;
+  height: 90vh;
+  background-position: center;
+  background-size: cover;
+  font-size: xx-large;
+  font-weight: 500;
+}
+
+.background-img::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(../assets/4.jpg);
+  z-index: -1;
+  background-image: linear-gradient(
+      180deg,
+      #bcd4b880, /* Adjust the RGBA values to change the color */
+      rgba(46, 107, 62, 0.5) /* Adjust the RGBA values to change the color */
+    ),
+    url(../assets/4.jpg);
+  filter: blur(0.7px); /* Adjust the blur radius as needed */
+}

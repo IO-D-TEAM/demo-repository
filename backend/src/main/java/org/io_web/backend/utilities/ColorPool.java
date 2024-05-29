@@ -16,4 +16,5 @@ public class ColorPool {
 
         return String.format("rgba(%d, %d, %d, %f)", color.getRed(), color.getGreen(), color.getBlue(), 1.0);
     }
+    
 }

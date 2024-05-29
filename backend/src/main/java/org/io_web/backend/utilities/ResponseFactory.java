@@ -1,5 +1,6 @@
 package org.io_web.backend.utilities;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
@@ -12,15 +13,21 @@ import org.springframework.http.ResponseEntity.BodyBuilder;
  * 2) ResponseFactory.status(HttpStatus).body(WrappedData);
  */
 public class ResponseFactory {
-    public static <T> ResponseEntity<T> createResponse(HttpStatus status, T body){
-        if (body instanceof String messageBody) {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-            if (!messageBody.isEmpty()) {
-                body = (T) ("{\"message\": \"" + messageBody + "\"}");
+
+    public static <T> ResponseEntity<String> createResponse(HttpStatus status, T body) {
+        try {
+            String responseBody;
+            if (body instanceof String) {
+                responseBody = "{\"message\": \"" + body + "\"}";
+            } else {
+                responseBody = objectMapper.writeValueAsString(body);
             }
+            return ResponseEntity.status(status).body(responseBody);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Serialization error\"}");
         }
-
-        return ResponseEntity.status(status).body(body);
     }
 
     public static ResponseEntity<String> simpleResponse(HttpStatus status) {

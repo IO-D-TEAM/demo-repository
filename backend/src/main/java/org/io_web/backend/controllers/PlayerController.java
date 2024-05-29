@@ -1,6 +1,5 @@
 package org.io_web.backend.controllers;
 
-import org.io_web.backend.client.Client;
 import org.io_web.backend.services.SharedDataService;
 import org.io_web.backend.utilities.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
@@ -19,7 +17,7 @@ public class PlayerController {
     private final SharedDataService dataService;
 
     @Autowired
-    public PlayerController(SharedDataService dataService){
+    public PlayerController(SharedDataService dataService) {
         this.dataService = dataService;
     }
 
@@ -32,17 +30,11 @@ public class PlayerController {
      * @return ResponseEntity wih HttpStatus and Game Data.
      */
     @GetMapping("/{gameCode}/client/{clientID}")
-    public ResponseEntity<Object> getPlayerData(@PathVariable String gameCode, @PathVariable String clientID) {
-        if (!gameCode.equals(this.dataService.getGameCode())) {
-            return ResponseFactory.createResponse(HttpStatus.NOT_FOUND, "Game not found");
-        }
+    public ResponseEntity<String> getPlayerData(@PathVariable String gameCode, @PathVariable String clientID) {
 
-        Client client = this.dataService.getClientPool().getClientById(clientID);
+//		ValidationUtils.validateGame(gameCode);
+//		ValidationUtils.validatePlayer(clientID);
 
-        if (client == null) {
-            return ResponseFactory.createResponse(HttpStatus.UNAUTHORIZED, "No client with this id");
-        }
-
-        return ResponseFactory.createResponse(HttpStatus.OK, client);
+        return ResponseFactory.createResponse(HttpStatus.OK, dataService.getClient(clientID));
     }
 }

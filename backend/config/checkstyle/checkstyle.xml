@@ -4,20 +4,21 @@
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
-    <property name="charset" value="UTF-8" />
+    <property name="charset" value="UTF-8"/>
 
-    <property name="severity" value="error" />
+    <property name="severity" value="error"/>
 
-    <property name="fileExtensions" value="java, properties, xml" />
+    <property name="fileExtensions" value="java, properties, xml"/>
     <!-- Excludes all 'module-info.java' files              -->
     <!-- See https://checkstyle.org/config_filefilters.html -->
     <module name="BeforeExecutionExclusionFileFilter">
-        <property name="fileNamePattern" value="module\-info\.java$" />
+        <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
     <!-- https://checkstyle.org/config_filters.html#SuppressionFilter -->
     <module name="SuppressionFilter">
-        <property name="file" value="${org.checkstyle.google.suppressionfilter.config}" default="checkstyle-suppressions.xml" />
-        <property name="optional" value="true" />
+        <property name="file" value="${org.checkstyle.google.suppressionfilter.config}"
+                  default="checkstyle-suppressions.xml"/>
+        <property name="optional" value="true"/>
     </module>
 
 
@@ -33,8 +34,10 @@
         <module name="UnusedImports"/>
         <module name="RedundantImport"/>
         <module name="CustomImportOrder">
-            <property name="customImportOrderRules" value="THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS###STANDARD_JAVA_PACKAGE###STATIC"/>
+            <property name="customImportOrderRules"
+                      value="THIRD_PARTY_PACKAGE###SPECIAL_IMPORTS###STANDARD_JAVA_PACKAGE###STATIC"/>
             <property name="sortImportsInGroupAlphabetically" value="true"/>
+            <property name="standardPackageRegExp" value="^(java|javax)\."/>
             <property name="separateLineBetweenGroups" value="true"/>
         </module>
 

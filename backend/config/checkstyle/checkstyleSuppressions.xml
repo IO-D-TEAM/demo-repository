@@ -1,0 +1,2 @@
+<suppress checks="CustomImportOrder"
+          message="Wrong lexicographical order for 'java\.[^']+' import\. Should be before 'javax\.[^']+'\."/>
